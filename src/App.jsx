@@ -4,13 +4,7 @@ import Auth from './Auth.jsx'
 import { supabase } from './supabase.js'
 
 const defaultPackingLists = {
-  Famille: [
-    { id: 1, name: 'Passeports', checked: false },
-    { id: 2, name: 'Crème solaire', checked: false },
-    { id: 3, name: 'Maillots de bain', checked: false },
-    { id: 4, name: 'AirTags', checked: false },
-    { id: 5, name: 'Médicaments enfant', checked: false },
-  ],
+  Famille: [],
 }
 
 function App() {
@@ -20,8 +14,8 @@ function App() {
   const [dataLoaded, setDataLoaded] = useState(false)
   const [travelDataId, setTravelDataId] = useState(null)
 
-  const [tripName, setTripName] = useState('Gran Canaria — Maspalomas')
-  const [tripIcon, setTripIcon] = useState('🌴')
+  const [tripName, setTripName] = useState('Mon voyage')
+  const [tripIcon, setTripIcon] = useState('✈️')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
 
@@ -45,12 +39,7 @@ function App() {
 
   const [activityDate, setActivityDate] = useState('')
   const [activityName, setActivityName] = useState('')
-  const [activities, setActivities] = useState([
-    { id: 1, date: '25 juin', name: 'Arrivée à Maspalomas' },
-    { id: 2, date: '26 juin', name: 'Aquarium Poema del Mar' },
-    { id: 3, date: '27 juin', name: 'Puerto de Mogán' },
-    { id: 4, date: '28 juin', name: 'Plage + promenade' },
-  ])
+  const [activities, setActivities] = useState([])
 
   const [documents, setDocuments] = useState([])
   const [documentPerson, setDocumentPerson] = useState('Famille')
@@ -246,8 +235,8 @@ function App() {
 
     if (data) {
       setTravelDataId(data.id)
-      setTripName(data.trip_name || 'Gran Canaria — Maspalomas')
-      setTripIcon(data.trip_icon || '🌴')
+      setTripName(data.trip_name || 'Mon voyage')
+      setTripIcon(data.trip_icon || '✈️')
       setStartDate(data.start_date || '')
       setEndDate(data.end_date || '')
       setPeople(data.people || ['Famille'])
@@ -263,8 +252,8 @@ function App() {
         .from('travel_data')
         .insert({
           user_id: session.user.id,
-          trip_name: 'Gran Canaria — Maspalomas',
-          trip_icon: '🌴',
+          trip_name: 'Mon voyage',
+          trip_icon: '✈️',
           start_date: null,
           end_date: null,
           people: ['Famille'],
@@ -272,12 +261,7 @@ function App() {
           budget: 1500,
           expenses: [],
           shopping_list: [],
-          activities: [
-            { id: 1, date: '25 juin', name: 'Arrivée à Maspalomas' },
-            { id: 2, date: '26 juin', name: 'Aquarium Poema del Mar' },
-            { id: 3, date: '27 juin', name: 'Puerto de Mogán' },
-            { id: 4, date: '28 juin', name: 'Plage + promenade' },
-          ],
+          activities: [],
         })
         .select()
         .single()
