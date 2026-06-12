@@ -2,37 +2,167 @@
   box-sizing: border-box;
 }
 
+:root {
+  --green: #22c55e;
+  --green-dark: #16a34a;
+  --blue: #0ea5e9;
+  --blue-dark: #2563eb;
+  --text: #0f172a;
+  --muted: #64748b;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --card: rgba(255, 255, 255, 0.74);
+  --border: rgba(255, 255, 255, 0.62);
+}
+
+html {
+  min-height: 100%;
+}
+
 body {
   margin: 0;
+  min-height: 100vh;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(14, 165, 233, 0.25), transparent 30%),
-    radial-gradient(circle at top right, rgba(34, 197, 94, 0.25), transparent 30%),
-    linear-gradient(180deg, #f0fdf4 0%, #eff6ff 100%);
-  color: #0f172a;
+    radial-gradient(circle at 20% 20%, rgba(34, 197, 94, 0.28), transparent 28%),
+    radial-gradient(circle at 80% 10%, rgba(14, 165, 233, 0.30), transparent 26%),
+    radial-gradient(circle at 50% 90%, rgba(251, 191, 36, 0.18), transparent 34%),
+    linear-gradient(135deg, #ecfeff 0%, #f0fdf4 45%, #eff6ff 100%);
+  background-size: 160% 160%;
+  animation: animatedBackground 16s ease-in-out infinite;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  border-radius: 999px;
+  filter: blur(10px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+body::before {
+  width: 280px;
+  height: 280px;
+  top: 8%;
+  left: -90px;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.38), transparent 65%);
+  animation: floatBlobOne 18s ease-in-out infinite;
+}
+
+body::after {
+  width: 330px;
+  height: 330px;
+  right: -120px;
+  bottom: 8%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.38), transparent 65%);
+  animation: floatBlobTwo 20s ease-in-out infinite;
+}
+
+@keyframes animatedBackground {
+  0% {
+    background-position: 0% 45%;
+  }
+
+  50% {
+    background-position: 100% 55%;
+  }
+
+  100% {
+    background-position: 0% 45%;
+  }
+}
+
+@keyframes floatBlobOne {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(50px, 80px) scale(1.16);
+  }
+}
+
+@keyframes floatBlobTwo {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-60px, -70px) scale(1.12);
+  }
 }
 
 .app {
-  max-width: 760px;
+  max-width: 780px;
   margin: 0 auto;
   padding: 18px;
 }
 
 .hero-card {
+  position: relative;
+  overflow: hidden;
   background:
-    linear-gradient(135deg, rgba(15, 118, 110, 0.95), rgba(14, 165, 233, 0.95)),
+    linear-gradient(135deg, rgba(15, 118, 110, 0.96), rgba(14, 165, 233, 0.96)),
     linear-gradient(135deg, #22c55e, #0ea5e9);
   color: white;
-  padding: 30px;
-  border-radius: 30px;
+  padding: 32px;
+  border-radius: 34px;
   margin-bottom: 18px;
-  box-shadow: 0 20px 50px rgba(14, 165, 233, 0.25);
+  box-shadow:
+    0 24px 60px rgba(14, 165, 233, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.hero-card::before {
+  content: "";
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  right: -80px;
+  top: -95px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  filter: blur(2px);
+  animation: heroGlow 9s ease-in-out infinite;
+}
+
+.hero-card::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  left: -85px;
+  bottom: -95px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  animation: heroGlow 11s ease-in-out infinite reverse;
+}
+
+@keyframes heroGlow {
+  0%, 100% {
+    transform: scale(1) translate(0, 0);
+  }
+
+  50% {
+    transform: scale(1.18) translate(-20px, 18px);
+  }
+}
+
+.hero-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-card h1 {
   margin: 0;
-  font-size: 36px;
-  letter-spacing: -1px;
+  font-size: 37px;
+  letter-spacing: -1.2px;
+  line-height: 1.05;
 }
 
 .hero-card p {
@@ -45,34 +175,43 @@ body {
   margin-top: 18px;
   border: none;
   border-radius: 999px;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.2);
+  padding: 11px 17px;
+  background: rgba(255, 255, 255, 0.22);
   color: white;
-  font-weight: 800;
-  backdrop-filter: blur(10px);
+  font-weight: 900;
+  backdrop-filter: blur(14px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
 
 .countdown {
+  display: inline-flex;
+  align-items: center;
   margin-top: 14px !important;
-  font-size: 22px !important;
-  font-weight: 900;
-  letter-spacing: -0.3px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 19px !important;
+  font-weight: 950;
+  letter-spacing: -0.2px;
+  background: rgba(255, 255, 255, 0.20);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(12px);
 }
 
 .hero-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 11px;
   margin-top: 20px;
 }
 
 .hero-stats div {
   background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(18px);
-  border-radius: 20px;
-  padding: 14px 10px;
+  border-radius: 21px;
+  padding: 15px 10px;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .hero-stats strong {
@@ -87,23 +226,26 @@ body {
   margin-top: 7px;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.88);
-  font-weight: 800;
+  font-weight: 850;
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(24px);
+  background: var(--card);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
   padding: 20px;
-  border-radius: 24px;
+  border-radius: 26px;
   margin-bottom: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 18px 45px rgba(15, 23, 42, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.66);
 }
 
 .card h2 {
   margin: 0 0 14px;
   font-size: 22px;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.45px;
   display: flex;
   align-items: center;
 }
@@ -112,14 +254,14 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 39px;
+  height: 39px;
   margin-right: 10px;
-  border-radius: 13px;
+  border-radius: 14px;
   background: linear-gradient(135deg, #22c55e, #0ea5e9);
   color: white;
   font-size: 18px;
-  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.25);
+  box-shadow: 0 9px 22px rgba(14, 165, 233, 0.24);
   flex: 0 0 auto;
 }
 
@@ -137,7 +279,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-weight: 800;
+  font-weight: 850;
   color: #1e293b;
 }
 
@@ -145,10 +287,10 @@ body {
 .expense-form input {
   width: 100%;
   padding: 14px 15px;
-  border: 1px solid #dbeafe;
-  border-radius: 16px;
+  border: 1px solid rgba(191, 219, 254, 0.9);
+  border-radius: 17px;
   font-size: 16px;
-  background: rgba(248, 250, 252, 0.95);
+  background: rgba(248, 250, 252, 0.88);
   color: #0f172a;
   outline: none;
   transition: 0.2s ease;
@@ -157,7 +299,8 @@ body {
 .field input:focus,
 .expense-form input:focus {
   border-color: #0ea5e9;
-  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.13);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .budget-summary {
@@ -168,11 +311,11 @@ body {
 
 .budget-summary p {
   flex: 1;
-  background: linear-gradient(135deg, #ecfeff, #f0fdf4);
+  background: linear-gradient(135deg, rgba(236, 254, 255, 0.88), rgba(240, 253, 244, 0.88));
   padding: 16px;
-  border-radius: 18px;
+  border-radius: 19px;
   margin: 0;
-  border: 1px solid #dbeafe;
+  border: 1px solid rgba(191, 219, 254, 0.9);
 }
 
 .expense-form {
@@ -192,12 +335,12 @@ button:active {
 .expenses-list button {
   padding: 13px;
   border: none;
-  border-radius: 16px;
+  border-radius: 17px;
   background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
-  font-weight: 900;
+  font-weight: 950;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
+  box-shadow: 0 12px 24px rgba(34, 197, 94, 0.22);
 }
 
 .expenses-list {
@@ -211,11 +354,11 @@ button:active {
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  background: rgba(248, 250, 252, 0.95);
+  background: rgba(248, 250, 252, 0.88);
   padding: 13px;
-  border-radius: 16px;
+  border-radius: 17px;
   margin-bottom: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(226, 232, 240, 0.9);
 }
 
 .expenses-list button {
@@ -246,6 +389,7 @@ button:active {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 12px;
 }
 
 .packing-row {
@@ -253,20 +397,22 @@ button:active {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: rgba(248, 250, 252, 0.9);
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 4px 8px 4px 12px;
+  background: rgba(248, 250, 252, 0.88);
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  border-radius: 17px;
+  padding: 5px 8px 5px 12px;
 }
 
 .packing-row button {
   width: auto;
-  padding: 8px 12px;
+  min-width: 38px;
+  height: 36px;
+  padding: 0 12px;
   border: none;
-  border-radius: 12px;
+  border-radius: 999px;
   background: #fee2e2;
   color: #b91c1c;
-  font-weight: 900;
+  font-weight: 950;
 }
 
 .person-tabs {
@@ -281,16 +427,16 @@ button:active {
   border: none;
   border-radius: 999px;
   padding: 11px 15px;
-  background: #e2e8f0;
+  background: rgba(226, 232, 240, 0.92);
   color: #1e293b;
-  font-weight: 900;
+  font-weight: 950;
   white-space: nowrap;
 }
 
 .person-tabs .active-tab {
   background: linear-gradient(135deg, #22c55e, #0ea5e9);
   color: white;
-  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
+  box-shadow: 0 10px 22px rgba(14, 165, 233, 0.23);
 }
 
 .delete-person-button {
@@ -298,30 +444,30 @@ button:active {
   margin-bottom: 14px;
   padding: 12px;
   border: none;
-  border-radius: 16px;
+  border-radius: 17px;
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
-  font-weight: 900;
+  font-weight: 950;
 }
 
 .weather-card button {
   width: 100%;
   padding: 13px;
   border: none;
-  border-radius: 16px;
+  border-radius: 17px;
   background: linear-gradient(135deg, #0ea5e9, #2563eb);
   color: white;
-  font-weight: 900;
+  font-weight: 950;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.18);
+  box-shadow: 0 12px 24px rgba(14, 165, 233, 0.20);
 }
 
 .weather-box {
-  background: linear-gradient(135deg, #eff6ff, #ecfeff);
+  background: linear-gradient(135deg, rgba(239, 246, 255, 0.92), rgba(236, 254, 255, 0.92));
   padding: 16px;
-  border-radius: 20px;
+  border-radius: 22px;
   margin-bottom: 12px;
-  border: 1px solid #dbeafe;
+  border: 1px solid rgba(191, 219, 254, 0.9);
 }
 
 .weather-main {
@@ -347,17 +493,17 @@ button:active {
 
 .weather-details p {
   flex: 1;
-  background: white;
+  background: rgba(255, 255, 255, 0.85);
   padding: 11px;
-  border-radius: 14px;
+  border-radius: 15px;
   margin: 0;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(226, 232, 240, 0.9);
 }
 
 .assistant-card {
   background:
-    linear-gradient(135deg, rgba(239, 246, 255, 0.96), rgba(240, 253, 244, 0.96));
-  border: 1px solid #bfdbfe;
+    linear-gradient(135deg, rgba(239, 246, 255, 0.86), rgba(240, 253, 244, 0.86));
+  border: 1px solid rgba(191, 219, 254, 0.92);
 }
 
 .assistant-intro {
@@ -373,11 +519,11 @@ button:active {
 }
 
 .assistant-summary div {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.80);
   padding: 13px;
-  border-radius: 18px;
+  border-radius: 19px;
   text-align: center;
-  border: 1px solid #dbeafe;
+  border: 1px solid rgba(219, 234, 254, 0.92);
 }
 
 .assistant-summary span {
@@ -409,7 +555,7 @@ button:active {
 .file-input {
   padding: 12px;
   border: 1px dashed #93c5fd;
-  border-radius: 16px;
+  border-radius: 17px;
   background: rgba(239, 246, 255, 0.8);
 }
 
@@ -420,9 +566,9 @@ button:active {
 }
 
 .document-row {
-  background: rgba(248, 250, 252, 0.95);
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  background: rgba(248, 250, 252, 0.88);
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  border-radius: 17px;
   padding: 13px;
 }
 
@@ -444,9 +590,9 @@ button:active {
 .document-actions button {
   flex: 1;
   border: none;
-  border-radius: 14px;
+  border-radius: 15px;
   padding: 10px;
-  font-weight: 900;
+  font-weight: 950;
 }
 
 .open-document {
@@ -466,7 +612,7 @@ button:active {
 
   .hero-card {
     padding: 24px;
-    border-radius: 26px;
+    border-radius: 28px;
   }
 
   .hero-card h1 {
@@ -481,5 +627,15 @@ button:active {
   .assistant-summary,
   .hero-stats {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  body::before,
+  body::after,
+  .hero-card::before,
+  .hero-card::after {
+    animation: none;
   }
 }
