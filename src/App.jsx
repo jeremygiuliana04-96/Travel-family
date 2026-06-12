@@ -123,7 +123,33 @@ function App() {
       ? 0
       : Math.round((boughtShoppingItems.length / shoppingList.length) * 100)
 
+  const budgetColor =
+    remaining < 0
+      ? '#ef4444'
+      : remaining < budget * 0.2
+        ? '#f59e0b'
+        : '#22c55e'
+
+  const packingColor =
+    packingProgress < 40
+      ? '#ef4444'
+      : packingProgress < 80
+        ? '#f59e0b'
+        : '#22c55e'
+
   const nextActivity = activities.length > 0 ? activities[0] : null
+
+  function getCountdownText() {
+    const daysUntilStart = getDaysUntilStart()
+
+    if (daysUntilStart === null) return ''
+
+    if (daysUntilStart > 1) return `✈️ Départ dans ${daysUntilStart} jours`
+    if (daysUntilStart === 1) return '✈️ Départ demain'
+    if (daysUntilStart === 0) return '✈️ Départ aujourd’hui'
+
+    return '🌴 Voyage en cours'
+  }
 
   function formatDate(dateValue) {
     if (!dateValue) return ''
@@ -558,11 +584,33 @@ function App() {
         <h1>{tripIcon} Travel Family</h1>
         <p>Vacances {tripName}</p>
         {getTripDatesText() && <p>{getTripDatesText()}</p>}
+
+        {getCountdownText() && (
+          <p className="countdown">{getCountdownText()}</p>
+        )}
+
+        <div className="hero-stats">
+          <div>
+            <strong style={{ color: packingColor }}>{packingProgress}%</strong>
+            <span>🧳 Valises</span>
+          </div>
+
+          <div>
+            <strong style={{ color: budgetColor }}>{remaining} €</strong>
+            <span>💰 Budget</span>
+          </div>
+
+          <div>
+            <strong>{activities.length}</strong>
+            <span>📅 Activités</span>
+          </div>
+        </div>
+
         <button onClick={signOut}>Se déconnecter</button>
       </section>
 
       <section className="card assistant-card">
-        <h2>🤖 Assistant Vacances</h2>
+        <h2><span className="section-badge">🤖</span>Assistant Vacances</h2>
         <p className="assistant-intro">Bonjour 👋 Voici ce que je remarque pour ton voyage.</p>
 
         <div className="assistant-summary">
@@ -579,7 +627,7 @@ function App() {
       </section>
 
       <section className="card">
-        <h2>🛒 Achats avant départ</h2>
+        <h2><span className="section-badge">🛒</span>Achats avant départ</h2>
 
         <div className="budget-summary">
           <p>Acheté : <strong>{boughtShoppingItems.length}</strong></p>
@@ -620,7 +668,7 @@ function App() {
       </section>
 
       <section className="card vault-card">
-        <h2>📁 Coffre-fort Voyage</h2>
+        <h2><span className="section-badge">📁</span>Coffre-fort Voyage</h2>
 
         <div className="person-tabs">
           {people.map((person) => (
@@ -692,7 +740,7 @@ function App() {
       </section>
 
       <section className="card weather-card">
-        <h2>🌤️ Météo</h2>
+        <h2><span className="section-badge">🌤️</span>Météo</h2>
 
         {weatherLoading && <p>Chargement de la météo...</p>}
         {weatherError && <p>{weatherError}</p>}
@@ -718,7 +766,7 @@ function App() {
       </section>
 
       <section className="card">
-        <h2>⚙️ Thème du voyage</h2>
+        <h2><span className="section-badge">⚙️</span>Thème du voyage</h2>
 
         <label className="field">
           Destination
@@ -742,7 +790,7 @@ function App() {
       </section>
 
       <section className="card">
-        <h2>📅 Planning</h2>
+        <h2><span className="section-badge">📅</span>Planning</h2>
 
         <div className="expense-form">
           <input type="text" placeholder="Date : ex 29 juin" value={activityDate} onChange={(e) => setActivityDate(e.target.value)} />
@@ -761,7 +809,7 @@ function App() {
       </section>
 
       <section className="card">
-        <h2>🧳 Valises</h2>
+        <h2><span className="section-badge">🧳</span>Valises</h2>
 
         <div className="expense-form">
           <input type="text" placeholder="Ajouter une personne : ex Eva" value={newPersonName} onChange={(e) => setNewPersonName(e.target.value)} />
@@ -802,7 +850,7 @@ function App() {
       </section>
 
       <section className="card">
-        <h2>💰 Budget</h2>
+        <h2><span className="section-badge">💰</span>Budget</h2>
 
         <label className="field">
           Budget prévu
