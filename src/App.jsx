@@ -38,6 +38,8 @@ function App() {
     ]
   })
 
+  const [packingItemName, setPackingItemName] = useState('')
+
   const [packingList, setPackingList] = useState(() => {
     const savedList = localStorage.getItem('packingList')
     if (savedList) return JSON.parse(savedList)
@@ -75,17 +77,22 @@ function App() {
     localStorage.setItem('activities', JSON.stringify(activities))
   }, [activities])
 
-  const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
+  const totalSpent = expenses.reduce((total, expense) => {
+    return total + expense.amount
+  }, 0)
+
   const remaining = budget - totalSpent
 
   function addActivity() {
     if (activityDate === '' || activityName === '') return
 
-    setActivities([
-      ...activities,
-      { id: Date.now(), date: activityDate, name: activityName },
-    ])
+    const newActivity = {
+      id: Date.now(),
+      date: activityDate,
+      name: activityName,
+    }
 
+    setActivities([...activities, newActivity])
     setActivityDate('')
     setActivityName('')
   }
@@ -94,20 +101,21 @@ function App() {
     setActivities(activities.filter((activity) => activity.id !== id))
   }
 
-  function addExpense() {
-    if (expenseName === '' || expenseAmount === '') return
+  function addPackingItem() {
+    if (packingItemName === '') return
 
-    setExpenses([
-      ...expenses,
-      { id: Date.now(), name: expenseName, amount: Number(expenseAmount) },
-    ])
+    const newItem = {
+      id: Date.now(),
+      name: packingItemName,
+      checked: false,
+    }
 
-    setExpenseName('')
-    setExpenseAmount('')
+    setPackingList([...packingList, newItem])
+    setPackingItemName('')
   }
 
-  function deleteExpense(id) {
-    setExpenses(expenses.filter((expense) => expense.id !== id))
+  function deletePackingItem(id) {
+    setPackingList(packingList.filter((item) => item.id !== id))
   }
 
   function togglePackingItem(id) {
@@ -116,6 +124,24 @@ function App() {
         item.id === id ? { ...item, checked: !item.checked } : item
       )
     )
+  }
+
+  function addExpense() {
+    if (expenseName === '' || expenseAmount === '') return
+
+    const newExpense = {
+      id: Date.now(),
+      name: expenseName,
+      amount: Number(expenseAmount),
+    }
+
+    setExpenses([...expenses, newExpense])
+    setExpenseName('')
+    setExpenseAmount('')
+  }
+
+  function deleteExpense(id) {
+    setExpenses(expenses.filter((expense) => expense.id !== id))
   }
 
   return (
@@ -185,16 +211,36 @@ function App() {
       <section className="card">
         <h2>🧳 Valises</h2>
 
-        {packingList.map((item) => (
-          <label className="check-item" key={item.id}>
-            <input
-              type="checkbox"
-              checked={item.checked}
-              onChange={() => togglePackingItem(item.id)}
-            />
-            <span className={item.checked ? 'checked' : ''}>{item.name}</span>
-          </label>
-        ))}
+        <div className="expense-form">
+          <input
+            type="text"
+            placeholder="Ex : Doudou, chargeur, lunettes..."
+            value={packingItemName}
+            onChange={(e) => setPackingItemName(e.target.value)}
+          />
+
+          <button onClick={addPackingItem}>Ajouter</button>
+        </div>
+
+        <div className="packing-list">
+          {packingList.map((item) => (
+            <div className="packing-row" key={item.id}>
+              <label className="check-item">
+                <input
+                  type="checkbox"
+                  checked={item.checked}
+                  onChange={() => togglePackingItem(item.id)}
+                />
+
+                <span className={item.checked ? 'checked' : ''}>
+                  {item.name}
+                </span>
+              </label>
+
+              <button onClick={() => deletePackingItem(item.id)}>✕</button>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="card">
@@ -210,8 +256,12 @@ function App() {
         </label>
 
         <div className="budget-summary">
-          <p>Dépensé : <strong>{totalSpent} €</strong></p>
-          <p>Reste : <strong>{remaining} €</strong></p>
+          <p>
+            Dépensé : <strong>{totalSpent} €</strong>
+          </p>
+          <p>
+            Reste : <strong>{remaining} €</strong>
+          </p>
         </div>
 
         <div className="expense-form">
@@ -246,4 +296,20 @@ function App() {
   )
 }
 
-export default App
+export default App.packing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.packing-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.packing-row button {
+  width: auto;
+  padding: 8px 12px;
+}
