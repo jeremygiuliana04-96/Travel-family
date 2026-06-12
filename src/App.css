@@ -1,0 +1,133 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eef7f2;
+  color: #1f2933;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.hero-card {
+  background: linear-gradient(135deg, #22c55e, #0ea5e9);
+  color: white;
+  padding: 28px;
+  border-radius: 24px;
+  margin-bottom: 18px;
+}
+
+.hero-card h1 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.hero-card p {
+  margin-bottom: 0;
+  font-size: 18px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+.card ul {
+  padding-left: 20px;
+}
+
+.card label {
+  display: block;
+  padding: 10px 0;
+  font-size: 17px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: bold;
+}
+
+.field input,
+.expense-form input {
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+.budget-summary {
+  display: flex;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.budget-summary p {
+  flex: 1;
+  background: #eef7f2;
+  padding: 14px;
+  border-radius: 14px;
+}
+
+.expense-form {
+  display: grid;
+  gap: 10px;
+}
+
+.expense-form button,
+.expenses-list button {
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #22c55e;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.expenses-list {
+  padding: 0;
+  margin-top: 16px;
+  list-style: none;
+}
+
+.expenses-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.expenses-list button {
+  background: #ef4444;
+  padding: 8px 10px;
+}
+
+.check-item {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+}
+
+.check-item input {
+  width: 18px;
+  height: 18px;
+}
+
+.checked {
+  text-decoration: line-through;
+  color: #6b7280;
+}
