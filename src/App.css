@@ -1,43 +1,71 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #eef7f2;
-  color: #1f2933;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.25), transparent 30%),
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.25), transparent 30%),
+    linear-gradient(180deg, #f0fdf4 0%, #eff6ff 100%);
+  color: #0f172a;
 }
 
 .app {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 18px;
 }
 
 .hero-card {
-  background: linear-gradient(135deg, #22c55e, #0ea5e9);
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.95), rgba(14, 165, 233, 0.95)),
+    linear-gradient(135deg, #22c55e, #0ea5e9);
   color: white;
-  padding: 28px;
-  border-radius: 24px;
+  padding: 30px;
+  border-radius: 30px;
   margin-bottom: 18px;
+  box-shadow: 0 20px 50px rgba(14, 165, 233, 0.25);
 }
 
 .hero-card h1 {
   margin: 0;
-  font-size: 34px;
+  font-size: 36px;
+  letter-spacing: -1px;
 }
 
 .hero-card p {
-  margin-bottom: 0;
-  font-size: 18px;
+  margin: 8px 0 0;
+  font-size: 17px;
+  opacity: 0.95;
+}
+
+.hero-card button {
+  margin-top: 18px;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 800;
+  backdrop-filter: blur(10px);
 }
 
 .card {
-  background: white;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(18px);
   padding: 20px;
-  border-radius: 20px;
+  border-radius: 24px;
   margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
 }
 
 .card h2 {
-  margin-top: 0;
+  margin: 0 0 14px;
+  font-size: 22px;
+  letter-spacing: -0.4px;
 }
 
 .card ul {
@@ -47,22 +75,34 @@ body {
 .card label {
   display: block;
   padding: 10px 0;
-  font-size: 17px;
+  font-size: 16px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-weight: bold;
+  font-weight: 800;
+  color: #1e293b;
 }
 
 .field input,
 .expense-form input {
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 12px;
+  width: 100%;
+  padding: 14px 15px;
+  border: 1px solid #dbeafe;
+  border-radius: 16px;
   font-size: 16px;
+  background: rgba(248, 250, 252, 0.95);
+  color: #0f172a;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.field input:focus,
+.expense-form input:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
 }
 
 .budget-summary {
@@ -73,9 +113,11 @@ body {
 
 .budget-summary p {
   flex: 1;
-  background: #eef7f2;
-  padding: 14px;
-  border-radius: 14px;
+  background: linear-gradient(135deg, #ecfeff, #f0fdf4);
+  padding: 16px;
+  border-radius: 18px;
+  margin: 0;
+  border: 1px solid #dbeafe;
 }
 
 .expense-form {
@@ -83,15 +125,24 @@ body {
   gap: 10px;
 }
 
+button {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
 .expense-form button,
 .expenses-list button {
-  padding: 12px;
+  padding: 13px;
   border: none;
-  border-radius: 12px;
-  background: #22c55e;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
-  font-weight: bold;
+  font-weight: 900;
   cursor: pointer;
+  box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
 }
 
 .expenses-list {
@@ -105,31 +156,35 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  background: #f9fafb;
-  padding: 12px;
-  border-radius: 12px;
+  background: rgba(248, 250, 252, 0.95);
+  padding: 13px;
+  border-radius: 16px;
   margin-bottom: 8px;
+  border: 1px solid #e2e8f0;
 }
 
 .expenses-list button {
-  background: #ef4444;
-  padding: 8px 10px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  padding: 8px 11px;
+  box-shadow: none;
 }
 
 .check-item {
   display: flex !important;
   align-items: center;
   gap: 10px;
+  margin: 0;
 }
 
 .check-item input {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+  accent-color: #22c55e;
 }
 
 .checked {
   text-decoration: line-through;
-  color: #6b7280;
+  color: #64748b;
 }
 
 .packing-list {
@@ -143,11 +198,20 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 4px 8px 4px 12px;
 }
 
 .packing-row button {
   width: auto;
   padding: 8px 12px;
+  border: none;
+  border-radius: 12px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-weight: 900;
 }
 
 .person-tabs {
@@ -155,51 +219,54 @@ body {
   gap: 8px;
   overflow-x: auto;
   margin: 16px 0;
-  padding-bottom: 6px;
+  padding-bottom: 8px;
 }
 
 .person-tabs button {
   border: none;
   border-radius: 999px;
-  padding: 10px 14px;
-  background: #e5e7eb;
-  color: #1f2933;
-  font-weight: bold;
+  padding: 11px 15px;
+  background: #e2e8f0;
+  color: #1e293b;
+  font-weight: 900;
   white-space: nowrap;
 }
 
 .person-tabs .active-tab {
-  background: #22c55e;
+  background: linear-gradient(135deg, #22c55e, #0ea5e9);
   color: white;
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
 }
 
 .delete-person-button {
   width: 100%;
   margin-bottom: 14px;
-  padding: 10px;
+  padding: 12px;
   border: none;
-  border-radius: 12px;
-  background: #ef4444;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
-  font-weight: bold;
+  font-weight: 900;
 }
 
 .weather-card button {
   width: 100%;
-  padding: 12px;
+  padding: 13px;
   border: none;
-  border-radius: 12px;
-  background: #0ea5e9;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
   color: white;
-  font-weight: bold;
+  font-weight: 900;
   cursor: pointer;
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.18);
 }
 
 .weather-box {
-  background: #eef7f2;
+  background: linear-gradient(135deg, #eff6ff, #ecfeff);
   padding: 16px;
-  border-radius: 16px;
+  border-radius: 20px;
   margin-bottom: 12px;
+  border: 1px solid #dbeafe;
 }
 
 .weather-main {
@@ -209,11 +276,12 @@ body {
 }
 
 .weather-icon {
-  font-size: 42px;
+  font-size: 44px;
 }
 
 .weather-main p {
   margin: 4px 0 0;
+  color: #475569;
 }
 
 .weather-details {
@@ -225,18 +293,21 @@ body {
 .weather-details p {
   flex: 1;
   background: white;
-  padding: 10px;
-  border-radius: 12px;
+  padding: 11px;
+  border-radius: 14px;
   margin: 0;
+  border: 1px solid #e2e8f0;
 }
 
 .assistant-card {
-  border: 2px solid #dbeafe;
+  background:
+    linear-gradient(135deg, rgba(239, 246, 255, 0.96), rgba(240, 253, 244, 0.96));
+  border: 1px solid #bfdbfe;
 }
 
 .assistant-intro {
   margin-top: 0;
-  color: #4b5563;
+  color: #475569;
 }
 
 .assistant-summary {
@@ -247,21 +318,23 @@ body {
 }
 
 .assistant-summary div {
-  background: #eef7f2;
-  padding: 12px;
-  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 13px;
+  border-radius: 18px;
   text-align: center;
+  border: 1px solid #dbeafe;
 }
 
 .assistant-summary span {
   display: block;
   font-size: 13px;
-  color: #4b5563;
+  color: #64748b;
   margin-bottom: 6px;
 }
 
 .assistant-summary strong {
-  font-size: 20px;
+  font-size: 22px;
+  color: #0f172a;
 }
 
 .assistant-list {
@@ -271,4 +344,29 @@ body {
 
 .assistant-list li {
   margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+@media (max-width: 520px) {
+  .app {
+    padding: 14px;
+  }
+
+  .hero-card {
+    padding: 24px;
+    border-radius: 26px;
+  }
+
+  .hero-card h1 {
+    font-size: 31px;
+  }
+
+  .budget-summary,
+  .weather-details {
+    flex-direction: column;
+  }
+
+  .assistant-summary {
+    grid-template-columns: 1fr;
+  }
 }
