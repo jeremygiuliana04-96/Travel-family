@@ -370,3 +370,60 @@ button:active {
     grid-template-columns: 1fr;
   }
 }
+
+.vault-card {
+  border: 1px solid #c7d2fe;
+}
+
+.file-input {
+  padding: 12px;
+  border: 1px dashed #93c5fd;
+  border-radius: 16px;
+  background: rgba(239, 246, 255, 0.8);
+}
+
+.document-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.document-row {
+  background: rgba(248, 250, 252, 0.95);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 13px;
+}
+
+.document-row strong {
+  display: block;
+}
+
+.document-row span {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.document-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.document-actions button {
+  flex: 1;
+  border: none;
+  border-radius: 14px;
+  padding: 10px;
+  font-weight: 900;
+}
+
+.open-document {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  color: white;
+}
+
+.delete-document {
+  background: #fee2e2;
+  color: #b91c1c;
+}

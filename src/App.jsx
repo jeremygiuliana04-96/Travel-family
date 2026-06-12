@@ -49,6 +49,13 @@ function App() {
     { id: 4, date: '28 juin', name: 'Plage + promenade' },
   ])
 
+  const [documents, setDocuments] = useState([])
+  const [documentPerson, setDocumentPerson] = useState('Famille')
+  const [documentName, setDocumentName] = useState('')
+  const [documentType, setDocumentType] = useState('Passeport')
+  const [documentFile, setDocumentFile] = useState(null)
+  const [documentUploading, setDocumentUploading] = useState(false)
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
@@ -67,7 +74,10 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (session) loadTravelData()
+    if (session) {
+      loadTravelData()
+      loadDocuments()
+    }
   }, [session])
 
   useEffect(() => {
@@ -89,6 +99,8 @@ function App() {
   }, [tripName])
 
   const currentPackingList = packingLists[selectedPerson] || []
+  const filteredDocuments = documents.filter((doc) => doc.person_name === documentPerson)
+
   const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
   const remaining = budget - totalSpent
 
@@ -135,6 +147,12 @@ function App() {
       else if (daysUntilStart === 1) advice.push('✈️ Départ demain ! Dernière vérification des valises.')
       else if (daysUntilStart === 0) advice.push('✈️ C’est le jour du départ ! Vérifie documents, valises et trajet.')
       else advice.push('🌴 Le voyage a déjà commencé. Profite bien !')
+    }
+
+    if (documents.length > 0) {
+      advice.push(`📁 Coffre-fort : ${documents.length} document(s) enregistré(s).`)
+    } else {
+      advice.push('📁 Pense à ajouter les documents importants dans le coffre-fort.')
     }
 
     if (weather) {
@@ -195,6 +213,7 @@ function App() {
       setExpenses(data.expenses || [])
       setActivities(data.activities || [])
       setSelectedPerson('Famille')
+      setDocumentPerson('Famille')
     } else {
       const { data: newData } = await supabase
         .from('travel_data')
@@ -241,6 +260,95 @@ function App() {
         updated_at: new Date().toISOString(),
       })
       .eq('id', travelDataId)
+  }
+
+  async function loadDocuments() {
+    const { data, error } = await supabase
+      .from('travel_documents')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    setDocuments(data || [])
+  }
+
+  async function addDocument() {
+    if (!documentFile || documentName.trim() === '') return
+
+    try {
+      setDocumentUploading(true)
+
+      const cleanFileName = documentFile.name.replaceAll(' ', '-')
+      const filePath = `${session.user.id}/${Date.now()}-${cleanFileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('travel-documents')
+        .upload(filePath, documentFile)
+
+      if (uploadError) {
+        console.error(uploadError)
+        alert("Impossible d'envoyer le fichier.")
+        return
+      }
+
+      const { error: insertError } = await supabase
+        .from('travel_documents')
+        .insert({
+          user_id: session.user.id,
+          person_name: documentPerson,
+          document_name: documentName.trim(),
+          document_type: documentType,
+          file_url: filePath,
+        })
+
+      if (insertError) {
+        console.error(insertError)
+        alert("Impossible d'enregistrer le document.")
+        return
+      }
+
+      setDocumentName('')
+      setDocumentType('Passeport')
+      setDocumentFile(null)
+      await loadDocuments()
+    } finally {
+      setDocumentUploading(false)
+    }
+  }
+
+  async function openDocument(filePath) {
+    const { data, error } = await supabase.storage
+      .from('travel-documents')
+      .createSignedUrl(filePath, 60)
+
+    if (error) {
+      console.error(error)
+      alert("Impossible d'ouvrir le document.")
+      return
+    }
+
+    window.open(data.signedUrl, '_blank')
+  }
+
+  async function deleteDocument(document) {
+    const confirmDelete = confirm(`Supprimer ${document.document_name} ?`)
+    if (!confirmDelete) return
+
+    await supabase.storage
+      .from('travel-documents')
+      .remove([document.file_url])
+
+    await supabase
+      .from('travel_documents')
+      .delete()
+      .eq('id', document.id)
+
+    await loadDocuments()
   }
 
   async function signOut() {
@@ -313,6 +421,7 @@ function App() {
     setPeople([...people, cleanName])
     setPackingLists({ ...packingLists, [cleanName]: [] })
     setSelectedPerson(cleanName)
+    setDocumentPerson(cleanName)
     setNewPersonName('')
   }
 
@@ -326,6 +435,7 @@ function App() {
     setPeople(updatedPeople)
     setPackingLists(updatedPackingLists)
     setSelectedPerson('Famille')
+    setDocumentPerson('Famille')
   }
 
   function addPackingItem() {
@@ -419,6 +529,78 @@ function App() {
             <li key={index}>{advice}</li>
           ))}
         </ul>
+      </section>
+
+      <section className="card vault-card">
+        <h2>📁 Coffre-fort Voyage</h2>
+
+        <div className="person-tabs">
+          {people.map((person) => (
+            <button
+              key={person}
+              className={documentPerson === person ? 'active-tab' : ''}
+              onClick={() => setDocumentPerson(person)}
+            >
+              {person}
+            </button>
+          ))}
+        </div>
+
+        <div className="expense-form">
+          <input
+            type="text"
+            placeholder="Nom du document : ex Passeport Jérémy"
+            value={documentName}
+            onChange={(e) => setDocumentName(e.target.value)}
+          />
+
+          <input
+            type="text"
+            placeholder="Type : ex Passeport, Hôtel, Assurance..."
+            value={documentType}
+            onChange={(e) => setDocumentType(e.target.value)}
+          />
+
+          <input
+            className="file-input"
+            type="file"
+            accept="image/*,.pdf"
+            onChange={(e) => setDocumentFile(e.target.files[0])}
+          />
+
+          <button onClick={addDocument} disabled={documentUploading}>
+            {documentUploading ? 'Envoi en cours...' : 'Ajouter le document'}
+          </button>
+        </div>
+
+        <div className="document-list">
+          {filteredDocuments.length === 0 && (
+            <p>Aucun document pour {documentPerson}.</p>
+          )}
+
+          {filteredDocuments.map((document) => (
+            <div className="document-row" key={document.id}>
+              <strong>📄 {document.document_name}</strong>
+              <span>{document.document_type}</span>
+
+              <div className="document-actions">
+                <button
+                  className="open-document"
+                  onClick={() => openDocument(document.file_url)}
+                >
+                  Ouvrir
+                </button>
+
+                <button
+                  className="delete-document"
+                  onClick={() => deleteDocument(document)}
+                >
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="card weather-card">
