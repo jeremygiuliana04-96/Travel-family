@@ -3,72 +3,49 @@ import './App.css'
 import Auth from './Auth.jsx'
 import { supabase } from './supabase.js'
 
+const defaultPackingLists = {
+  Famille: [
+    { id: 1, name: 'Passeports', checked: false },
+    { id: 2, name: 'Crème solaire', checked: false },
+    { id: 3, name: 'Maillots de bain', checked: false },
+    { id: 4, name: 'AirTags', checked: false },
+    { id: 5, name: 'Médicaments enfant', checked: false },
+  ],
+}
+
 function App() {
   const [session, setSession] = useState(null)
   const [sessionLoading, setSessionLoading] = useState(true)
+  const [dataLoading, setDataLoading] = useState(false)
+  const [dataLoaded, setDataLoaded] = useState(false)
+  const [travelDataId, setTravelDataId] = useState(null)
 
-  const [tripName, setTripName] = useState(() => localStorage.getItem('tripName') || 'Gran Canaria — Maspalomas')
-  const [tripIcon, setTripIcon] = useState(() => localStorage.getItem('tripIcon') || '🌴')
+  const [tripName, setTripName] = useState('Gran Canaria — Maspalomas')
+  const [tripIcon, setTripIcon] = useState('🌴')
 
   const [weather, setWeather] = useState(null)
   const [weatherLoading, setWeatherLoading] = useState(false)
   const [weatherError, setWeatherError] = useState('')
 
-  const [people, setPeople] = useState(() => {
-    const savedPeople = localStorage.getItem('people')
-    return savedPeople ? JSON.parse(savedPeople) : ['Famille']
-  })
-
-  const [selectedPerson, setSelectedPerson] = useState(() => localStorage.getItem('selectedPerson') || 'Famille')
+  const [people, setPeople] = useState(['Famille'])
+  const [selectedPerson, setSelectedPerson] = useState('Famille')
   const [newPersonName, setNewPersonName] = useState('')
   const [packingItemName, setPackingItemName] = useState('')
+  const [packingLists, setPackingLists] = useState(defaultPackingLists)
 
-  const [packingLists, setPackingLists] = useState(() => {
-    const savedPackingLists = localStorage.getItem('packingLists')
-    if (savedPackingLists) return JSON.parse(savedPackingLists)
-
-    const oldList = localStorage.getItem('packingList')
-
-    return {
-      Famille: oldList
-        ? JSON.parse(oldList)
-        : [
-            { id: 1, name: 'Passeports', checked: false },
-            { id: 2, name: 'Crème solaire', checked: false },
-            { id: 3, name: 'Maillots de bain', checked: false },
-            { id: 4, name: 'AirTags', checked: false },
-            { id: 5, name: 'Médicaments enfant', checked: false },
-          ],
-    }
-  })
-
-  const [budget, setBudget] = useState(() => {
-    const savedBudget = localStorage.getItem('budget')
-    return savedBudget ? Number(savedBudget) : 1500
-  })
-
+  const [budget, setBudget] = useState(1500)
   const [expenseName, setExpenseName] = useState('')
   const [expenseAmount, setExpenseAmount] = useState('')
-
-  const [expenses, setExpenses] = useState(() => {
-    const savedExpenses = localStorage.getItem('expenses')
-    return savedExpenses ? JSON.parse(savedExpenses) : []
-  })
+  const [expenses, setExpenses] = useState([])
 
   const [activityDate, setActivityDate] = useState('')
   const [activityName, setActivityName] = useState('')
-
-  const [activities, setActivities] = useState(() => {
-    const savedActivities = localStorage.getItem('activities')
-    if (savedActivities) return JSON.parse(savedActivities)
-
-    return [
-      { id: 1, date: '25 juin', name: 'Arrivée à Maspalomas' },
-      { id: 2, date: '26 juin', name: 'Aquarium Poema del Mar' },
-      { id: 3, date: '27 juin', name: 'Puerto de Mogán' },
-      { id: 4, date: '28 juin', name: 'Plage + promenade' },
-    ]
-  })
+  const [activities, setActivities] = useState([
+    { id: 1, date: '25 juin', name: 'Arrivée à Maspalomas' },
+    { id: 2, date: '26 juin', name: 'Aquarium Poema del Mar' },
+    { id: 3, date: '27 juin', name: 'Puerto de Mogán' },
+    { id: 4, date: '28 juin', name: 'Plage + promenade' },
+  ])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -79,6 +56,7 @@ function App() {
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       setSessionLoading(false)
+      setDataLoaded(false)
     })
 
     return () => {
@@ -86,22 +64,96 @@ function App() {
     }
   }, [])
 
-  useEffect(() => localStorage.setItem('tripName', tripName), [tripName])
-  useEffect(() => localStorage.setItem('tripIcon', tripIcon), [tripIcon])
-  useEffect(() => localStorage.setItem('people', JSON.stringify(people)), [people])
-  useEffect(() => localStorage.setItem('selectedPerson', selectedPerson), [selectedPerson])
-  useEffect(() => localStorage.setItem('packingLists', JSON.stringify(packingLists)), [packingLists])
-  useEffect(() => localStorage.setItem('budget', String(budget)), [budget])
-  useEffect(() => localStorage.setItem('expenses', JSON.stringify(expenses)), [expenses])
-  useEffect(() => localStorage.setItem('activities', JSON.stringify(activities)), [activities])
+  useEffect(() => {
+    if (session) {
+      loadTravelData()
+    }
+  }, [session])
+
+  useEffect(() => {
+    if (session && dataLoaded && travelDataId) {
+      saveTravelData()
+    }
+  }, [tripName, tripIcon, people, packingLists, budget, expenses, activities])
 
   useEffect(() => {
     fetchWeather()
-  }, [])
+  }, [tripName])
 
   const currentPackingList = packingLists[selectedPerson] || []
   const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
   const remaining = budget - totalSpent
+
+  async function loadTravelData() {
+    setDataLoading(true)
+
+    const { data, error } = await supabase
+      .from('travel_data')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .maybeSingle()
+
+    if (error) {
+      console.error(error)
+      setDataLoading(false)
+      return
+    }
+
+    if (data) {
+      setTravelDataId(data.id)
+      setTripName(data.trip_name || 'Gran Canaria — Maspalomas')
+      setTripIcon(data.trip_icon || '🌴')
+      setPeople(data.people || ['Famille'])
+      setPackingLists(data.packing_lists || defaultPackingLists)
+      setBudget(Number(data.budget) || 1500)
+      setExpenses(data.expenses || [])
+      setActivities(data.activities || [])
+      setSelectedPerson('Famille')
+    } else {
+      const { data: newData } = await supabase
+        .from('travel_data')
+        .insert({
+          user_id: session.user.id,
+          trip_name: 'Gran Canaria — Maspalomas',
+          trip_icon: '🌴',
+          people: ['Famille'],
+          packing_lists: defaultPackingLists,
+          budget: 1500,
+          expenses: [],
+          activities: [
+            { id: 1, date: '25 juin', name: 'Arrivée à Maspalomas' },
+            { id: 2, date: '26 juin', name: 'Aquarium Poema del Mar' },
+            { id: 3, date: '27 juin', name: 'Puerto de Mogán' },
+            { id: 4, date: '28 juin', name: 'Plage + promenade' },
+          ],
+        })
+        .select()
+        .single()
+
+      if (newData) {
+        setTravelDataId(newData.id)
+      }
+    }
+
+    setDataLoaded(true)
+    setDataLoading(false)
+  }
+
+  async function saveTravelData() {
+    await supabase
+      .from('travel_data')
+      .update({
+        trip_name: tripName,
+        trip_icon: tripIcon,
+        people,
+        packing_lists: packingLists,
+        budget,
+        expenses,
+        activities,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', travelDataId)
+  }
 
   async function signOut() {
     await supabase.auth.signOut()
@@ -242,7 +294,7 @@ function App() {
     setExpenses(expenses.filter((expense) => expense.id !== id))
   }
 
-  if (sessionLoading) {
+  if (sessionLoading || dataLoading) {
     return (
       <main className="app">
         <section className="hero-card">
