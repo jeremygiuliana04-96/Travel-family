@@ -1,7 +1,33 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import Auth from './Auth.jsx'
+import { supabase } from './supabase.js'
 
 function App() {
+  const [session, setSession] = useState(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session)
+    })
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    return () => {
+      listener.subscription.unsubscribe()
+    }
+  }, [])
+
+  if (!session) {
+    return <Auth />
+  }
+
+  async function signOut() {
+    await supabase.auth.signOut()
+  }
+
   const [tripName, setTripName] = useState(() => localStorage.getItem('tripName') || 'Gran Canaria — Maspalomas')
   const [tripIcon, setTripIcon] = useState(() => localStorage.getItem('tripIcon') || '🌴')
 
@@ -106,9 +132,7 @@ function App() {
       setWeatherError('')
 
       const geoResponse = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
-          location
-        )}&count=1&language=fr&format=json`
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=fr&format=json`
       )
 
       const geoData = await geoResponse.json()
@@ -224,13 +248,13 @@ function App() {
       <section className="hero-card">
         <h1>{tripIcon} Travel Family</h1>
         <p>Vacances {tripName}</p>
+        <button onClick={signOut}>Se déconnecter</button>
       </section>
 
       <section className="card weather-card">
         <h2>🌤️ Météo</h2>
 
         {weatherLoading && <p>Chargement de la météo...</p>}
-
         {weatherError && <p>{weatherError}</p>}
 
         {weather && (
@@ -250,9 +274,7 @@ function App() {
           </div>
         )}
 
-        <button onClick={fetchWeather}>
-          Actualiser météo
-        </button>
+        <button onClick={fetchWeather}>Actualiser météo</button>
       </section>
 
       <section className="card">
@@ -260,22 +282,12 @@ function App() {
 
         <label className="field">
           Destination
-          <input
-            type="text"
-            placeholder="Ex : Italie, Paris, Tenerife..."
-            value={tripName}
-            onChange={(e) => setTripName(e.target.value)}
-          />
+          <input type="text" placeholder="Ex : Italie, Paris, Tenerife..." value={tripName} onChange={(e) => setTripName(e.target.value)} />
         </label>
 
         <label className="field">
           Icône
-          <input
-            type="text"
-            placeholder="Ex : 🌴 ✈️ 🏖️ 🏔️"
-            value={tripIcon}
-            onChange={(e) => setTripIcon(e.target.value)}
-          />
+          <input type="text" placeholder="Ex : 🌴 ✈️ 🏖️ 🏔️" value={tripIcon} onChange={(e) => setTripIcon(e.target.value)} />
         </label>
       </section>
 
