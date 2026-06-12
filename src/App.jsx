@@ -10,6 +10,37 @@ function App() {
     return localStorage.getItem('tripIcon') || '🌴'
   })
 
+  const [people, setPeople] = useState(() => {
+    const savedPeople = localStorage.getItem('people')
+    return savedPeople ? JSON.parse(savedPeople) : ['Famille']
+  })
+
+  const [selectedPerson, setSelectedPerson] = useState(() => {
+    return localStorage.getItem('selectedPerson') || 'Famille'
+  })
+
+  const [newPersonName, setNewPersonName] = useState('')
+  const [packingItemName, setPackingItemName] = useState('')
+
+  const [packingLists, setPackingLists] = useState(() => {
+    const savedPackingLists = localStorage.getItem('packingLists')
+    if (savedPackingLists) return JSON.parse(savedPackingLists)
+
+    const oldList = localStorage.getItem('packingList')
+
+    return {
+      Famille: oldList
+        ? JSON.parse(oldList)
+        : [
+            { id: 1, name: 'Passeports', checked: false },
+            { id: 2, name: 'Crème solaire', checked: false },
+            { id: 3, name: 'Maillots de bain', checked: false },
+            { id: 4, name: 'AirTags', checked: false },
+            { id: 5, name: 'Médicaments enfant', checked: false },
+          ],
+    }
+  })
+
   const [budget, setBudget] = useState(() => {
     const savedBudget = localStorage.getItem('budget')
     return savedBudget ? Number(savedBudget) : 1500
@@ -38,21 +69,6 @@ function App() {
     ]
   })
 
-  const [packingItemName, setPackingItemName] = useState('')
-
-  const [packingList, setPackingList] = useState(() => {
-    const savedList = localStorage.getItem('packingList')
-    if (savedList) return JSON.parse(savedList)
-
-    return [
-      { id: 1, name: 'Passeports', checked: false },
-      { id: 2, name: 'Crème solaire', checked: false },
-      { id: 3, name: 'Maillots de bain', checked: false },
-      { id: 4, name: 'AirTags', checked: false },
-      { id: 5, name: 'Médicaments enfant', checked: false },
-    ]
-  })
-
   useEffect(() => {
     localStorage.setItem('tripName', tripName)
   }, [tripName])
@@ -60,6 +76,18 @@ function App() {
   useEffect(() => {
     localStorage.setItem('tripIcon', tripIcon)
   }, [tripIcon])
+
+  useEffect(() => {
+    localStorage.setItem('people', JSON.stringify(people))
+  }, [people])
+
+  useEffect(() => {
+    localStorage.setItem('selectedPerson', selectedPerson)
+  }, [selectedPerson])
+
+  useEffect(() => {
+    localStorage.setItem('packingLists', JSON.stringify(packingLists))
+  }, [packingLists])
 
   useEffect(() => {
     localStorage.setItem('budget', String(budget))
@@ -70,12 +98,10 @@ function App() {
   }, [expenses])
 
   useEffect(() => {
-    localStorage.setItem('packingList', JSON.stringify(packingList))
-  }, [packingList])
-
-  useEffect(() => {
     localStorage.setItem('activities', JSON.stringify(activities))
   }, [activities])
+
+  const currentPackingList = packingLists[selectedPerson] || []
 
   const totalSpent = expenses.reduce((total, expense) => {
     return total + expense.amount
@@ -83,16 +109,74 @@ function App() {
 
   const remaining = budget - totalSpent
 
+  function addPerson() {
+    const cleanName = newPersonName.trim()
+    if (cleanName === '') return
+    if (people.includes(cleanName)) return
+
+    setPeople([...people, cleanName])
+    setPackingLists({
+      ...packingLists,
+      [cleanName]: [],
+    })
+    setSelectedPerson(cleanName)
+    setNewPersonName('')
+  }
+
+  function deletePerson(personName) {
+    if (personName === 'Famille') return
+
+    const updatedPeople = people.filter((person) => person !== personName)
+
+    const updatedPackingLists = { ...packingLists }
+    delete updatedPackingLists[personName]
+
+    setPeople(updatedPeople)
+    setPackingLists(updatedPackingLists)
+    setSelectedPerson('Famille')
+  }
+
+  function addPackingItem() {
+    if (packingItemName.trim() === '') return
+
+    const newItem = {
+      id: Date.now(),
+      name: packingItemName.trim(),
+      checked: false,
+    }
+
+    setPackingLists({
+      ...packingLists,
+      [selectedPerson]: [...currentPackingList, newItem],
+    })
+
+    setPackingItemName('')
+  }
+
+  function deletePackingItem(id) {
+    setPackingLists({
+      ...packingLists,
+      [selectedPerson]: currentPackingList.filter((item) => item.id !== id),
+    })
+  }
+
+  function togglePackingItem(id) {
+    setPackingLists({
+      ...packingLists,
+      [selectedPerson]: currentPackingList.map((item) =>
+        item.id === id ? { ...item, checked: !item.checked } : item
+      ),
+    })
+  }
+
   function addActivity() {
     if (activityDate === '' || activityName === '') return
 
-    const newActivity = {
-      id: Date.now(),
-      date: activityDate,
-      name: activityName,
-    }
+    setActivities([
+      ...activities,
+      { id: Date.now(), date: activityDate, name: activityName },
+    ])
 
-    setActivities([...activities, newActivity])
     setActivityDate('')
     setActivityName('')
   }
@@ -101,41 +185,14 @@ function App() {
     setActivities(activities.filter((activity) => activity.id !== id))
   }
 
-  function addPackingItem() {
-    if (packingItemName === '') return
-
-    const newItem = {
-      id: Date.now(),
-      name: packingItemName,
-      checked: false,
-    }
-
-    setPackingList([...packingList, newItem])
-    setPackingItemName('')
-  }
-
-  function deletePackingItem(id) {
-    setPackingList(packingList.filter((item) => item.id !== id))
-  }
-
-  function togglePackingItem(id) {
-    setPackingList(
-      packingList.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item
-      )
-    )
-  }
-
   function addExpense() {
     if (expenseName === '' || expenseAmount === '') return
 
-    const newExpense = {
-      id: Date.now(),
-      name: expenseName,
-      amount: Number(expenseAmount),
-    }
+    setExpenses([
+      ...expenses,
+      { id: Date.now(), name: expenseName, amount: Number(expenseAmount) },
+    ])
 
-    setExpenses([...expenses, newExpense])
     setExpenseName('')
     setExpenseAmount('')
   }
@@ -214,7 +271,39 @@ function App() {
         <div className="expense-form">
           <input
             type="text"
-            placeholder="Ex : Doudou, chargeur, lunettes..."
+            placeholder="Ajouter une personne : ex Eva"
+            value={newPersonName}
+            onChange={(e) => setNewPersonName(e.target.value)}
+          />
+
+          <button onClick={addPerson}>Ajouter une personne</button>
+        </div>
+
+        <div className="person-tabs">
+          {people.map((person) => (
+            <button
+              key={person}
+              className={selectedPerson === person ? 'active-tab' : ''}
+              onClick={() => setSelectedPerson(person)}
+            >
+              {person}
+            </button>
+          ))}
+        </div>
+
+        {selectedPerson !== 'Famille' && (
+          <button
+            className="delete-person-button"
+            onClick={() => deletePerson(selectedPerson)}
+          >
+            Supprimer {selectedPerson}
+          </button>
+        )}
+
+        <div className="expense-form">
+          <input
+            type="text"
+            placeholder={`À prendre pour ${selectedPerson}`}
             value={packingItemName}
             onChange={(e) => setPackingItemName(e.target.value)}
           />
@@ -223,7 +312,7 @@ function App() {
         </div>
 
         <div className="packing-list">
-          {packingList.map((item) => (
+          {currentPackingList.map((item) => (
             <div className="packing-row" key={item.id}>
               <label className="check-item">
                 <input
