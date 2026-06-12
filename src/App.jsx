@@ -84,6 +84,54 @@ function App() {
   const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
   const remaining = budget - totalSpent
 
+  const allPackingItems = Object.values(packingLists).flat()
+  const uncheckedPackingItems = allPackingItems.filter((item) => !item.checked)
+  const checkedPackingItems = allPackingItems.filter((item) => item.checked)
+  const packingProgress =
+    allPackingItems.length === 0
+      ? 0
+      : Math.round((checkedPackingItems.length / allPackingItems.length) * 100)
+
+  const nextActivity = activities.length > 0 ? activities[0] : null
+
+  function getAssistantAdvice() {
+    const advice = []
+
+    if (weather) {
+      if (weather.temperature >= 27 && weather.wind <= 25) {
+        advice.push('☀️ Temps idéal pour prévoir une activité extérieure ou une sortie plage.')
+      } else if (weather.temperature <= 20 || weather.code >= 51) {
+        advice.push('🌧️ Météo moins favorable : une activité intérieure serait plus confortable.')
+      } else {
+        advice.push('🌤️ Météo correcte : garde une activité flexible selon l’énergie de la famille.')
+      }
+    }
+
+    if (uncheckedPackingItems.length > 0) {
+      advice.push(`🧳 Il reste ${uncheckedPackingItems.length} objet(s) non cochés dans les valises.`)
+    } else if (allPackingItems.length > 0) {
+      advice.push('✅ Toutes les valises sont prêtes. Nickel pour partir tranquille.')
+    }
+
+    if (budget > 0) {
+      if (remaining < 0) {
+        advice.push(`⚠️ Le budget est dépassé de ${Math.abs(remaining)} €.`)
+      } else if (remaining <= budget * 0.2) {
+        advice.push(`💰 Il reste ${remaining} €. Budget à surveiller pour la suite du voyage.`)
+      } else {
+        advice.push(`💰 Budget restant : ${remaining} €. Tu as encore une bonne marge.`)
+      }
+    }
+
+    if (nextActivity) {
+      advice.push(`📅 Prochaine activité prévue : ${nextActivity.name} (${nextActivity.date}).`)
+    } else {
+      advice.push('📅 Aucun planning prévu pour le moment. Tu peux ajouter une activité simple.')
+    }
+
+    return advice
+  }
+
   async function loadTravelData() {
     setDataLoading(true)
 
@@ -315,6 +363,37 @@ function App() {
         <h1>{tripIcon} Travel Family</h1>
         <p>Vacances {tripName}</p>
         <button onClick={signOut}>Se déconnecter</button>
+      </section>
+
+      <section className="card assistant-card">
+        <h2>🤖 Assistant Vacances</h2>
+
+        <p className="assistant-intro">
+          Bonjour 👋 Voici ce que je remarque pour ton voyage.
+        </p>
+
+        <div className="assistant-summary">
+          <div>
+            <span>🧳 Valises</span>
+            <strong>{packingProgress}%</strong>
+          </div>
+
+          <div>
+            <span>💰 Budget</span>
+            <strong>{remaining} €</strong>
+          </div>
+
+          <div>
+            <span>📅 Planning</span>
+            <strong>{activities.length}</strong>
+          </div>
+        </div>
+
+        <ul className="assistant-list">
+          {getAssistantAdvice().map((advice, index) => (
+            <li key={index}>{advice}</li>
+          ))}
+        </ul>
       </section>
 
       <section className="card weather-card">
