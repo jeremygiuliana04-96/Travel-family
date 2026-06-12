@@ -2,6 +2,14 @@ import { useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
+  const [tripName, setTripName] = useState(() => {
+    return localStorage.getItem('tripName') || 'Gran Canaria — Maspalomas'
+  })
+
+  const [tripIcon, setTripIcon] = useState(() => {
+    return localStorage.getItem('tripIcon') || '🌴'
+  })
+
   const [budget, setBudget] = useState(() => {
     const savedBudget = localStorage.getItem('budget')
     return savedBudget ? Number(savedBudget) : 1500
@@ -20,7 +28,6 @@ function App() {
 
   const [activities, setActivities] = useState(() => {
     const savedActivities = localStorage.getItem('activities')
-
     if (savedActivities) return JSON.parse(savedActivities)
 
     return [
@@ -33,7 +40,6 @@ function App() {
 
   const [packingList, setPackingList] = useState(() => {
     const savedList = localStorage.getItem('packingList')
-
     if (savedList) return JSON.parse(savedList)
 
     return [
@@ -44,6 +50,14 @@ function App() {
       { id: 5, name: 'Médicaments enfant', checked: false },
     ]
   })
+
+  useEffect(() => {
+    localStorage.setItem('tripName', tripName)
+  }, [tripName])
+
+  useEffect(() => {
+    localStorage.setItem('tripIcon', tripIcon)
+  }, [tripIcon])
 
   useEffect(() => {
     localStorage.setItem('budget', String(budget))
@@ -61,22 +75,17 @@ function App() {
     localStorage.setItem('activities', JSON.stringify(activities))
   }, [activities])
 
-  const totalSpent = expenses.reduce((total, expense) => {
-    return total + expense.amount
-  }, 0)
-
+  const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
   const remaining = budget - totalSpent
 
   function addActivity() {
     if (activityDate === '' || activityName === '') return
 
-    const newActivity = {
-      id: Date.now(),
-      date: activityDate,
-      name: activityName,
-    }
+    setActivities([
+      ...activities,
+      { id: Date.now(), date: activityDate, name: activityName },
+    ])
 
-    setActivities([...activities, newActivity])
     setActivityDate('')
     setActivityName('')
   }
@@ -88,13 +97,11 @@ function App() {
   function addExpense() {
     if (expenseName === '' || expenseAmount === '') return
 
-    const newExpense = {
-      id: Date.now(),
-      name: expenseName,
-      amount: Number(expenseAmount),
-    }
+    setExpenses([
+      ...expenses,
+      { id: Date.now(), name: expenseName, amount: Number(expenseAmount) },
+    ])
 
-    setExpenses([...expenses, newExpense])
     setExpenseName('')
     setExpenseAmount('')
   }
@@ -114,8 +121,32 @@ function App() {
   return (
     <main className="app">
       <section className="hero-card">
-        <h1>🌴 Travel Family</h1>
-        <p>Vacances Gran Canaria — Maspalomas</p>
+        <h1>{tripIcon} Travel Family</h1>
+        <p>Vacances {tripName}</p>
+      </section>
+
+      <section className="card">
+        <h2>⚙️ Thème du voyage</h2>
+
+        <label className="field">
+          Destination
+          <input
+            type="text"
+            placeholder="Ex : Italie, Paris, Tenerife..."
+            value={tripName}
+            onChange={(e) => setTripName(e.target.value)}
+          />
+        </label>
+
+        <label className="field">
+          Icône
+          <input
+            type="text"
+            placeholder="Ex : 🌴 ✈️ 🏖️ 🏔️"
+            value={tripIcon}
+            onChange={(e) => setTripIcon(e.target.value)}
+          />
+        </label>
       </section>
 
       <section className="card">
@@ -161,9 +192,7 @@ function App() {
               checked={item.checked}
               onChange={() => togglePackingItem(item.id)}
             />
-            <span className={item.checked ? 'checked' : ''}>
-              {item.name}
-            </span>
+            <span className={item.checked ? 'checked' : ''}>{item.name}</span>
           </label>
         ))}
       </section>
