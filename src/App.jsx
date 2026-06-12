@@ -2,23 +2,19 @@ import { useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
-  const [tripName, setTripName] = useState(() => {
-    return localStorage.getItem('tripName') || 'Gran Canaria — Maspalomas'
-  })
+  const [tripName, setTripName] = useState(() => localStorage.getItem('tripName') || 'Gran Canaria — Maspalomas')
+  const [tripIcon, setTripIcon] = useState(() => localStorage.getItem('tripIcon') || '🌴')
 
-  const [tripIcon, setTripIcon] = useState(() => {
-    return localStorage.getItem('tripIcon') || '🌴'
-  })
+  const [weather, setWeather] = useState(null)
+  const [weatherLoading, setWeatherLoading] = useState(false)
+  const [weatherError, setWeatherError] = useState('')
 
   const [people, setPeople] = useState(() => {
     const savedPeople = localStorage.getItem('people')
     return savedPeople ? JSON.parse(savedPeople) : ['Famille']
   })
 
-  const [selectedPerson, setSelectedPerson] = useState(() => {
-    return localStorage.getItem('selectedPerson') || 'Famille'
-  })
-
+  const [selectedPerson, setSelectedPerson] = useState(() => localStorage.getItem('selectedPerson') || 'Famille')
   const [newPersonName, setNewPersonName] = useState('')
   const [packingItemName, setPackingItemName] = useState('')
 
@@ -69,56 +65,90 @@ function App() {
     ]
   })
 
-  useEffect(() => {
-    localStorage.setItem('tripName', tripName)
-  }, [tripName])
+  useEffect(() => localStorage.setItem('tripName', tripName), [tripName])
+  useEffect(() => localStorage.setItem('tripIcon', tripIcon), [tripIcon])
+  useEffect(() => localStorage.setItem('people', JSON.stringify(people)), [people])
+  useEffect(() => localStorage.setItem('selectedPerson', selectedPerson), [selectedPerson])
+  useEffect(() => localStorage.setItem('packingLists', JSON.stringify(packingLists)), [packingLists])
+  useEffect(() => localStorage.setItem('budget', String(budget)), [budget])
+  useEffect(() => localStorage.setItem('expenses', JSON.stringify(expenses)), [expenses])
+  useEffect(() => localStorage.setItem('activities', JSON.stringify(activities)), [activities])
 
   useEffect(() => {
-    localStorage.setItem('tripIcon', tripIcon)
-  }, [tripIcon])
-
-  useEffect(() => {
-    localStorage.setItem('people', JSON.stringify(people))
-  }, [people])
-
-  useEffect(() => {
-    localStorage.setItem('selectedPerson', selectedPerson)
-  }, [selectedPerson])
-
-  useEffect(() => {
-    localStorage.setItem('packingLists', JSON.stringify(packingLists))
-  }, [packingLists])
-
-  useEffect(() => {
-    localStorage.setItem('budget', String(budget))
-  }, [budget])
-
-  useEffect(() => {
-    localStorage.setItem('expenses', JSON.stringify(expenses))
-  }, [expenses])
-
-  useEffect(() => {
-    localStorage.setItem('activities', JSON.stringify(activities))
-  }, [activities])
+    fetchWeather()
+  }, [])
 
   const currentPackingList = packingLists[selectedPerson] || []
-
-  const totalSpent = expenses.reduce((total, expense) => {
-    return total + expense.amount
-  }, 0)
-
+  const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
   const remaining = budget - totalSpent
+
+  function getWeatherIcon(code) {
+    if (code === 0) return '☀️'
+    if ([1, 2, 3].includes(code)) return '⛅'
+    if ([45, 48].includes(code)) return '🌫️'
+    if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧️'
+    if ([95, 96, 99].includes(code)) return '⛈️'
+    return '🌤️'
+  }
+
+  function getSearchLocation() {
+    if (tripName.includes('—')) return tripName.split('—').pop().trim()
+    if (tripName.includes('-')) return tripName.split('-').pop().trim()
+    return tripName.trim()
+  }
+
+  async function fetchWeather() {
+    const location = getSearchLocation()
+    if (!location) return
+
+    try {
+      setWeatherLoading(true)
+      setWeatherError('')
+
+      const geoResponse = await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
+          location
+        )}&count=1&language=fr&format=json`
+      )
+
+      const geoData = await geoResponse.json()
+
+      if (!geoData.results || geoData.results.length === 0) {
+        setWeather(null)
+        setWeatherError('Destination introuvable pour la météo')
+        return
+      }
+
+      const place = geoData.results[0]
+
+      const weatherResponse = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto`
+      )
+
+      const weatherData = await weatherResponse.json()
+
+      setWeather({
+        city: place.name,
+        country: place.country,
+        temperature: Math.round(weatherData.current.temperature_2m),
+        feelsLike: Math.round(weatherData.current.apparent_temperature),
+        humidity: weatherData.current.relative_humidity_2m,
+        wind: Math.round(weatherData.current.wind_speed_10m),
+        code: weatherData.current.weather_code,
+      })
+    } catch {
+      setWeatherError('Impossible de charger la météo')
+    } finally {
+      setWeatherLoading(false)
+    }
+  }
 
   function addPerson() {
     const cleanName = newPersonName.trim()
-    if (cleanName === '') return
-    if (people.includes(cleanName)) return
+    if (cleanName === '' || people.includes(cleanName)) return
 
     setPeople([...people, cleanName])
-    setPackingLists({
-      ...packingLists,
-      [cleanName]: [],
-    })
+    setPackingLists({ ...packingLists, [cleanName]: [] })
     setSelectedPerson(cleanName)
     setNewPersonName('')
   }
@@ -127,7 +157,6 @@ function App() {
     if (personName === 'Famille') return
 
     const updatedPeople = people.filter((person) => person !== personName)
-
     const updatedPackingLists = { ...packingLists }
     delete updatedPackingLists[personName]
 
@@ -139,15 +168,12 @@ function App() {
   function addPackingItem() {
     if (packingItemName.trim() === '') return
 
-    const newItem = {
-      id: Date.now(),
-      name: packingItemName.trim(),
-      checked: false,
-    }
-
     setPackingLists({
       ...packingLists,
-      [selectedPerson]: [...currentPackingList, newItem],
+      [selectedPerson]: [
+        ...currentPackingList,
+        { id: Date.now(), name: packingItemName.trim(), checked: false },
+      ],
     })
 
     setPackingItemName('')
@@ -172,11 +198,7 @@ function App() {
   function addActivity() {
     if (activityDate === '' || activityName === '') return
 
-    setActivities([
-      ...activities,
-      { id: Date.now(), date: activityDate, name: activityName },
-    ])
-
+    setActivities([...activities, { id: Date.now(), date: activityDate, name: activityName }])
     setActivityDate('')
     setActivityName('')
   }
@@ -188,11 +210,7 @@ function App() {
   function addExpense() {
     if (expenseName === '' || expenseAmount === '') return
 
-    setExpenses([
-      ...expenses,
-      { id: Date.now(), name: expenseName, amount: Number(expenseAmount) },
-    ])
-
+    setExpenses([...expenses, { id: Date.now(), name: expenseName, amount: Number(expenseAmount) }])
     setExpenseName('')
     setExpenseAmount('')
   }
@@ -206,6 +224,35 @@ function App() {
       <section className="hero-card">
         <h1>{tripIcon} Travel Family</h1>
         <p>Vacances {tripName}</p>
+      </section>
+
+      <section className="card weather-card">
+        <h2>🌤️ Météo</h2>
+
+        {weatherLoading && <p>Chargement de la météo...</p>}
+
+        {weatherError && <p>{weatherError}</p>}
+
+        {weather && (
+          <div className="weather-box">
+            <div className="weather-main">
+              <span className="weather-icon">{getWeatherIcon(weather.code)}</span>
+              <div>
+                <strong>{weather.city}, {weather.country}</strong>
+                <p>{weather.temperature}°C — ressenti {weather.feelsLike}°C</p>
+              </div>
+            </div>
+
+            <div className="weather-details">
+              <p>💨 Vent : <strong>{weather.wind} km/h</strong></p>
+              <p>💧 Humidité : <strong>{weather.humidity}%</strong></p>
+            </div>
+          </div>
+        )}
+
+        <button onClick={fetchWeather}>
+          Actualiser météo
+        </button>
       </section>
 
       <section className="card">
@@ -236,29 +283,15 @@ function App() {
         <h2>📅 Planning</h2>
 
         <div className="expense-form">
-          <input
-            type="text"
-            placeholder="Date : ex 29 juin"
-            value={activityDate}
-            onChange={(e) => setActivityDate(e.target.value)}
-          />
-
-          <input
-            type="text"
-            placeholder="Activité : ex Restaurant"
-            value={activityName}
-            onChange={(e) => setActivityName(e.target.value)}
-          />
-
+          <input type="text" placeholder="Date : ex 29 juin" value={activityDate} onChange={(e) => setActivityDate(e.target.value)} />
+          <input type="text" placeholder="Activité : ex Restaurant" value={activityName} onChange={(e) => setActivityName(e.target.value)} />
           <button onClick={addActivity}>Ajouter une activité</button>
         </div>
 
         <ul className="expenses-list">
           {activities.map((activity) => (
             <li key={activity.id}>
-              <span>
-                <strong>{activity.date}</strong> — {activity.name}
-              </span>
+              <span><strong>{activity.date}</strong> — {activity.name}</span>
               <button onClick={() => deleteActivity(activity.id)}>✕</button>
             </li>
           ))}
@@ -269,45 +302,26 @@ function App() {
         <h2>🧳 Valises</h2>
 
         <div className="expense-form">
-          <input
-            type="text"
-            placeholder="Ajouter une personne : ex Eva"
-            value={newPersonName}
-            onChange={(e) => setNewPersonName(e.target.value)}
-          />
-
+          <input type="text" placeholder="Ajouter une personne : ex Eva" value={newPersonName} onChange={(e) => setNewPersonName(e.target.value)} />
           <button onClick={addPerson}>Ajouter une personne</button>
         </div>
 
         <div className="person-tabs">
           {people.map((person) => (
-            <button
-              key={person}
-              className={selectedPerson === person ? 'active-tab' : ''}
-              onClick={() => setSelectedPerson(person)}
-            >
+            <button key={person} className={selectedPerson === person ? 'active-tab' : ''} onClick={() => setSelectedPerson(person)}>
               {person}
             </button>
           ))}
         </div>
 
         {selectedPerson !== 'Famille' && (
-          <button
-            className="delete-person-button"
-            onClick={() => deletePerson(selectedPerson)}
-          >
+          <button className="delete-person-button" onClick={() => deletePerson(selectedPerson)}>
             Supprimer {selectedPerson}
           </button>
         )}
 
         <div className="expense-form">
-          <input
-            type="text"
-            placeholder={`À prendre pour ${selectedPerson}`}
-            value={packingItemName}
-            onChange={(e) => setPackingItemName(e.target.value)}
-          />
-
+          <input type="text" placeholder={`À prendre pour ${selectedPerson}`} value={packingItemName} onChange={(e) => setPackingItemName(e.target.value)} />
           <button onClick={addPackingItem}>Ajouter</button>
         </div>
 
@@ -315,15 +329,8 @@ function App() {
           {currentPackingList.map((item) => (
             <div className="packing-row" key={item.id}>
               <label className="check-item">
-                <input
-                  type="checkbox"
-                  checked={item.checked}
-                  onChange={() => togglePackingItem(item.id)}
-                />
-
-                <span className={item.checked ? 'checked' : ''}>
-                  {item.name}
-                </span>
+                <input type="checkbox" checked={item.checked} onChange={() => togglePackingItem(item.id)} />
+                <span className={item.checked ? 'checked' : ''}>{item.name}</span>
               </label>
 
               <button onClick={() => deletePackingItem(item.id)}>✕</button>
@@ -337,37 +344,17 @@ function App() {
 
         <label className="field">
           Budget prévu
-          <input
-            type="number"
-            value={budget}
-            onChange={(e) => setBudget(Number(e.target.value))}
-          />
+          <input type="number" value={budget} onChange={(e) => setBudget(Number(e.target.value))} />
         </label>
 
         <div className="budget-summary">
-          <p>
-            Dépensé : <strong>{totalSpent} €</strong>
-          </p>
-          <p>
-            Reste : <strong>{remaining} €</strong>
-          </p>
+          <p>Dépensé : <strong>{totalSpent} €</strong></p>
+          <p>Reste : <strong>{remaining} €</strong></p>
         </div>
 
         <div className="expense-form">
-          <input
-            type="text"
-            placeholder="Ex : Restaurant"
-            value={expenseName}
-            onChange={(e) => setExpenseName(e.target.value)}
-          />
-
-          <input
-            type="number"
-            placeholder="Montant"
-            value={expenseAmount}
-            onChange={(e) => setExpenseAmount(e.target.value)}
-          />
-
+          <input type="text" placeholder="Ex : Restaurant" value={expenseName} onChange={(e) => setExpenseName(e.target.value)} />
+          <input type="number" placeholder="Montant" value={expenseAmount} onChange={(e) => setExpenseAmount(e.target.value)} />
           <button onClick={addExpense}>Ajouter</button>
         </div>
 

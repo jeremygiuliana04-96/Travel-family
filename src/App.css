@@ -183,3 +183,49 @@ body {
   color: white;
   font-weight: bold;
 }
+
+.weather-card button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #0ea5e9;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.weather-box {
+  background: #eef7f2;
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+}
+
+.weather-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.weather-icon {
+  font-size: 42px;
+}
+
+.weather-main p {
+  margin: 4px 0 0;
+}
+
+.weather-details {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.weather-details p {
+  flex: 1;
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+  margin: 0;
+}
