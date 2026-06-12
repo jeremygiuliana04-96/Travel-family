@@ -40,6 +40,9 @@ function App() {
   const [expenseAmount, setExpenseAmount] = useState('')
   const [expenses, setExpenses] = useState([])
 
+  const [shoppingItem, setShoppingItem] = useState('')
+  const [shoppingList, setShoppingList] = useState([])
+
   const [activityDate, setActivityDate] = useState('')
   const [activityName, setActivityName] = useState('')
   const [activities, setActivities] = useState([
@@ -91,6 +94,7 @@ function App() {
     packingLists,
     budget,
     expenses,
+    shoppingList,
     activities,
   ])
 
@@ -111,6 +115,13 @@ function App() {
     allPackingItems.length === 0
       ? 0
       : Math.round((checkedPackingItems.length / allPackingItems.length) * 100)
+
+  const boughtShoppingItems = shoppingList.filter((item) => item.bought)
+  const missingShoppingItems = shoppingList.filter((item) => !item.bought)
+  const shoppingProgress =
+    shoppingList.length === 0
+      ? 0
+      : Math.round((boughtShoppingItems.length / shoppingList.length) * 100)
 
   const nextActivity = activities.length > 0 ? activities[0] : null
 
@@ -147,6 +158,12 @@ function App() {
       else if (daysUntilStart === 1) advice.push('✈️ Départ demain ! Dernière vérification des valises.')
       else if (daysUntilStart === 0) advice.push('✈️ C’est le jour du départ ! Vérifie documents, valises et trajet.')
       else advice.push('🌴 Le voyage a déjà commencé. Profite bien !')
+    }
+
+    if (missingShoppingItems.length > 0) {
+      advice.push(`🛒 Il reste ${missingShoppingItems.length} achat(s) à faire avant le départ.`)
+    } else if (shoppingList.length > 0) {
+      advice.push('🛒 Tous les achats avant départ sont faits.')
     }
 
     if (documents.length > 0) {
@@ -211,6 +228,7 @@ function App() {
       setPackingLists(data.packing_lists || defaultPackingLists)
       setBudget(Number(data.budget) || 1500)
       setExpenses(data.expenses || [])
+      setShoppingList(data.shopping_list || [])
       setActivities(data.activities || [])
       setSelectedPerson('Famille')
       setDocumentPerson('Famille')
@@ -227,6 +245,7 @@ function App() {
           packing_lists: defaultPackingLists,
           budget: 1500,
           expenses: [],
+          shopping_list: [],
           activities: [
             { id: 1, date: '25 juin', name: 'Arrivée à Maspalomas' },
             { id: 2, date: '26 juin', name: 'Aquarium Poema del Mar' },
@@ -256,6 +275,7 @@ function App() {
         packing_lists: packingLists,
         budget,
         expenses,
+        shopping_list: shoppingList,
         activities,
         updated_at: new Date().toISOString(),
       })
@@ -468,6 +488,33 @@ function App() {
     })
   }
 
+  function addShoppingItem() {
+    if (shoppingItem.trim() === '') return
+
+    setShoppingList([
+      ...shoppingList,
+      {
+        id: Date.now(),
+        name: shoppingItem.trim(),
+        bought: false,
+      },
+    ])
+
+    setShoppingItem('')
+  }
+
+  function toggleShoppingItem(id) {
+    setShoppingList(
+      shoppingList.map((item) =>
+        item.id === id ? { ...item, bought: !item.bought } : item
+      )
+    )
+  }
+
+  function deleteShoppingItem(id) {
+    setShoppingList(shoppingList.filter((item) => item.id !== id))
+  }
+
   function addActivity() {
     if (activityDate === '' || activityName === '') return
 
@@ -520,8 +567,8 @@ function App() {
 
         <div className="assistant-summary">
           <div><span>🧳 Valises</span><strong>{packingProgress}%</strong></div>
+          <div><span>🛒 Achats</span><strong>{shoppingProgress}%</strong></div>
           <div><span>💰 Budget</span><strong>{remaining} €</strong></div>
-          <div><span>📅 Planning</span><strong>{activities.length}</strong></div>
         </div>
 
         <ul className="assistant-list">
@@ -529,6 +576,47 @@ function App() {
             <li key={index}>{advice}</li>
           ))}
         </ul>
+      </section>
+
+      <section className="card">
+        <h2>🛒 Achats avant départ</h2>
+
+        <div className="budget-summary">
+          <p>Acheté : <strong>{boughtShoppingItems.length}</strong></p>
+          <p>Restant : <strong>{missingShoppingItems.length}</strong></p>
+        </div>
+
+        <div className="expense-form">
+          <input
+            type="text"
+            placeholder="Ex : Crème solaire, brassards, lunettes..."
+            value={shoppingItem}
+            onChange={(e) => setShoppingItem(e.target.value)}
+          />
+
+          <button onClick={addShoppingItem}>Ajouter</button>
+        </div>
+
+        <div className="packing-list">
+          {shoppingList.length === 0 && (
+            <p>Aucun achat à prévoir pour le moment.</p>
+          )}
+
+          {shoppingList.map((item) => (
+            <div className="packing-row" key={item.id}>
+              <label className="check-item">
+                <input
+                  type="checkbox"
+                  checked={item.bought}
+                  onChange={() => toggleShoppingItem(item.id)}
+                />
+                <span className={item.bought ? 'checked' : ''}>{item.name}</span>
+              </label>
+
+              <button onClick={() => deleteShoppingItem(item.id)}>✕</button>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="card vault-card">
