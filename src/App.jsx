@@ -39,7 +39,12 @@ function App() {
 
   const [activityDate, setActivityDate] = useState('')
   const [activityName, setActivityName] = useState('')
-  const [activities, setActivities] = useState([])
+  const [activities, setActivities] = useState([
+    { id: 1, date: '25 juin', name: 'Arrivée à Maspalomas' },
+    { id: 2, date: '26 juin', name: 'Aquarium Poema del Mar' },
+    { id: 3, date: '27 juin', name: 'Puerto de Mogán' },
+    { id: 4, date: '28 juin', name: 'Plage + promenade' },
+  ])
 
   const [documents, setDocuments] = useState([])
   const [documentPerson, setDocumentPerson] = useState('Famille')
@@ -50,11 +55,14 @@ function App() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
+      resetAppState()
       setSession(data.session)
       setSessionLoading(false)
+      setDataLoaded(false)
     })
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      resetAppState()
       setSession(session)
       setSessionLoading(false)
       setDataLoaded(false)
@@ -112,32 +120,35 @@ function App() {
       ? 0
       : Math.round((boughtShoppingItems.length / shoppingList.length) * 100)
 
-  const budgetColor =
-    remaining < 0
-      ? '#ef4444'
-      : remaining < budget * 0.2
-        ? '#f59e0b'
-        : '#22c55e'
-
-  const packingColor =
-    packingProgress < 40
-      ? '#ef4444'
-      : packingProgress < 80
-        ? '#f59e0b'
-        : '#22c55e'
-
   const nextActivity = activities.length > 0 ? activities[0] : null
 
-  function getCountdownText() {
-    const daysUntilStart = getDaysUntilStart()
-
-    if (daysUntilStart === null) return ''
-
-    if (daysUntilStart > 1) return `✈️ Départ dans ${daysUntilStart} jours`
-    if (daysUntilStart === 1) return '✈️ Départ demain'
-    if (daysUntilStart === 0) return '✈️ Départ aujourd’hui'
-
-    return '🌴 Voyage en cours'
+  function resetAppState() {
+    setTravelDataId(null)
+    setTripName('Mon voyage')
+    setTripIcon('✈️')
+    setStartDate('')
+    setEndDate('')
+    setWeather(null)
+    setWeatherError('')
+    setPeople(['Famille'])
+    setSelectedPerson('Famille')
+    setNewPersonName('')
+    setPackingItemName('')
+    setPackingLists(defaultPackingLists)
+    setBudget(0)
+    setExpenseName('')
+    setExpenseAmount('')
+    setExpenses([])
+    setShoppingItem('')
+    setShoppingList([])
+    setActivityDate('')
+    setActivityName('')
+    setActivities([])
+    setDocuments([])
+    setDocumentPerson('Famille')
+    setDocumentName('')
+    setDocumentType('Passeport')
+    setDocumentFile(null)
   }
 
   function formatDate(dateValue) {
@@ -241,7 +252,7 @@ function App() {
       setEndDate(data.end_date || '')
       setPeople(data.people || ['Famille'])
       setPackingLists(data.packing_lists || defaultPackingLists)
-      setBudget(Number(data.budget) || 1500)
+      setBudget(Number(data.budget) || 0)
       setExpenses(data.expenses || [])
       setShoppingList(data.shopping_list || [])
       setActivities(data.activities || [])
@@ -258,7 +269,7 @@ function App() {
           end_date: null,
           people: ['Famille'],
           packing_lists: defaultPackingLists,
-          budget: 1500,
+          budget: 0,
           expenses: [],
           shopping_list: [],
           activities: [],
@@ -378,6 +389,53 @@ function App() {
       .delete()
       .eq('id', document.id)
 
+    await loadDocuments()
+  }
+
+  async function resetCurrentAccountData() {
+    const confirmReset = confirm(
+      'Réinitialiser ce compte ? Toutes les données de ce compte seront effacées.'
+    )
+
+    if (!confirmReset || !session || !travelDataId) return
+
+    const { data: docs } = await supabase
+      .from('travel_documents')
+      .select('*')
+      .eq('user_id', session.user.id)
+
+    const filePaths = (docs || []).map((document) => document.file_url)
+
+    if (filePaths.length > 0) {
+      await supabase.storage
+        .from('travel-documents')
+        .remove(filePaths)
+    }
+
+    await supabase
+      .from('travel_documents')
+      .delete()
+      .eq('user_id', session.user.id)
+
+    await supabase
+      .from('travel_data')
+      .update({
+        trip_name: 'Mon voyage',
+        trip_icon: '✈️',
+        start_date: null,
+        end_date: null,
+        people: ['Famille'],
+        packing_lists: defaultPackingLists,
+        budget: 0,
+        expenses: [],
+        shopping_list: [],
+        activities: [],
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', travelDataId)
+
+    resetAppState()
+    await loadTravelData()
     await loadDocuments()
   }
 
@@ -553,7 +611,7 @@ function App() {
     return (
       <main className="app">
         <section className="hero-card">
-          <h1>🌴 Travel Family</h1>
+          <h1>✈️ Travel Family</h1>
           <p>Chargement...</p>
         </section>
       </main>
@@ -568,33 +626,11 @@ function App() {
         <h1>{tripIcon} Travel Family</h1>
         <p>Vacances {tripName}</p>
         {getTripDatesText() && <p>{getTripDatesText()}</p>}
-
-        {getCountdownText() && (
-          <p className="countdown">{getCountdownText()}</p>
-        )}
-
-        <div className="hero-stats">
-          <div>
-            <strong style={{ color: packingColor }}>{packingProgress}%</strong>
-            <span>🧳 Valises</span>
-          </div>
-
-          <div>
-            <strong style={{ color: budgetColor }}>{remaining} €</strong>
-            <span>💰 Budget</span>
-          </div>
-
-          <div>
-            <strong>{activities.length}</strong>
-            <span>📅 Activités</span>
-          </div>
-        </div>
-
         <button onClick={signOut}>Se déconnecter</button>
       </section>
 
       <section className="card assistant-card">
-        <h2><span className="section-badge">🤖</span>Assistant Vacances</h2>
+        <h2>🤖 Assistant Vacances</h2>
         <p className="assistant-intro">Bonjour 👋 Voici ce que je remarque pour ton voyage.</p>
 
         <div className="assistant-summary">
@@ -611,7 +647,7 @@ function App() {
       </section>
 
       <section className="card">
-        <h2><span className="section-badge">🛒</span>Achats avant départ</h2>
+        <h2>🛒 Achats avant départ</h2>
 
         <div className="budget-summary">
           <p>Acheté : <strong>{boughtShoppingItems.length}</strong></p>
@@ -652,7 +688,7 @@ function App() {
       </section>
 
       <section className="card vault-card">
-        <h2><span className="section-badge">📁</span>Coffre-fort Voyage</h2>
+        <h2>📁 Coffre-fort Voyage</h2>
 
         <div className="person-tabs">
           {people.map((person) => (
@@ -724,7 +760,7 @@ function App() {
       </section>
 
       <section className="card weather-card">
-        <h2><span className="section-badge">🌤️</span>Météo</h2>
+        <h2>🌤️ Météo</h2>
 
         {weatherLoading && <p>Chargement de la météo...</p>}
         {weatherError && <p>{weatherError}</p>}
@@ -750,7 +786,7 @@ function App() {
       </section>
 
       <section className="card">
-        <h2><span className="section-badge">⚙️</span>Thème du voyage</h2>
+        <h2>⚙️ Thème du voyage</h2>
 
         <label className="field">
           Destination
@@ -771,10 +807,14 @@ function App() {
           Date de retour
           <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </label>
+
+        <button className="delete-person-button" onClick={resetCurrentAccountData}>
+          Réinitialiser ce compte
+        </button>
       </section>
 
       <section className="card">
-        <h2><span className="section-badge">📅</span>Planning</h2>
+        <h2>📅 Planning</h2>
 
         <div className="expense-form">
           <input type="text" placeholder="Date : ex 29 juin" value={activityDate} onChange={(e) => setActivityDate(e.target.value)} />
@@ -793,7 +833,7 @@ function App() {
       </section>
 
       <section className="card">
-        <h2><span className="section-badge">🧳</span>Valises</h2>
+        <h2>🧳 Valises</h2>
 
         <div className="expense-form">
           <input type="text" placeholder="Ajouter une personne : ex Eva" value={newPersonName} onChange={(e) => setNewPersonName(e.target.value)} />
@@ -834,7 +874,7 @@ function App() {
       </section>
 
       <section className="card">
-        <h2><span className="section-badge">💰</span>Budget</h2>
+        <h2>💰 Budget</h2>
 
         <label className="field">
           Budget prévu
