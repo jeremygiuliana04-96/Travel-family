@@ -5,28 +5,7 @@ import { supabase } from './supabase.js'
 
 function App() {
   const [session, setSession] = useState(null)
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-    })
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-
-    return () => {
-      listener.subscription.unsubscribe()
-    }
-  }, [])
-
-  if (!session) {
-    return <Auth />
-  }
-
-  async function signOut() {
-    await supabase.auth.signOut()
-  }
+  const [sessionLoading, setSessionLoading] = useState(true)
 
   const [tripName, setTripName] = useState(() => localStorage.getItem('tripName') || 'Gran Canaria — Maspalomas')
   const [tripIcon, setTripIcon] = useState(() => localStorage.getItem('tripIcon') || '🌴')
@@ -91,6 +70,22 @@ function App() {
     ]
   })
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session)
+      setSessionLoading(false)
+    })
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+      setSessionLoading(false)
+    })
+
+    return () => {
+      listener.subscription.unsubscribe()
+    }
+  }, [])
+
   useEffect(() => localStorage.setItem('tripName', tripName), [tripName])
   useEffect(() => localStorage.setItem('tripIcon', tripIcon), [tripIcon])
   useEffect(() => localStorage.setItem('people', JSON.stringify(people)), [people])
@@ -107,6 +102,10 @@ function App() {
   const currentPackingList = packingLists[selectedPerson] || []
   const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
   const remaining = budget - totalSpent
+
+  async function signOut() {
+    await supabase.auth.signOut()
+  }
 
   function getWeatherIcon(code) {
     if (code === 0) return '☀️'
@@ -241,6 +240,21 @@ function App() {
 
   function deleteExpense(id) {
     setExpenses(expenses.filter((expense) => expense.id !== id))
+  }
+
+  if (sessionLoading) {
+    return (
+      <main className="app">
+        <section className="hero-card">
+          <h1>🌴 Travel Family</h1>
+          <p>Chargement...</p>
+        </section>
+      </main>
+    )
+  }
+
+  if (!session) {
+    return <Auth />
   }
 
   return (
