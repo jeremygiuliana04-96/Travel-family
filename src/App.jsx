@@ -22,6 +22,8 @@ function App() {
 
   const [tripName, setTripName] = useState('Gran Canaria — Maspalomas')
   const [tripIcon, setTripIcon] = useState('🌴')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
 
   const [weather, setWeather] = useState(null)
   const [weatherLoading, setWeatherLoading] = useState(false)
@@ -65,16 +67,22 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (session) {
-      loadTravelData()
-    }
+    if (session) loadTravelData()
   }, [session])
 
   useEffect(() => {
-    if (session && dataLoaded && travelDataId) {
-      saveTravelData()
-    }
-  }, [tripName, tripIcon, people, packingLists, budget, expenses, activities])
+    if (session && dataLoaded && travelDataId) saveTravelData()
+  }, [
+    tripName,
+    tripIcon,
+    startDate,
+    endDate,
+    people,
+    packingLists,
+    budget,
+    expenses,
+    activities,
+  ])
 
   useEffect(() => {
     fetchWeather()
@@ -94,8 +102,40 @@ function App() {
 
   const nextActivity = activities.length > 0 ? activities[0] : null
 
+  function formatDate(dateValue) {
+    if (!dateValue) return ''
+    return new Date(dateValue).toLocaleDateString('fr-BE')
+  }
+
+  function getDaysUntilStart() {
+    if (!startDate) return null
+
+    const today = new Date()
+    const departure = new Date(startDate)
+
+    today.setHours(0, 0, 0, 0)
+    departure.setHours(0, 0, 0, 0)
+
+    return Math.ceil((departure - today) / (1000 * 60 * 60 * 24))
+  }
+
+  function getTripDatesText() {
+    if (startDate && endDate) return `📅 Du ${formatDate(startDate)} au ${formatDate(endDate)}`
+    if (startDate) return `📅 Départ le ${formatDate(startDate)}`
+    if (endDate) return `📅 Retour le ${formatDate(endDate)}`
+    return ''
+  }
+
   function getAssistantAdvice() {
     const advice = []
+    const daysUntilStart = getDaysUntilStart()
+
+    if (daysUntilStart !== null) {
+      if (daysUntilStart > 1) advice.push(`✈️ Départ dans ${daysUntilStart} jours.`)
+      else if (daysUntilStart === 1) advice.push('✈️ Départ demain ! Dernière vérification des valises.')
+      else if (daysUntilStart === 0) advice.push('✈️ C’est le jour du départ ! Vérifie documents, valises et trajet.')
+      else advice.push('🌴 Le voyage a déjà commencé. Profite bien !')
+    }
 
     if (weather) {
       if (weather.temperature >= 27 && weather.wind <= 25) {
@@ -114,13 +154,9 @@ function App() {
     }
 
     if (budget > 0) {
-      if (remaining < 0) {
-        advice.push(`⚠️ Le budget est dépassé de ${Math.abs(remaining)} €.`)
-      } else if (remaining <= budget * 0.2) {
-        advice.push(`💰 Il reste ${remaining} €. Budget à surveiller pour la suite du voyage.`)
-      } else {
-        advice.push(`💰 Budget restant : ${remaining} €. Tu as encore une bonne marge.`)
-      }
+      if (remaining < 0) advice.push(`⚠️ Le budget est dépassé de ${Math.abs(remaining)} €.`)
+      else if (remaining <= budget * 0.2) advice.push(`💰 Il reste ${remaining} €. Budget à surveiller.`)
+      else advice.push(`💰 Budget restant : ${remaining} €. Tu as encore une bonne marge.`)
     }
 
     if (nextActivity) {
@@ -151,6 +187,8 @@ function App() {
       setTravelDataId(data.id)
       setTripName(data.trip_name || 'Gran Canaria — Maspalomas')
       setTripIcon(data.trip_icon || '🌴')
+      setStartDate(data.start_date || '')
+      setEndDate(data.end_date || '')
       setPeople(data.people || ['Famille'])
       setPackingLists(data.packing_lists || defaultPackingLists)
       setBudget(Number(data.budget) || 1500)
@@ -164,6 +202,8 @@ function App() {
           user_id: session.user.id,
           trip_name: 'Gran Canaria — Maspalomas',
           trip_icon: '🌴',
+          start_date: null,
+          end_date: null,
           people: ['Famille'],
           packing_lists: defaultPackingLists,
           budget: 1500,
@@ -178,9 +218,7 @@ function App() {
         .select()
         .single()
 
-      if (newData) {
-        setTravelDataId(newData.id)
-      }
+      if (newData) setTravelDataId(newData.id)
     }
 
     setDataLoaded(true)
@@ -193,6 +231,8 @@ function App() {
       .update({
         trip_name: tripName,
         trip_icon: tripIcon,
+        start_date: startDate || null,
+        end_date: endDate || null,
         people,
         packing_lists: packingLists,
         budget,
@@ -353,40 +393,25 @@ function App() {
     )
   }
 
-  if (!session) {
-    return <Auth />
-  }
+  if (!session) return <Auth />
 
   return (
     <main className="app">
       <section className="hero-card">
         <h1>{tripIcon} Travel Family</h1>
         <p>Vacances {tripName}</p>
+        {getTripDatesText() && <p>{getTripDatesText()}</p>}
         <button onClick={signOut}>Se déconnecter</button>
       </section>
 
       <section className="card assistant-card">
         <h2>🤖 Assistant Vacances</h2>
-
-        <p className="assistant-intro">
-          Bonjour 👋 Voici ce que je remarque pour ton voyage.
-        </p>
+        <p className="assistant-intro">Bonjour 👋 Voici ce que je remarque pour ton voyage.</p>
 
         <div className="assistant-summary">
-          <div>
-            <span>🧳 Valises</span>
-            <strong>{packingProgress}%</strong>
-          </div>
-
-          <div>
-            <span>💰 Budget</span>
-            <strong>{remaining} €</strong>
-          </div>
-
-          <div>
-            <span>📅 Planning</span>
-            <strong>{activities.length}</strong>
-          </div>
+          <div><span>🧳 Valises</span><strong>{packingProgress}%</strong></div>
+          <div><span>💰 Budget</span><strong>{remaining} €</strong></div>
+          <div><span>📅 Planning</span><strong>{activities.length}</strong></div>
         </div>
 
         <ul className="assistant-list">
@@ -433,6 +458,16 @@ function App() {
         <label className="field">
           Icône
           <input type="text" placeholder="Ex : 🌴 ✈️ 🏖️ 🏔️" value={tripIcon} onChange={(e) => setTripIcon(e.target.value)} />
+        </label>
+
+        <label className="field">
+          Date de départ
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        </label>
+
+        <label className="field">
+          Date de retour
+          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </label>
       </section>
 
