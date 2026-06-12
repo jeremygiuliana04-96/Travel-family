@@ -2,14 +2,33 @@ import { useState } from 'react'
 import { supabase } from './supabase'
 
 function Auth() {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(() => {
+    return localStorage.getItem('lastLoginEmail') || ''
+  })
+
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(() => {
+    return localStorage.getItem('rememberMe') === 'true'
+  })
+
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+
+  function saveLoginPreferences() {
+    if (rememberMe) {
+      localStorage.setItem('lastLoginEmail', email)
+      localStorage.setItem('rememberMe', 'true')
+    } else {
+      localStorage.removeItem('lastLoginEmail')
+      localStorage.setItem('rememberMe', 'false')
+    }
+  }
 
   async function signUp() {
     setLoading(true)
     setMessage('')
+
+    saveLoginPreferences()
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -28,6 +47,8 @@ function Auth() {
   async function signIn() {
     setLoading(true)
     setMessage('')
+
+    saveLoginPreferences()
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -49,7 +70,7 @@ function Auth() {
       </section>
 
       <section className="card">
-        <h2>🔐 Connexion</h2>
+        <h2><span className="section-badge">🔐</span>Connexion</h2>
 
         <label className="field">
           Email
@@ -69,6 +90,15 @@ function Auth() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+        </label>
+
+        <label className="remember-row">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+          <span>Se souvenir de moi</span>
         </label>
 
         {message && <p>{message}</p>}
