@@ -1,34 +1,35 @@
 import { useState } from 'react'
-import { supabase } from './supabase'
+import { supabase } from './supabase.js'
 
 function Auth() {
-  const [email, setEmail] = useState(() => {
-    return localStorage.getItem('lastLoginEmail') || ''
-  })
-
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [rememberMe, setRememberMe] = useState(() => {
-    return localStorage.getItem('rememberMe') === 'true'
-  })
-
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
-  function saveLoginPreferences() {
-    if (rememberMe) {
-      localStorage.setItem('lastLoginEmail', email)
-      localStorage.setItem('rememberMe', 'true')
-    } else {
-      localStorage.removeItem('lastLoginEmail')
-      localStorage.setItem('rememberMe', 'false')
-    }
-  }
+  async function signIn() {
+    if (!email || !password) return
 
-  async function signUp() {
     setLoading(true)
     setMessage('')
 
-    saveLoginPreferences()
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      setMessage('Email ou mot de passe incorrect.')
+    }
+
+    setLoading(false)
+  }
+
+  async function signUp() {
+    if (!email || !password) return
+
+    setLoading(true)
+    setMessage('')
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -38,81 +39,73 @@ function Auth() {
     if (error) {
       setMessage(error.message)
     } else {
-      setMessage('Compte créé ✅ Vérifie tes emails pour confirmer ton compte.')
-    }
-
-    setLoading(false)
-  }
-
-  async function signIn() {
-    setLoading(true)
-    setMessage('')
-
-    saveLoginPreferences()
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    if (error) {
-      setMessage(error.message)
+      setMessage('Compte créé. Vérifie tes emails pour confirmer ton adresse.')
     }
 
     setLoading(false)
   }
 
   return (
-    <main className="app">
-      <section className="hero-card">
-        <h1>🌴 Travel Family</h1>
-        <p>Connecte-toi pour accéder à tes voyages</p>
+    <main className="auth-page">
+      <div className="auth-plane">✈️</div>
+      <div className="auth-trail"></div>
+
+      <div className="auth-palm auth-palm-right">🌴</div>
+      <div className="auth-palm auth-palm-left">🌴</div>
+
+      <section className="auth-hero">
+        <div className="auth-logo">🌴</div>
+        <h1>Travel Family</h1>
+        <p>Vos vacances. Vos documents. Votre tranquillité.</p>
       </section>
 
-      <section className="card">
-        <h2><span className="section-badge">🔐</span>Connexion</h2>
+      <section className="auth-card">
+        <h2>Connexion</h2>
+        <p>Bienvenue parmi nous 👋</p>
 
-        <label className="field">
-          Email
-          <input
-            type="email"
-            placeholder="ton@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
+        <input
+          type="email"
+          placeholder="Adresse e-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-        <label className="field">
-          Mot de passe
-          <input
-            type="password"
-            placeholder="Minimum 6 caractères"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
+        <input
+          type="password"
+          placeholder="Mot de passe"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-        <label className="remember-row">
-          <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-          />
-          <span>Se souvenir de moi</span>
-        </label>
+        {message && <p className="auth-message">{message}</p>}
 
-        {message && <p>{message}</p>}
+        <button onClick={signIn} disabled={loading}>
+          {loading ? 'Chargement...' : 'Se connecter'}
+        </button>
 
-        <div className="auth-buttons">
-          <button onClick={signIn} disabled={loading}>
-            Se connecter
-          </button>
-
-          <button onClick={signUp} disabled={loading}>
-            Créer un compte
-          </button>
+        <div className="auth-separator">
+          <span></span>
+          <p>ou</p>
+          <span></span>
         </div>
+
+        <button className="secondary-auth-button" onClick={signUp} disabled={loading}>
+          Créer un compte
+        </button>
       </section>
+
+      <section className="auth-features">
+        <div>🧳 Valises</div>
+        <div>💰 Budget</div>
+        <div>📁 Documents</div>
+        <div>🗺️ Lieux</div>
+        <div>🌤️ Météo</div>
+        <div>🤖 Assistant</div>
+      </section>
+
+      <p className="auth-footer">
+        Prêt pour l’aventure ? ✈️🌴
+      </p>
     </main>
   )
 }
