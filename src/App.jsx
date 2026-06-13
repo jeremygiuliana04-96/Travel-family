@@ -1092,27 +1092,80 @@ function App() {
           <div className="system-section">
             <h3>👤 Compte</h3>
 
-            <div className="document-row">
-              <strong>Email connecté</strong>
-              <span>{session?.user?.email || 'Non disponible'}</span>
+            <div className="system-row">
+              <div>
+                <strong>Email connecté</strong>
+                <span>{session?.user?.email || 'Non disponible'}</span>
+              </div>
+            </div>
+
+            <div className="system-row">
+              <div>
+                <strong>Statut</strong>
+                <span>Connecté</span>
+              </div>
             </div>
           </div>
 
           <div className="system-section">
             <h3>📱 Application</h3>
 
-            <div className="document-row">
-              <strong>Travel Family</strong>
-              <span>Version 1.0</span>
+            <div className="system-row">
+              <div>
+                <strong>Nom de l’application</strong>
+                <span>Travel Family</span>
+              </div>
+            </div>
+
+            <div className="system-row">
+              <div>
+                <strong>Version</strong>
+                <span>1.0.0</span>
+              </div>
+            </div>
+
+            <div className="system-row">
+              <div>
+                <strong>Mode d’installation</strong>
+                <span>Compatible iPhone / PWA</span>
+              </div>
             </div>
           </div>
 
           <div className="system-section">
-            <h3>🚪 Session</h3>
+            <h3>💾 Sauvegarde</h3>
 
-            <button className="open-document" onClick={signOut}>
-              Se déconnecter
-            </button>
+            <div className="system-row">
+              <div>
+                <strong>Sauvegarde cloud</strong>
+                <span>Activée avec Supabase</span>
+              </div>
+            </div>
+
+            <div className="system-row">
+              <div>
+                <strong>Données synchronisées</strong>
+                <span>Voyage, budget, valises, achats, lieux et documents</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="system-section">
+            <h3>🎨 Apparence</h3>
+
+            <div className="system-row">
+              <div>
+                <strong>Thème actuel</strong>
+                <span>Tropical clair</span>
+              </div>
+            </div>
+
+            <div className="system-row">
+              <div>
+                <strong>Interface</strong>
+                <span>Optimisée mobile</span>
+              </div>
+            </div>
           </div>
 
           <div className="system-section">
@@ -1120,6 +1173,14 @@ function App() {
 
             <button className="delete-person-button" onClick={resetCurrentAccountData}>
               Réinitialiser mon voyage
+            </button>
+          </div>
+
+          <div className="system-section">
+            <h3>🚪 Session</h3>
+
+            <button className="delete-person-button" onClick={signOut}>
+              Se déconnecter
             </button>
           </div>
         </section>
