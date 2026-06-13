@@ -8,6 +8,8 @@ const defaultPackingLists = {
 }
 
 function App() {
+  const [activeTab, setActiveTab] = useState('home')
+
   const [session, setSession] = useState(null)
   const [sessionLoading, setSessionLoading] = useState(true)
   const [dataLoading, setDataLoading] = useState(false)
@@ -39,12 +41,7 @@ function App() {
 
   const [activityDate, setActivityDate] = useState('')
   const [activityName, setActivityName] = useState('')
-  const [activities, setActivities] = useState([
-    { id: 1, date: '25 juin', name: 'Arrivée à Maspalomas' },
-    { id: 2, date: '26 juin', name: 'Aquarium Poema del Mar' },
-    { id: 3, date: '27 juin', name: 'Puerto de Mogán' },
-    { id: 4, date: '28 juin', name: 'Plage + promenade' },
-  ])
+  const [activities, setActivities] = useState([])
 
   const [documents, setDocuments] = useState([])
   const [documentPerson, setDocumentPerson] = useState('Famille')
@@ -108,6 +105,7 @@ function App() {
   const allPackingItems = Object.values(packingLists).flat()
   const uncheckedPackingItems = allPackingItems.filter((item) => !item.checked)
   const checkedPackingItems = allPackingItems.filter((item) => item.checked)
+
   const packingProgress =
     allPackingItems.length === 0
       ? 0
@@ -115,6 +113,7 @@ function App() {
 
   const boughtShoppingItems = shoppingList.filter((item) => item.bought)
   const missingShoppingItems = shoppingList.filter((item) => !item.bought)
+
   const shoppingProgress =
     shoppingList.length === 0
       ? 0
@@ -229,7 +228,7 @@ function App() {
     return advice
   }
 
-  async function loadTravelData() {
+    async function loadTravelData() {
     setDataLoading(true)
 
     const { data, error } = await supabase
@@ -621,7 +620,7 @@ function App() {
   if (!session) return <Auth />
 
   return (
-    <main className="app">
+    <main className="app with-bottom-nav">
       <section className="hero-card">
         <h1>{tripIcon} Travel Family</h1>
         <p>Vacances {tripName}</p>
@@ -629,279 +628,387 @@ function App() {
         <button onClick={signOut}>Se déconnecter</button>
       </section>
 
-      <section className="card assistant-card">
-        <h2>🤖 Assistant Vacances</h2>
-        <p className="assistant-intro">Bonjour 👋 Voici ce que je remarque pour ton voyage.</p>
+      {activeTab === 'home' && (
+        <>
+          <section className="card assistant-card">
+            <h2>🤖 Assistant Vacances</h2>
+            <p className="assistant-intro">Bonjour 👋 Voici ce que je remarque pour ton voyage.</p>
 
-        <div className="assistant-summary">
-          <div><span>🧳 Valises</span><strong>{packingProgress}%</strong></div>
-          <div><span>🛒 Achats</span><strong>{shoppingProgress}%</strong></div>
-          <div><span>💰 Budget</span><strong>{remaining} €</strong></div>
-        </div>
-
-        <ul className="assistant-list">
-          {getAssistantAdvice().map((advice, index) => (
-            <li key={index}>{advice}</li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="card">
-        <h2>🛒 Achats avant départ</h2>
-
-        <div className="budget-summary">
-          <p>Acheté : <strong>{boughtShoppingItems.length}</strong></p>
-          <p>Restant : <strong>{missingShoppingItems.length}</strong></p>
-        </div>
-
-        <div className="expense-form">
-          <input
-            type="text"
-            placeholder="Ex : Crème solaire, brassards, lunettes..."
-            value={shoppingItem}
-            onChange={(e) => setShoppingItem(e.target.value)}
-          />
-
-          <button onClick={addShoppingItem}>Ajouter</button>
-        </div>
-
-        <div className="packing-list">
-          {shoppingList.length === 0 && (
-            <p>Aucun achat à prévoir pour le moment.</p>
-          )}
-
-          {shoppingList.map((item) => (
-            <div className="packing-row" key={item.id}>
-              <label className="check-item">
-                <input
-                  type="checkbox"
-                  checked={item.bought}
-                  onChange={() => toggleShoppingItem(item.id)}
-                />
-                <span className={item.bought ? 'checked' : ''}>{item.name}</span>
-              </label>
-
-              <button onClick={() => deleteShoppingItem(item.id)}>✕</button>
+            <div className="assistant-summary">
+              <div><span>🧳 Valises</span><strong>{packingProgress}%</strong></div>
+              <div><span>🛒 Achats</span><strong>{shoppingProgress}%</strong></div>
+              <div><span>💰 Budget</span><strong>{remaining} €</strong></div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      <section className="card vault-card">
-        <h2>📁 Coffre-fort Voyage</h2>
+            <ul className="assistant-list">
+              {getAssistantAdvice().map((advice, index) => (
+                <li key={index}>{advice}</li>
+              ))}
+            </ul>
+          </section>
 
-        <div className="person-tabs">
-          {people.map((person) => (
-            <button
-              key={person}
-              className={documentPerson === person ? 'active-tab' : ''}
-              onClick={() => setDocumentPerson(person)}
-            >
-              {person}
-            </button>
-          ))}
-        </div>
+          <section className="card weather-card">
+            <h2>🌤️ Météo</h2>
 
-        <div className="expense-form">
-          <input
-            type="text"
-            placeholder="Nom du document : ex Passeport Jérémy"
-            value={documentName}
-            onChange={(e) => setDocumentName(e.target.value)}
-          />
+            {weatherLoading && <p>Chargement de la météo...</p>}
+            {weatherError && <p>{weatherError}</p>}
 
-          <input
-            type="text"
-            placeholder="Type : ex Passeport, Hôtel, Assurance..."
-            value={documentType}
-            onChange={(e) => setDocumentType(e.target.value)}
-          />
+            {weather && (
+              <div className="weather-box">
+                <div className="weather-main">
+                  <span className="weather-icon">{getWeatherIcon(weather.code)}</span>
+                  <div>
+                    <strong>{weather.city}, {weather.country}</strong>
+                    <p>{weather.temperature}°C — ressenti {weather.feelsLike}°C</p>
+                  </div>
+                </div>
 
-          <input
-            className="file-input"
-            type="file"
-            accept="image/*,.pdf"
-            onChange={(e) => setDocumentFile(e.target.files[0])}
-          />
-
-          <button onClick={addDocument} disabled={documentUploading}>
-            {documentUploading ? 'Envoi en cours...' : 'Ajouter le document'}
-          </button>
-        </div>
-
-        <div className="document-list">
-          {filteredDocuments.length === 0 && (
-            <p>Aucun document pour {documentPerson}.</p>
-          )}
-
-          {filteredDocuments.map((document) => (
-            <div className="document-row" key={document.id}>
-              <strong>📄 {document.document_name}</strong>
-              <span>{document.document_type}</span>
-
-              <div className="document-actions">
-                <button
-                  className="open-document"
-                  onClick={() => openDocument(document.file_url)}
-                >
-                  Ouvrir
-                </button>
-
-                <button
-                  className="delete-document"
-                  onClick={() => deleteDocument(document)}
-                >
-                  Supprimer
-                </button>
+                <div className="weather-details">
+                  <p>💨 Vent : <strong>{weather.wind} km/h</strong></p>
+                  <p>💧 Humidité : <strong>{weather.humidity}%</strong></p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            )}
 
-      <section className="card weather-card">
-        <h2>🌤️ Météo</h2>
+            <button onClick={fetchWeather}>Actualiser météo</button>
+          </section>
 
-        {weatherLoading && <p>Chargement de la météo...</p>}
-        {weatherError && <p>{weatherError}</p>}
+          <section className="card">
+            <h2>🛒 Achats avant départ</h2>
 
-        {weather && (
-          <div className="weather-box">
-            <div className="weather-main">
-              <span className="weather-icon">{getWeatherIcon(weather.code)}</span>
-              <div>
-                <strong>{weather.city}, {weather.country}</strong>
-                <p>{weather.temperature}°C — ressenti {weather.feelsLike}°C</p>
-              </div>
+            <div className="budget-summary">
+              <p>Acheté : <strong>{boughtShoppingItems.length}</strong></p>
+              <p>Restant : <strong>{missingShoppingItems.length}</strong></p>
             </div>
 
-            <div className="weather-details">
-              <p>💨 Vent : <strong>{weather.wind} km/h</strong></p>
-              <p>💧 Humidité : <strong>{weather.humidity}%</strong></p>
+            <div className="expense-form">
+              <input
+                type="text"
+                placeholder="Ex : Crème solaire, brassards, lunettes..."
+                value={shoppingItem}
+                onChange={(e) => setShoppingItem(e.target.value)}
+              />
+
+              <button onClick={addShoppingItem}>Ajouter</button>
             </div>
+
+            <div className="packing-list">
+              {shoppingList.length === 0 && <p>Aucun achat à prévoir pour le moment.</p>}
+
+              {shoppingList.map((item) => (
+                <div className="packing-row" key={item.id}>
+                  <label className="check-item">
+                    <input
+                      type="checkbox"
+                      checked={item.bought}
+                      onChange={() => toggleShoppingItem(item.id)}
+                    />
+                    <span className={item.bought ? 'checked' : ''}>{item.name}</span>
+                  </label>
+
+                  <button onClick={() => deleteShoppingItem(item.id)}>✕</button>
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+
+      {activeTab === 'packing' && (
+        <section className="card">
+          <h2>🧳 Valises</h2>
+
+          <div className="budget-summary">
+            <p>Préparation : <strong>{packingProgress}%</strong></p>
+            <p>Restant : <strong>{uncheckedPackingItems.length}</strong></p>
           </div>
-        )}
 
-        <button onClick={fetchWeather}>Actualiser météo</button>
-      </section>
+          <div className="expense-form">
+            <input
+              type="text"
+              placeholder="Ajouter une personne : ex Eva"
+              value={newPersonName}
+              onChange={(e) => setNewPersonName(e.target.value)}
+            />
+            <button onClick={addPerson}>Ajouter une personne</button>
+          </div>
 
-      <section className="card">
-        <h2>⚙️ Thème du voyage</h2>
+          <div className="person-tabs">
+            {people.map((person) => (
+              <button
+                key={person}
+                className={selectedPerson === person ? 'active-tab' : ''}
+                onClick={() => setSelectedPerson(person)}
+              >
+                {person}
+              </button>
+            ))}
+          </div>
 
-        <label className="field">
-          Destination
-          <input type="text" placeholder="Ex : Italie, Paris, Tenerife..." value={tripName} onChange={(e) => setTripName(e.target.value)} />
-        </label>
-
-        <label className="field">
-          Icône
-          <input type="text" placeholder="Ex : 🌴 ✈️ 🏖️ 🏔️" value={tripIcon} onChange={(e) => setTripIcon(e.target.value)} />
-        </label>
-
-        <label className="field">
-          Date de départ
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-        </label>
-
-        <label className="field">
-          Date de retour
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-        </label>
-
-        <button className="delete-person-button" onClick={resetCurrentAccountData}>
-          Réinitialiser ce compte
-        </button>
-      </section>
-
-      <section className="card">
-        <h2>📅 Planning</h2>
-
-        <div className="expense-form">
-          <input type="text" placeholder="Date : ex 29 juin" value={activityDate} onChange={(e) => setActivityDate(e.target.value)} />
-          <input type="text" placeholder="Activité : ex Restaurant" value={activityName} onChange={(e) => setActivityName(e.target.value)} />
-          <button onClick={addActivity}>Ajouter une activité</button>
-        </div>
-
-        <ul className="expenses-list">
-          {activities.map((activity) => (
-            <li key={activity.id}>
-              <span><strong>{activity.date}</strong> — {activity.name}</span>
-              <button onClick={() => deleteActivity(activity.id)}>✕</button>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="card">
-        <h2>🧳 Valises</h2>
-
-        <div className="expense-form">
-          <input type="text" placeholder="Ajouter une personne : ex Eva" value={newPersonName} onChange={(e) => setNewPersonName(e.target.value)} />
-          <button onClick={addPerson}>Ajouter une personne</button>
-        </div>
-
-        <div className="person-tabs">
-          {people.map((person) => (
-            <button key={person} className={selectedPerson === person ? 'active-tab' : ''} onClick={() => setSelectedPerson(person)}>
-              {person}
+          {selectedPerson !== 'Famille' && (
+            <button className="delete-person-button" onClick={() => deletePerson(selectedPerson)}>
+              Supprimer {selectedPerson}
             </button>
-          ))}
-        </div>
+          )}
 
-        {selectedPerson !== 'Famille' && (
-          <button className="delete-person-button" onClick={() => deletePerson(selectedPerson)}>
-            Supprimer {selectedPerson}
+          <div className="expense-form">
+            <input
+              type="text"
+              placeholder={`À prendre pour ${selectedPerson}`}
+              value={packingItemName}
+              onChange={(e) => setPackingItemName(e.target.value)}
+            />
+            <button onClick={addPackingItem}>Ajouter</button>
+          </div>
+
+          <div className="packing-list">
+            {currentPackingList.length === 0 && <p>Aucun objet pour {selectedPerson}.</p>}
+
+            {currentPackingList.map((item) => (
+              <div className="packing-row" key={item.id}>
+                <label className="check-item">
+                  <input
+                    type="checkbox"
+                    checked={item.checked}
+                    onChange={() => togglePackingItem(item.id)}
+                  />
+                  <span className={item.checked ? 'checked' : ''}>{item.name}</span>
+                </label>
+
+                <button onClick={() => deletePackingItem(item.id)}>✕</button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {activeTab === 'planning' && (
+        <section className="card">
+          <h2>📅 Planning</h2>
+
+          <div className="expense-form">
+            <input
+              type="text"
+              placeholder="Date : ex 29 juin"
+              value={activityDate}
+              onChange={(e) => setActivityDate(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Activité : ex Restaurant"
+              value={activityName}
+              onChange={(e) => setActivityName(e.target.value)}
+            />
+            <button onClick={addActivity}>Ajouter une activité</button>
+          </div>
+
+          <ul className="expenses-list">
+            {activities.length === 0 && <p>Aucune activité prévue.</p>}
+
+            {activities.map((activity) => (
+              <li key={activity.id}>
+                <span><strong>{activity.date}</strong> — {activity.name}</span>
+                <button onClick={() => deleteActivity(activity.id)}>✕</button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {activeTab === 'budget' && (
+        <section className="card">
+          <h2>💰 Budget</h2>
+
+          <label className="field">
+            Budget prévu
+            <input
+              type="number"
+              value={budget}
+              onChange={(e) => setBudget(Number(e.target.value))}
+            />
+          </label>
+
+          <div className="budget-summary">
+            <p>Dépensé : <strong>{totalSpent} €</strong></p>
+            <p>Reste : <strong>{remaining} €</strong></p>
+          </div>
+
+          <div className="expense-form">
+            <input
+              type="text"
+              placeholder="Ex : Restaurant"
+              value={expenseName}
+              onChange={(e) => setExpenseName(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Montant"
+              value={expenseAmount}
+              onChange={(e) => setExpenseAmount(e.target.value)}
+            />
+            <button onClick={addExpense}>Ajouter</button>
+          </div>
+
+          <ul className="expenses-list">
+            {expenses.length === 0 && <p>Aucune dépense enregistrée.</p>}
+
+            {expenses.map((expense) => (
+              <li key={expense.id}>
+                <span>{expense.name}</span>
+                <strong>{expense.amount} €</strong>
+                <button onClick={() => deleteExpense(expense.id)}>✕</button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {activeTab === 'documents' && (
+        <section className="card vault-card">
+          <h2>📁 Coffre-fort Voyage</h2>
+
+          <div className="person-tabs">
+            {people.map((person) => (
+              <button
+                key={person}
+                className={documentPerson === person ? 'active-tab' : ''}
+                onClick={() => setDocumentPerson(person)}
+              >
+                {person}
+              </button>
+            ))}
+          </div>
+
+          <div className="expense-form">
+            <input
+              type="text"
+              placeholder="Nom du document : ex Passeport Jérémy"
+              value={documentName}
+              onChange={(e) => setDocumentName(e.target.value)}
+            />
+
+            <input
+              type="text"
+              placeholder="Type : ex Passeport, Hôtel, Assurance..."
+              value={documentType}
+              onChange={(e) => setDocumentType(e.target.value)}
+            />
+
+            <input
+              className="file-input"
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => setDocumentFile(e.target.files[0])}
+            />
+
+            <button onClick={addDocument} disabled={documentUploading}>
+              {documentUploading ? 'Envoi en cours...' : 'Ajouter le document'}
+            </button>
+          </div>
+
+          <div className="document-list">
+            {filteredDocuments.length === 0 && <p>Aucun document pour {documentPerson}.</p>}
+
+            {filteredDocuments.map((document) => (
+              <div className="document-row" key={document.id}>
+                <strong>📄 {document.document_name}</strong>
+                <span>{document.document_type}</span>
+
+                <div className="document-actions">
+                  <button
+                    className="open-document"
+                    onClick={() => openDocument(document.file_url)}
+                  >
+                    Ouvrir
+                  </button>
+
+                  <button
+                    className="delete-document"
+                    onClick={() => deleteDocument(document)}
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {activeTab === 'settings' && (
+        <section className="card">
+          <h2>⚙️ Réglages</h2>
+
+          <label className="field">
+            Destination
+            <input
+              type="text"
+              placeholder="Ex : Italie, Paris, Tenerife..."
+              value={tripName}
+              onChange={(e) => setTripName(e.target.value)}
+            />
+          </label>
+
+          <label className="field">
+            Icône
+            <input
+              type="text"
+              placeholder="Ex : 🌴 ✈️ 🏖️ 🏔️"
+              value={tripIcon}
+              onChange={(e) => setTripIcon(e.target.value)}
+            />
+          </label>
+
+          <label className="field">
+            Date de départ
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </label>
+
+          <label className="field">
+            Date de retour
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </label>
+
+          <button className="delete-person-button" onClick={resetCurrentAccountData}>
+            Réinitialiser ce compte
           </button>
-        )}
+        </section>
+      )}
 
-        <div className="expense-form">
-          <input type="text" placeholder={`À prendre pour ${selectedPerson}`} value={packingItemName} onChange={(e) => setPackingItemName(e.target.value)} />
-          <button onClick={addPackingItem}>Ajouter</button>
-        </div>
-
-        <div className="packing-list">
-          {currentPackingList.map((item) => (
-            <div className="packing-row" key={item.id}>
-              <label className="check-item">
-                <input type="checkbox" checked={item.checked} onChange={() => togglePackingItem(item.id)} />
-                <span className={item.checked ? 'checked' : ''}>{item.name}</span>
-              </label>
-
-              <button onClick={() => deletePackingItem(item.id)}>✕</button>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="card">
-        <h2>💰 Budget</h2>
-
-        <label className="field">
-          Budget prévu
-          <input type="number" value={budget} onChange={(e) => setBudget(Number(e.target.value))} />
-        </label>
-
-        <div className="budget-summary">
-          <p>Dépensé : <strong>{totalSpent} €</strong></p>
-          <p>Reste : <strong>{remaining} €</strong></p>
-        </div>
-
-        <div className="expense-form">
-          <input type="text" placeholder="Ex : Restaurant" value={expenseName} onChange={(e) => setExpenseName(e.target.value)} />
-          <input type="number" placeholder="Montant" value={expenseAmount} onChange={(e) => setExpenseAmount(e.target.value)} />
-          <button onClick={addExpense}>Ajouter</button>
-        </div>
-
-        <ul className="expenses-list">
-          {expenses.map((expense) => (
-            <li key={expense.id}>
-              <span>{expense.name}</span>
-              <strong>{expense.amount} €</strong>
-              <button onClick={() => deleteExpense(expense.id)}>✕</button>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <nav className="bottom-nav">
+        <button className={activeTab === 'home' ? 'active-nav' : ''} onClick={() => setActiveTab('home')}>
+          <span>🏠</span>
+          Accueil
+        </button>
+        <button className={activeTab === 'packing' ? 'active-nav' : ''} onClick={() => setActiveTab('packing')}>
+          <span>🧳</span>
+          Valises
+        </button>
+        <button className={activeTab === 'planning' ? 'active-nav' : ''} onClick={() => setActiveTab('planning')}>
+          <span>📅</span>
+          Planning
+        </button>
+        <button className={activeTab === 'budget' ? 'active-nav' : ''} onClick={() => setActiveTab('budget')}>
+          <span>💰</span>
+          Budget
+        </button>
+        <button className={activeTab === 'documents' ? 'active-nav' : ''} onClick={() => setActiveTab('documents')}>
+          <span>📁</span>
+          Docs
+        </button>
+        <button className={activeTab === 'settings' ? 'active-nav' : ''} onClick={() => setActiveTab('settings')}>
+          <span>⚙️</span>
+          Réglages
+        </button>
+      </nav>
     </main>
   )
 }

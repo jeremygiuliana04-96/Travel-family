@@ -682,3 +682,70 @@ button:active {
 .auth-buttons button:last-child {
   background: linear-gradient(135deg, #0ea5e9, #2563eb);
 }
+
+.with-bottom-nav {
+  padding-bottom: 105px;
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 740px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  padding: 8px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+  z-index: 50;
+}
+
+.bottom-nav button {
+  border: none;
+  background: transparent;
+  border-radius: 18px;
+  padding: 8px 4px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 950;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.bottom-nav button span {
+  font-size: 19px;
+}
+
+.bottom-nav .active-nav {
+  background: linear-gradient(135deg, #22c55e, #0ea5e9);
+  color: white;
+  box-shadow: 0 10px 22px rgba(14, 165, 233, 0.22);
+}
+
+@media (max-width: 520px) {
+  .bottom-nav {
+    grid-template-columns: repeat(6, 1fr);
+    bottom: 10px;
+    width: calc(100% - 16px);
+    padding: 6px;
+    border-radius: 22px;
+  }
+
+  .bottom-nav button {
+    font-size: 10px;
+    padding: 7px 2px;
+  }
+
+  .bottom-nav button span {
+    font-size: 18px;
+  }
+}
