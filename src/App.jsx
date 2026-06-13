@@ -672,7 +672,6 @@ function App() {
         <h1>{tripIcon} Travel Family</h1>
         <p>Vacances {tripName}</p>
         {getTripDatesText() && <p>{getTripDatesText()}</p>}
-        <button onClick={signOut}>Se déconnecter</button>
       </section>
 
       {activeTab === 'home' && (
@@ -1035,9 +1034,9 @@ function App() {
         </section>
       )}
 
-      {activeTab === 'settings' && (
+      {activeTab === 'destination' && (
         <section className="card">
-          <h2>⚙️ Réglages</h2>
+          <h2>✈️ Ma destination</h2>
 
           <label className="field">
             Destination
@@ -1108,9 +1107,13 @@ function App() {
           <span>🗺️</span>
           Lieux
         </button>
-        <button className={activeTab === 'settings' ? 'active-nav' : ''} onClick={() => setActiveTab('settings')}>
+        <button className={activeTab === 'destination' ? 'active-nav' : ''} onClick={() => setActiveTab('destination')}>
+          <span>✈️</span>
+          Destination
+        </button>
+        <button className={activeTab === 'system' ? 'active-nav' : ''} onClick={() => setActiveTab('system')}>
           <span>⚙️</span>
-          Réglages
+          Système
         </button>
       </nav>
     </main>
