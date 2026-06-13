@@ -9,6 +9,7 @@ const defaultPackingLists = {
 
 function App() {
   const [activeTab, setActiveTab] = useState('home')
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const [session, setSession] = useState(null)
   const [sessionLoading, setSessionLoading] = useState(true)
@@ -667,8 +668,12 @@ function App() {
   if (!session) return <Auth />
 
   return (
-    <main className="app with-bottom-nav">
+    <main className="app">
       <section className="hero-card">
+        <button className="menu-button" onClick={() => setMenuOpen(true)}>
+          ☰
+        </button>
+
         <h1>{tripIcon} Travel Family</h1>
         <p>Vacances {tripName}</p>
         {getTripDatesText() && <p>{getTripDatesText()}</p>}
@@ -1076,46 +1081,82 @@ function App() {
             />
           </label>
 
-          <button className="delete-person-button" onClick={resetCurrentAccountData}>
-            Réinitialiser ce compte
-          </button>
+
         </section>
       )}
 
-      <nav className="bottom-nav">
-        <button className={activeTab === 'home' ? 'active-nav' : ''} onClick={() => setActiveTab('home')}>
-          <span>🏠</span>
-          Accueil
-        </button>
-        <button className={activeTab === 'packing' ? 'active-nav' : ''} onClick={() => setActiveTab('packing')}>
-          <span>🧳</span>
-          Valises
-        </button>
-        <button className={activeTab === 'planning' ? 'active-nav' : ''} onClick={() => setActiveTab('planning')}>
-          <span>📅</span>
-          Planning
-        </button>
-        <button className={activeTab === 'budget' ? 'active-nav' : ''} onClick={() => setActiveTab('budget')}>
-          <span>💰</span>
-          Budget
-        </button>
-        <button className={activeTab === 'documents' ? 'active-nav' : ''} onClick={() => setActiveTab('documents')}>
-          <span>📁</span>
-          Docs
-        </button>
-        <button className={activeTab === 'places' ? 'active-nav' : ''} onClick={() => setActiveTab('places')}>
-          <span>🗺️</span>
-          Lieux
-        </button>
-        <button className={activeTab === 'destination' ? 'active-nav' : ''} onClick={() => setActiveTab('destination')}>
-          <span>✈️</span>
-          Destination
-        </button>
-        <button className={activeTab === 'system' ? 'active-nav' : ''} onClick={() => setActiveTab('system')}>
-          <span>⚙️</span>
-          Système
-        </button>
-      </nav>
+      {activeTab === 'system' && (
+        <section className="card system-card">
+          <h2>⚙️ Système</h2>
+
+          <div className="system-section">
+            <h3>👤 Compte</h3>
+
+            <div className="document-row">
+              <strong>Email connecté</strong>
+              <span>{session?.user?.email || 'Non disponible'}</span>
+            </div>
+          </div>
+
+          <div className="system-section">
+            <h3>📱 Application</h3>
+
+            <div className="document-row">
+              <strong>Travel Family</strong>
+              <span>Version 1.0</span>
+            </div>
+          </div>
+
+          <div className="system-section">
+            <h3>🚪 Session</h3>
+
+            <button className="open-document" onClick={signOut}>
+              Se déconnecter
+            </button>
+          </div>
+
+          <div className="system-section">
+            <h3>🗑️ Données</h3>
+
+            <button className="delete-person-button" onClick={resetCurrentAccountData}>
+              Réinitialiser mon voyage
+            </button>
+          </div>
+        </section>
+      )}
+
+      {menuOpen && (
+        <div className="side-menu-overlay" onClick={() => setMenuOpen(false)}>
+          <aside className="side-menu" onClick={(e) => e.stopPropagation()}>
+            <button className="close-menu" onClick={() => setMenuOpen(false)}>×</button>
+
+            <h2>🌴 Travel Family</h2>
+
+            {[
+              ['home', '🏠', 'Accueil'],
+              ['packing', '🧳', 'Valises'],
+              ['planning', '📅', 'Planning'],
+              ['budget', '💰', 'Budget'],
+              ['documents', '📁', 'Documents'],
+              ['places', '🗺️', 'Lieux'],
+              ['destination', '✈️', 'Ma destination'],
+              ['system', '⚙️', 'Système'],
+            ].map(([tab, icon, label]) => (
+              <button
+                key={tab}
+                className={activeTab === tab ? 'side-menu-active' : ''}
+                onClick={() => {
+                  setActiveTab(tab)
+                  setMenuOpen(false)
+                }}
+              >
+                <span>{icon}</span>
+                {label}
+              </button>
+            ))}
+          </aside>
+        </div>
+      )}
     </main>
   )
 }
