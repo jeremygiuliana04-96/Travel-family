@@ -43,6 +43,11 @@ function App() {
   const [activityName, setActivityName] = useState('')
   const [activities, setActivities] = useState([])
 
+  const [places, setPlaces] = useState([])
+  const [placeName, setPlaceName] = useState('')
+  const [placeType, setPlaceType] = useState('Hôtel')
+  const [placeAddress, setPlaceAddress] = useState('')
+
   const [documents, setDocuments] = useState([])
   const [documentPerson, setDocumentPerson] = useState('Famille')
   const [documentName, setDocumentName] = useState('')
@@ -90,6 +95,7 @@ function App() {
     expenses,
     shoppingList,
     activities,
+    places,
   ])
 
   useEffect(() => {
@@ -143,6 +149,10 @@ function App() {
     setActivityDate('')
     setActivityName('')
     setActivities([])
+    setPlaces([])
+    setPlaceName('')
+    setPlaceType('Hôtel')
+    setPlaceAddress('')
     setDocuments([])
     setDocumentPerson('Famille')
     setDocumentName('')
@@ -197,6 +207,12 @@ function App() {
       advice.push('📁 Pense à ajouter les documents importants dans le coffre-fort.')
     }
 
+    if (places.length > 0) {
+      advice.push(`🗺️ Tu as ${places.length} lieu(x) enregistré(s) pour le voyage.`)
+    } else {
+      advice.push('🗺️ Ajoute ton hôtel, l’aéroport ou tes lieux favoris pour les retrouver vite.')
+    }
+
     if (weather) {
       if (weather.temperature >= 27 && weather.wind <= 25) {
         advice.push('☀️ Temps idéal pour prévoir une activité extérieure ou une sortie plage.')
@@ -228,7 +244,7 @@ function App() {
     return advice
   }
 
-    async function loadTravelData() {
+  async function loadTravelData() {
     setDataLoading(true)
 
     const { data, error } = await supabase
@@ -255,6 +271,7 @@ function App() {
       setExpenses(data.expenses || [])
       setShoppingList(data.shopping_list || [])
       setActivities(data.activities || [])
+      setPlaces(data.places || [])
       setSelectedPerson('Famille')
       setDocumentPerson('Famille')
     } else {
@@ -272,6 +289,7 @@ function App() {
           expenses: [],
           shopping_list: [],
           activities: [],
+          places: [],
         })
         .select()
         .single()
@@ -297,6 +315,7 @@ function App() {
         expenses,
         shopping_list: shoppingList,
         activities,
+        places,
         updated_at: new Date().toISOString(),
       })
       .eq('id', travelDataId)
@@ -429,6 +448,7 @@ function App() {
         expenses: [],
         shopping_list: [],
         activities: [],
+        places: [],
         updated_at: new Date().toISOString(),
       })
       .eq('id', travelDataId)
@@ -582,6 +602,33 @@ function App() {
     setShoppingList(shoppingList.filter((item) => item.id !== id))
   }
 
+  function addPlace() {
+    if (placeName.trim() === '' || placeAddress.trim() === '') return
+
+    setPlaces([
+      ...places,
+      {
+        id: Date.now(),
+        name: placeName.trim(),
+        type: placeType.trim() || 'Lieu',
+        address: placeAddress.trim(),
+      },
+    ])
+
+    setPlaceName('')
+    setPlaceType('Hôtel')
+    setPlaceAddress('')
+  }
+
+  function deletePlace(id) {
+    setPlaces(places.filter((place) => place.id !== id))
+  }
+
+  function openPlace(place) {
+    const query = encodeURIComponent(place.address)
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank')
+  }
+
   function addActivity() {
     if (activityDate === '' || activityName === '') return
 
@@ -608,10 +655,10 @@ function App() {
 
   if (sessionLoading || dataLoading) {
     return (
-      <main className="app">
+      <main className="app loading-screen">
         <section className="hero-card">
           <h1>✈️ Travel Family</h1>
-          <p>Chargement...</p>
+          <p>Préparation de ton voyage...</p>
         </section>
       </main>
     )
@@ -935,6 +982,59 @@ function App() {
         </section>
       )}
 
+      {activeTab === 'places' && (
+        <section className="card places-card">
+          <h2>🗺️ Lieux favoris</h2>
+
+          <div className="expense-form">
+            <input
+              type="text"
+              placeholder="Nom : ex Hôtel, Aquarium..."
+              value={placeName}
+              onChange={(e) => setPlaceName(e.target.value)}
+            />
+
+            <input
+              type="text"
+              placeholder="Type : Hôtel, Restaurant, Plage..."
+              value={placeType}
+              onChange={(e) => setPlaceType(e.target.value)}
+            />
+
+            <input
+              type="text"
+              placeholder="Adresse ou lien Google Maps"
+              value={placeAddress}
+              onChange={(e) => setPlaceAddress(e.target.value)}
+            />
+
+            <button onClick={addPlace}>Ajouter le lieu</button>
+          </div>
+
+          <div className="document-list">
+            {places.length === 0 && <p>Aucun lieu enregistré.</p>}
+
+            {places.map((place) => (
+              <div className="document-row" key={place.id}>
+                <strong>📍 {place.name}</strong>
+                <span>{place.type}</span>
+                <p>{place.address}</p>
+
+                <div className="document-actions">
+                  <button className="open-document" onClick={() => openPlace(place)}>
+                    Ouvrir Maps
+                  </button>
+
+                  <button className="delete-document" onClick={() => deletePlace(place.id)}>
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {activeTab === 'settings' && (
         <section className="card">
           <h2>⚙️ Réglages</h2>
@@ -1003,6 +1103,10 @@ function App() {
         <button className={activeTab === 'documents' ? 'active-nav' : ''} onClick={() => setActiveTab('documents')}>
           <span>📁</span>
           Docs
+        </button>
+        <button className={activeTab === 'places' ? 'active-nav' : ''} onClick={() => setActiveTab('places')}>
+          <span>🗺️</span>
+          Lieux
         </button>
         <button className={activeTab === 'settings' ? 'active-nav' : ''} onClick={() => setActiveTab('settings')}>
           <span>⚙️</span>
