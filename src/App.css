@@ -1052,3 +1052,15 @@ button:active {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.bottom-nav {
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.system-section {
+  margin-top: 18px;
+}
+
+.system-section h3 {
+  margin-bottom: 10px;
+}
