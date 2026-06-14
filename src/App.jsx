@@ -51,6 +51,11 @@ function App() {
 
   const [aiQuestion, setAiQuestion] = useState('')
 
+  const [aiAnswer, setAiAnswer] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState('')
+
+
   const [people, setPeople] = useState(['Famille'])
   const [selectedPerson, setSelectedPerson] = useState('Famille')
   const [newPersonName, setNewPersonName] = useState('')
@@ -208,12 +213,46 @@ function App() {
     setDocumentFile(null)
   }
 
-  function askAssistant(question) {
+  async function askAssistant(question) {
     const finalQuestion = question || aiQuestion
-    if (!finalQuestion.trim()) return
+    if (!finalQuestion.trim() || aiLoading) return
 
-    alert(`🤖 Assistant Travel Family\n\nQuestion : ${finalQuestion}`)
-    setAiQuestion('')
+    try {
+      setAiLoading(true)
+      setAiError('')
+      setAiAnswer('')
+
+      const { data, error } = await supabase.functions.invoke('travel-assistant', {
+        body: {
+          question: finalQuestion,
+          context: {
+            tripName,
+            startDate,
+            endDate,
+            weather,
+            people,
+            packingLists,
+            budget,
+            expenses,
+            shoppingList,
+            activities,
+            places
+          }
+        }
+      })
+
+      if (error) {
+        setAiError("Impossible de contacter l'assistant IA.")
+        return
+      }
+
+      setAiAnswer(data?.answer || "Aucune réponse.")
+      setAiQuestion('')
+    } catch (e) {
+      setAiError("Erreur assistant IA.")
+    } finally {
+      setAiLoading(false)
+    }
   }
 
   function formatDate(dateValue) {
