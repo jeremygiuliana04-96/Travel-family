@@ -1209,3 +1209,59 @@ button:active {
   font-size: 14px;
   line-height: 1.35;
 }
+
+.maps-card input {
+  width: 100%;
+}
+
+.map-start-box,
+.map-search-box {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.map-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.map-info-box,
+.ai-map-advice {
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 18px;
+  padding: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.map-info-box p,
+.ai-map-advice p {
+  margin: 6px 0 0;
+}
+
+.map-info-box span {
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+.travel-map {
+  margin: 18px 0;
+  overflow: hidden;
+  border-radius: 22px;
+}
+
+.map-error {
+  color: #c0392b;
+  font-weight: 700;
+}
+
+.map-result-card {
+  border: 2px solid rgba(0, 150, 136, 0.25);
+}
+
+@media (min-width: 650px) {
+  .map-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}

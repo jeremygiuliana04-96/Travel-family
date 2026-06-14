@@ -1,7 +1,30 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import 'leaflet/dist/leaflet.css'
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import L from 'leaflet'
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import Auth from './Auth.jsx'
 import { supabase } from './supabase.js'
+
+delete L.Icon.Default.prototype._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+})
+
+function ChangeMapView({ center }) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (center) map.setView(center, 13)
+  }, [center, map])
+
+  return null
+}
 
 const defaultPackingLists = {
   Famille: [],
@@ -48,6 +71,13 @@ function App() {
   const [placeName, setPlaceName] = useState('')
   const [placeType, setPlaceType] = useState('Hôtel')
   const [placeAddress, setPlaceAddress] = useState('')
+
+  const [startAddress, setStartAddress] = useState('')
+  const [startPoint, setStartPoint] = useState(null)
+  const [mapSearch, setMapSearch] = useState('')
+  const [mapResult, setMapResult] = useState(null)
+  const [mapLoading, setMapLoading] = useState(false)
+  const [mapError, setMapError] = useState('')
 
   const [documents, setDocuments] = useState([])
   const [documentPerson, setDocumentPerson] = useState('Famille')
@@ -158,6 +188,11 @@ function App() {
     setPlaceName('')
     setPlaceType('Hôtel')
     setPlaceAddress('')
+    setStartAddress('')
+    setStartPoint(null)
+    setMapSearch('')
+    setMapResult(null)
+    setMapError('')
     setDocuments([])
     setDocumentPerson('Famille')
     setDocumentName('')
@@ -646,6 +681,137 @@ function App() {
     setShoppingList(shoppingList.filter((item) => item.id !== id))
   }
 
+  async function searchAddress(query) {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`
+    )
+
+    const data = await response.json()
+
+    if (!data || data.length === 0) return null
+
+    return {
+      name: data[0].display_name.split(',')[0],
+      address: data[0].display_name,
+      latitude: Number(data[0].lat),
+      longitude: Number(data[0].lon),
+    }
+  }
+
+  function useCurrentPosition() {
+    if (!navigator.geolocation) {
+      setMapError('La géolocalisation n’est pas disponible sur cet appareil.')
+      return
+    }
+
+    setMapLoading(true)
+    setMapError('')
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setStartPoint({
+          name: 'Ma position actuelle',
+          address: 'Position GPS actuelle',
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        })
+        setMapLoading(false)
+      },
+      () => {
+        setMapError('Impossible de récupérer ta position.')
+        setMapLoading(false)
+      }
+    )
+  }
+
+  async function defineStartAddress() {
+    if (startAddress.trim() === '') return
+
+    setMapLoading(true)
+    setMapError('')
+
+    try {
+      const result = await searchAddress(startAddress)
+
+      if (!result) {
+        setMapError('Adresse de départ introuvable.')
+        return
+      }
+
+      setStartPoint(result)
+    } catch {
+      setMapError('Erreur pendant la recherche de l’adresse.')
+    } finally {
+      setMapLoading(false)
+    }
+  }
+
+  async function searchMapPlace() {
+    if (mapSearch.trim() === '') return
+
+    setMapLoading(true)
+    setMapError('')
+    setMapResult(null)
+
+    try {
+      const result = await searchAddress(mapSearch)
+
+      if (!result) {
+        setMapError('Lieu introuvable.')
+        return
+      }
+
+      setMapResult({
+        id: Date.now(),
+        name: result.name,
+        type: 'Lieu recherché',
+        address: result.address,
+        latitude: result.latitude,
+        longitude: result.longitude,
+      })
+    } catch {
+      setMapError('Erreur pendant la recherche du lieu.')
+    } finally {
+      setMapLoading(false)
+    }
+  }
+
+  function addMapResultToPlaces() {
+    if (!mapResult) return
+
+    setPlaces([
+      ...places,
+      {
+        ...mapResult,
+        id: Date.now(),
+      },
+    ])
+
+    setMapSearch('')
+    setMapResult(null)
+  }
+
+  function getRouteLink(destination, mode = 'driving') {
+    const origin = startPoint
+      ? `${startPoint.latitude},${startPoint.longitude}`
+      : ''
+
+    const destinationText =
+      destination.latitude && destination.longitude
+        ? `${destination.latitude},${destination.longitude}`
+        : destination.address
+
+    return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(
+      origin
+    )}&destination=${encodeURIComponent(destinationText)}&travelmode=${mode}`
+  }
+
+  function getAiMapAdvice(destination) {
+    if (!startPoint) return 'Définis d’abord un point de départ pour obtenir une recommandation.'
+
+    return `Depuis ${startPoint.name}, compare d’abord taxi/voiture et transport en commun. Avec une famille ou un enfant, le taxi est souvent le choix le plus confortable si le trajet dépasse 30 minutes en bus.`
+  }
+
   function addPlace() {
     if (placeName.trim() === '' || placeAddress.trim() === '') return
 
@@ -1034,6 +1200,164 @@ function App() {
         </section>
       )}
 
+      {activeTab === 'maps' && (
+        <section className="card maps-card">
+          <h2>🗺️ Cartes intelligentes</h2>
+
+          <div className="map-start-box">
+            <h3>📍 Point de départ</h3>
+
+            <div className="map-actions">
+              <button onClick={useCurrentPosition}>📍 Ma position actuelle</button>
+              <button onClick={defineStartAddress}>🏨 Rechercher une adresse</button>
+            </div>
+
+            <input
+              type="text"
+              placeholder="Adresse de départ : hôtel, aéroport, appartement..."
+              value={startAddress}
+              onChange={(e) => setStartAddress(e.target.value)}
+            />
+
+            {startPoint && (
+              <div className="map-info-box">
+                <strong>Point de départ défini :</strong>
+                <p>{startPoint.name}</p>
+                <span>{startPoint.address}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="map-search-box">
+            <h3>🔎 Recherche de lieu</h3>
+
+            <input
+              type="text"
+              placeholder="Rechercher un lieu..."
+              value={mapSearch}
+              onChange={(e) => setMapSearch(e.target.value)}
+            />
+
+            <button onClick={searchMapPlace}>🔍 Rechercher</button>
+          </div>
+
+          {mapLoading && <p>Recherche en cours...</p>}
+          {mapError && <p className="map-error">{mapError}</p>}
+
+          <div className="travel-map">
+            <MapContainer
+              center={
+                startPoint
+                  ? [startPoint.latitude, startPoint.longitude]
+                  : [28.1248, -15.43]
+              }
+              zoom={12}
+              scrollWheelZoom={false}
+              style={{ height: '320px', width: '100%', borderRadius: '22px' }}
+            >
+              <TileLayer
+                attribution="&copy; OpenStreetMap"
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+
+              {startPoint && (
+                <>
+                  <ChangeMapView center={[startPoint.latitude, startPoint.longitude]} />
+                  <Marker position={[startPoint.latitude, startPoint.longitude]}>
+                    <Popup>📍 {startPoint.name}</Popup>
+                  </Marker>
+                </>
+              )}
+
+              {mapResult && (
+                <Marker position={[mapResult.latitude, mapResult.longitude]}>
+                  <Popup>{mapResult.name}</Popup>
+                </Marker>
+              )}
+
+              {places
+                .filter((place) => place.latitude && place.longitude)
+                .map((place) => (
+                  <Marker key={place.id} position={[place.latitude, place.longitude]}>
+                    <Popup>{place.name}</Popup>
+                  </Marker>
+                ))}
+            </MapContainer>
+          </div>
+
+          {mapResult && (
+            <div className="document-row map-result-card">
+              <strong>📍 {mapResult.name}</strong>
+              <span>{mapResult.address}</span>
+
+              <div className="ai-map-advice">
+                <strong>🤖 Recommandation IA</strong>
+                <p>{getAiMapAdvice(mapResult)}</p>
+              </div>
+
+              <div className="document-actions">
+                <button className="open-document" onClick={addMapResultToPlaces}>
+                  ➕ Ajouter à ma liste
+                </button>
+
+                <button
+                  className="open-document"
+                  onClick={() => window.open(getRouteLink(mapResult, 'driving'), '_blank')}
+                >
+                  🚗 Itinéraire voiture
+                </button>
+
+                <button
+                  className="open-document"
+                  onClick={() => window.open(getRouteLink(mapResult, 'transit'), '_blank')}
+                >
+                  🚌 Transport
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="document-list">
+            <h3>📌 Ma liste</h3>
+
+            {places.length === 0 && <p>Aucun lieu ajouté.</p>}
+
+            {places.map((place) => (
+              <div className="document-row" key={place.id}>
+                <strong>📍 {place.name}</strong>
+                <span>{place.type}</span>
+                <p>{place.address}</p>
+
+                <div className="ai-map-advice">
+                  <strong>🤖 Analyse depuis le point de départ</strong>
+                  <p>{getAiMapAdvice(place)}</p>
+                </div>
+
+                <div className="document-actions">
+                  <button
+                    className="open-document"
+                    onClick={() => window.open(getRouteLink(place, 'driving'), '_blank')}
+                  >
+                    🚗 Voiture / taxi
+                  </button>
+
+                  <button
+                    className="open-document"
+                    onClick={() => window.open(getRouteLink(place, 'transit'), '_blank')}
+                  >
+                    🚌 Bus
+                  </button>
+
+                  <button className="delete-document" onClick={() => deletePlace(place.id)}>
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {activeTab === 'places' && (
         <section className="card places-card">
           <h2>🗺️ Lieux favoris</h2>
@@ -1128,8 +1452,6 @@ function App() {
               onChange={(e) => setEndDate(e.target.value)}
             />
           </label>
-
-
         </section>
       )}
 
@@ -1247,7 +1569,8 @@ function App() {
               ['planning', '📅', 'Planning'],
               ['budget', '💰', 'Budget'],
               ['documents', '📁', 'Documents'],
-              ['places', '🗺️', 'Lieux'],
+              ['maps', '🗺️', 'Cartes'],
+              ['places', '📍', 'Lieux'],
               ['destination', '✈️', 'Ma destination'],
               ['system', '⚙️', 'Système'],
             ].map(([tab, icon, label]) => (
