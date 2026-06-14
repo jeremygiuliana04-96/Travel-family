@@ -126,7 +126,11 @@ function App() {
       ? 0
       : Math.round((boughtShoppingItems.length / shoppingList.length) * 100)
 
-  const nextActivity = activities.length > 0 ? activities[0] : null
+  const sortedActivities = [...activities].sort((a, b) => {
+    return parseActivityDate(a.date) - parseActivityDate(b.date)
+  })
+
+  const nextActivity = sortedActivities.length > 0 ? sortedActivities[0] : null
 
   function resetAppState() {
     setTravelDataId(null)
@@ -164,6 +168,45 @@ function App() {
   function formatDate(dateValue) {
     if (!dateValue) return ''
     return new Date(dateValue).toLocaleDateString('fr-BE')
+  }
+
+  function parseActivityDate(dateText) {
+    if (!dateText) return Number.MAX_SAFE_INTEGER
+
+    const cleanDate = dateText
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+
+    const isoDate = new Date(cleanDate)
+    if (!Number.isNaN(isoDate.getTime())) return isoDate.getTime()
+
+    const months = {
+      janvier: 0,
+      fevrier: 1,
+      mars: 2,
+      avril: 3,
+      mai: 4,
+      juin: 5,
+      juillet: 6,
+      aout: 7,
+      septembre: 8,
+      octobre: 9,
+      novembre: 10,
+      decembre: 11,
+    }
+
+    const match = cleanDate.match(/(\d{1,2})\s+([a-z]+)/)
+    if (!match) return Number.MAX_SAFE_INTEGER
+
+    const day = Number(match[1])
+    const month = months[match[2]]
+    const year = startDate ? new Date(startDate).getFullYear() : new Date().getFullYear()
+
+    if (Number.isNaN(day) || month === undefined) return Number.MAX_SAFE_INTEGER
+
+    return new Date(year, month, day).getTime()
   }
 
   function getDaysUntilStart() {
