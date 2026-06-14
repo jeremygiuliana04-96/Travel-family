@@ -126,8 +126,7 @@ function App() {
       ? 0
       : Math.round((boughtShoppingItems.length / shoppingList.length) * 100)
 
-  const sortedActivities = [...activities].sort((a, b) => new Date(a.date) - new Date(b.date))
-  const nextActivity = sortedActivities.length > 0 ? sortedActivities[0] : null
+  const nextActivity = activities.length > 0 ? activities[0] : null
 
   function resetAppState() {
     setTravelDataId(null)
@@ -632,12 +631,12 @@ function App() {
   }
 
   function addActivity() {
-    if (activityDate === '' || activityName.trim() === '') return
+    if (activityDate.trim() === '' || activityName.trim() === '') return
 
     const updatedActivities = [
       ...activities,
-      { id: Date.now(), date: activityDate, name: activityName.trim() },
-    ].sort((a, b) => new Date(a.date) - new Date(b.date))
+      { id: Date.now(), date: activityDate.trim(), name: activityName.trim() },
+    ].sort((a, b) => parseActivityDate(a.date) - parseActivityDate(b.date))
 
     setActivities(updatedActivities)
     setActivityDate('')
