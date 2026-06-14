@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import './App.css'
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
@@ -93,7 +93,7 @@ function App() {
   const [documentFile, setDocumentFile] = useState(null)
   const [documentUploading, setDocumentUploading] = useState(false)
 
-  const quickSuggestions = [
+  const quickSuggestions = useMemo(() => [
     '🍽️ Trouver un restaurant',
     '🏖️ Trouver une activité',
     '📅 Résumer ma journée',
@@ -213,8 +213,8 @@ function App() {
     setDocumentFile(null)
   }
 
-  async function askAssistant(question) {
-    const finalQuestion = question || aiQuestion
+  const askAssistant = useCallback(async (questionOverride) => {
+    const finalQuestion = questionOverride || aiQuestion
     if (!finalQuestion.trim() || aiLoading) return
 
     try {
