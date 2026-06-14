@@ -16,12 +16,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 })
 
-function ChangeMapView({ center }) {
+function ChangeMapView({ center, zoom = 13 }) {
   const map = useMap()
 
   useEffect(() => {
-    if (center) map.setView(center, 13)
-  }, [center, map])
+    if (center) map.setView(center, zoom)
+  }, [center, zoom, map])
 
   return null
 }
@@ -477,14 +477,8 @@ function App() {
     const confirmDelete = confirm(`Supprimer ${document.document_name} ?`)
     if (!confirmDelete) return
 
-    await supabase.storage
-      .from('travel-documents')
-      .remove([document.file_url])
-
-    await supabase
-      .from('travel_documents')
-      .delete()
-      .eq('id', document.id)
+    await supabase.storage.from('travel-documents').remove([document.file_url])
+    await supabase.from('travel_documents').delete().eq('id', document.id)
 
     await loadDocuments()
   }
@@ -504,15 +498,10 @@ function App() {
     const filePaths = (docs || []).map((document) => document.file_url)
 
     if (filePaths.length > 0) {
-      await supabase.storage
-        .from('travel-documents')
-        .remove(filePaths)
+      await supabase.storage.from('travel-documents').remove(filePaths)
     }
 
-    await supabase
-      .from('travel_documents')
-      .delete()
-      .eq('user_id', session.user.id)
+    await supabase.from('travel_documents').delete().eq('user_id', session.user.id)
 
     await supabase
       .from('travel_data')
@@ -683,7 +672,7 @@ function App() {
 
   async function searchAddress(query) {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`
+      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=${encodeURIComponent(query)}`
     )
 
     const data = await response.json()
@@ -695,6 +684,14 @@ function App() {
       address: data[0].display_name,
       latitude: Number(data[0].lat),
       longitude: Number(data[0].lon),
+      countryCode: data[0].address?.country_code || '',
+      country: data[0].address?.country || '',
+      city:
+        data[0].address?.city ||
+        data[0].address?.town ||
+        data[0].address?.village ||
+        data[0].address?.municipality ||
+        '',
     }
   }
 
@@ -714,6 +711,9 @@ function App() {
           address: 'Position GPS actuelle',
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
+          countryCode: '',
+          country: '',
+          city: '',
         })
         setMapLoading(false)
       },
@@ -768,6 +768,9 @@ function App() {
         address: result.address,
         latitude: result.latitude,
         longitude: result.longitude,
+        countryCode: result.countryCode,
+        country: result.country,
+        city: result.city,
       })
     } catch {
       setMapError('Erreur pendant la recherche du lieu.')
@@ -791,6 +794,105 @@ function App() {
     setMapResult(null)
   }
 
+  function getDistanceKm(destination) {
+    if (!startPoint || !destination.latitude || !destination.longitude) return null
+
+    const earthRadius = 6371
+    const dLat = ((destination.latitude - startPoint.latitude) * Math.PI) / 180
+    const dLon = ((destination.longitude - startPoint.longitude) * Math.PI) / 180
+    const lat1 = (startPoint.latitude * Math.PI) / 180
+    const lat2 = (destination.latitude * Math.PI) / 180
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2)
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return Math.max(1, Math.round(earthRadius * c * 1.25))
+  }
+
+  function getLocalPriceSettings(destination) {
+    const text = `${destination.address || ''} ${destination.countryCode || ''} ${destination.country || ''}`.toLowerCase()
+
+    if (
+      text.includes('gran canaria') ||
+      text.includes('canarias') ||
+      text.includes('canary') ||
+      text.includes('españa') ||
+      text.includes('spain') ||
+      text.includes(' es ')
+    ) {
+      return {
+        zone: 'Espagne / Canaries',
+        taxiStart: 3.5,
+        taxiKm: 1.35,
+        busMin: 2,
+        busMax: 6,
+        fuelLiter: 1.6,
+        consumption: 6.5,
+      }
+    }
+
+    if (
+      text.includes('belgique') ||
+      text.includes('belgië') ||
+      text.includes('belgium') ||
+      text.includes(' be ')
+    ) {
+      return {
+        zone: 'Belgique',
+        taxiStart: 5,
+        taxiKm: 2.4,
+        busMin: 2.5,
+        busMax: 5,
+        fuelLiter: 1.75,
+        consumption: 6.5,
+      }
+    }
+
+    if (text.includes('france') || text.includes(' fr ')) {
+      return {
+        zone: 'France',
+        taxiStart: 4,
+        taxiKm: 1.8,
+        busMin: 2,
+        busMax: 5,
+        fuelLiter: 1.8,
+        consumption: 6.5,
+      }
+    }
+
+    return {
+      zone: 'Tarif moyen estimé',
+      taxiStart: 4,
+      taxiKm: 1.6,
+      busMin: 2,
+      busMax: 6,
+      fuelLiter: 1.7,
+      consumption: 6.5,
+    }
+  }
+
+  function getTripCostEstimate(destination) {
+    const distance = getDistanceKm(destination)
+    if (!distance) return null
+
+    const settings = getLocalPriceSettings(destination)
+    const taxiMin = Math.round(settings.taxiStart + distance * settings.taxiKm * 0.9)
+    const taxiMax = Math.round(settings.taxiStart + distance * settings.taxiKm * 1.2)
+    const carFuel = Math.round(((distance / 100) * settings.consumption * settings.fuelLiter) * 10) / 10
+
+    return {
+      distance,
+      zone: settings.zone,
+      taxiMin,
+      taxiMax,
+      busMin: settings.busMin,
+      busMax: settings.busMax,
+      carFuel,
+    }
+  }
+
   function getRouteLink(destination, mode = 'driving') {
     const origin = startPoint
       ? `${startPoint.latitude},${startPoint.longitude}`
@@ -807,9 +909,24 @@ function App() {
   }
 
   function getAiMapAdvice(destination) {
-    if (!startPoint) return 'Définis d’abord un point de départ pour obtenir une recommandation.'
+    const estimate = getTripCostEstimate(destination)
 
-    return `Depuis ${startPoint.name}, compare d’abord taxi/voiture et transport en commun. Avec une famille ou un enfant, le taxi est souvent le choix le plus confortable si le trajet dépasse 30 minutes en bus.`
+    if (!startPoint) return 'Définis d’abord un point de départ pour obtenir une recommandation.'
+    if (!estimate) return 'Estimation indisponible pour ce lieu.'
+
+    if (estimate.distance <= 2) {
+      return 'Le lieu semble proche. La marche peut être intéressante si le trajet est agréable et adapté à la famille.'
+    }
+
+    if (estimate.distance <= 8) {
+      return 'Le taxi ou la voiture seront probablement les plus confortables. Le bus peut être intéressant si l’arrêt est proche.'
+    }
+
+    if (estimate.distance <= 25) {
+      return 'Pour une famille, le taxi ou la voiture sont souvent plus simples. Le bus reste intéressant si tu veux réduire le budget.'
+    }
+
+    return 'Le trajet semble assez long. Il vaut mieux comparer l’itinéraire Google Maps avant de choisir entre voiture, taxi ou transport en commun.'
   }
 
   function addPlace() {
@@ -866,6 +983,40 @@ function App() {
 
   function deleteExpense(id) {
     setExpenses(expenses.filter((expense) => expense.id !== id))
+  }
+
+  function CostBox({ destination }) {
+    if (!startPoint) {
+      return (
+        <div className="map-cost-box">
+          <strong>💶 Estimation IA du trajet</strong>
+          <p>Définis d’abord un point de départ pour calculer le coût.</p>
+        </div>
+      )
+    }
+
+    const estimate = getTripCostEstimate(destination)
+
+    if (!estimate) {
+      return (
+        <div className="map-cost-box">
+          <strong>💶 Estimation IA du trajet</strong>
+          <p>Impossible de calculer l’estimation pour ce lieu.</p>
+        </div>
+      )
+    }
+
+    return (
+      <div className="map-cost-box">
+        <strong>💶 Estimation IA du trajet</strong>
+        <p>📍 Zone détectée : {estimate.zone}</p>
+        <p>📏 Distance estimée : {estimate.distance} km</p>
+        <p>🚕 Taxi : ± {estimate.taxiMin} à {estimate.taxiMax} €</p>
+        <p>🚗 Voiture : ± {estimate.carFuel} € de carburant</p>
+        <p>🚌 Bus : ± {estimate.busMin} à {estimate.busMax} € / personne</p>
+        <small>Estimation indicative, à vérifier avec l’itinéraire réel.</small>
+      </div>
+    )
   }
 
   if (sessionLoading || dataLoading) {
@@ -1247,11 +1398,13 @@ function App() {
           <div className="travel-map">
             <MapContainer
               center={
-                startPoint
-                  ? [startPoint.latitude, startPoint.longitude]
-                  : [28.1248, -15.43]
+                mapResult
+                  ? [mapResult.latitude, mapResult.longitude]
+                  : startPoint
+                    ? [startPoint.latitude, startPoint.longitude]
+                    : [20, 0]
               }
-              zoom={12}
+              zoom={mapResult || startPoint ? 13 : 2}
               scrollWheelZoom={false}
               style={{ height: '320px', width: '100%', borderRadius: '22px' }}
             >
@@ -1260,13 +1413,16 @@ function App() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
 
+              {mapResult ? (
+                <ChangeMapView center={[mapResult.latitude, mapResult.longitude]} zoom={13} />
+              ) : startPoint ? (
+                <ChangeMapView center={[startPoint.latitude, startPoint.longitude]} zoom={13} />
+              ) : null}
+
               {startPoint && (
-                <>
-                  <ChangeMapView center={[startPoint.latitude, startPoint.longitude]} />
-                  <Marker position={[startPoint.latitude, startPoint.longitude]}>
-                    <Popup>📍 {startPoint.name}</Popup>
-                  </Marker>
-                </>
+                <Marker position={[startPoint.latitude, startPoint.longitude]}>
+                  <Popup>📍 {startPoint.name}</Popup>
+                </Marker>
               )}
 
               {mapResult && (
@@ -1290,6 +1446,8 @@ function App() {
               <strong>📍 {mapResult.name}</strong>
               <span>{mapResult.address}</span>
 
+              <CostBox destination={mapResult} />
+
               <div className="ai-map-advice">
                 <strong>🤖 Recommandation IA</strong>
                 <p>{getAiMapAdvice(mapResult)}</p>
@@ -1304,14 +1462,14 @@ function App() {
                   className="open-document"
                   onClick={() => window.open(getRouteLink(mapResult, 'driving'), '_blank')}
                 >
-                  🚗 Itinéraire voiture
+                  🚗 Voiture / taxi
                 </button>
 
                 <button
                   className="open-document"
                   onClick={() => window.open(getRouteLink(mapResult, 'transit'), '_blank')}
                 >
-                  🚌 Transport
+                  🚌 Bus
                 </button>
               </div>
             </div>
@@ -1327,6 +1485,8 @@ function App() {
                 <strong>📍 {place.name}</strong>
                 <span>{place.type}</span>
                 <p>{place.address}</p>
+
+                <CostBox destination={place} />
 
                 <div className="ai-map-advice">
                   <strong>🤖 Analyse depuis le point de départ</strong>
@@ -1461,14 +1621,12 @@ function App() {
 
           <div className="system-section">
             <h3>👤 Compte</h3>
-
             <div className="system-row">
               <div>
                 <strong>Email connecté</strong>
                 <span>{session?.user?.email || 'Non disponible'}</span>
               </div>
             </div>
-
             <div className="system-row">
               <div>
                 <strong>Statut</strong>
@@ -1479,21 +1637,18 @@ function App() {
 
           <div className="system-section">
             <h3>📱 Application</h3>
-
             <div className="system-row">
               <div>
                 <strong>Nom de l’application</strong>
                 <span>Travel Family</span>
               </div>
             </div>
-
             <div className="system-row">
               <div>
                 <strong>Version</strong>
                 <span>1.0.0</span>
               </div>
             </div>
-
             <div className="system-row">
               <div>
                 <strong>Mode d’installation</strong>
@@ -1504,14 +1659,12 @@ function App() {
 
           <div className="system-section">
             <h3>💾 Sauvegarde</h3>
-
             <div className="system-row">
               <div>
                 <strong>Sauvegarde cloud</strong>
                 <span>Activée avec Supabase</span>
               </div>
             </div>
-
             <div className="system-row">
               <div>
                 <strong>Données synchronisées</strong>
@@ -1522,14 +1675,12 @@ function App() {
 
           <div className="system-section">
             <h3>🎨 Apparence</h3>
-
             <div className="system-row">
               <div>
                 <strong>Thème actuel</strong>
                 <span>Tropical clair</span>
               </div>
             </div>
-
             <div className="system-row">
               <div>
                 <strong>Interface</strong>
@@ -1540,7 +1691,6 @@ function App() {
 
           <div className="system-section">
             <h3>🗑️ Données</h3>
-
             <button className="delete-person-button" onClick={resetCurrentAccountData}>
               Réinitialiser mon voyage
             </button>
@@ -1548,7 +1698,6 @@ function App() {
 
           <div className="system-section">
             <h3>🚪 Session</h3>
-
             <button className="delete-person-button" onClick={signOut}>
               Se déconnecter
             </button>
