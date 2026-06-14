@@ -49,6 +49,8 @@ function App() {
   const [weatherLoading, setWeatherLoading] = useState(false)
   const [weatherError, setWeatherError] = useState('')
 
+  const [aiQuestion, setAiQuestion] = useState('')
+
   const [people, setPeople] = useState(['Famille'])
   const [selectedPerson, setSelectedPerson] = useState('Famille')
   const [newPersonName, setNewPersonName] = useState('')
@@ -85,6 +87,16 @@ function App() {
   const [documentType, setDocumentType] = useState('Passeport')
   const [documentFile, setDocumentFile] = useState(null)
   const [documentUploading, setDocumentUploading] = useState(false)
+
+  const quickSuggestions = [
+    '🍽️ Trouver un restaurant',
+    '🏖️ Trouver une activité',
+    '📅 Résumer ma journée',
+    '🚗 Estimer un trajet',
+    '💰 Calculer mes frais de déplacement',
+    '👶 Activités pour les enfants',
+    '📍 Que faire à proximité ?',
+  ]
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -170,6 +182,7 @@ function App() {
     setEndDate('')
     setWeather(null)
     setWeatherError('')
+    setAiQuestion('')
     setPeople(['Famille'])
     setSelectedPerson('Famille')
     setNewPersonName('')
@@ -198,6 +211,14 @@ function App() {
     setDocumentName('')
     setDocumentType('Passeport')
     setDocumentFile(null)
+  }
+
+  function askAssistant(question) {
+    const finalQuestion = question || aiQuestion
+    if (!finalQuestion.trim()) return
+
+    alert(`🤖 Assistant Travel Family\n\nQuestion : ${finalQuestion}`)
+    setAiQuestion('')
   }
 
   function formatDate(dateValue) {
@@ -1046,25 +1067,8 @@ function App() {
 
       {activeTab === 'home' && (
         <>
-          <section className="card assistant-card">
-            <h2>🤖 Assistant Vacances</h2>
-            <p className="assistant-intro">Bonjour 👋 Voici ce que je remarque pour ton voyage.</p>
-
-            <div className="assistant-summary">
-              <div><span>🧳 Valises</span><strong>{packingProgress}%</strong></div>
-              <div><span>🛒 Achats</span><strong>{shoppingProgress}%</strong></div>
-              <div><span>💰 Budget</span><strong>{remaining} €</strong></div>
-            </div>
-
-            <ul className="assistant-list">
-              {getAssistantAdvice().map((advice, index) => (
-                <li key={index}>{advice}</li>
-              ))}
-            </ul>
-          </section>
-
           <section className="card weather-card">
-            <h2>🌤️ Météo</h2>
+            <h2>🌤️ Météo de la destination</h2>
 
             {weatherLoading && <p>Chargement de la météo...</p>}
             {weatherError && <p>{weatherError}</p>}
@@ -1087,6 +1091,42 @@ function App() {
             )}
 
             <button onClick={fetchWeather}>Actualiser météo</button>
+          </section>
+
+          <section className="card assistant-card">
+            <h2>🤖 Assistant Travel Family</h2>
+            <p className="assistant-intro">Posez une question sur votre voyage.</p>
+
+            <div className="ai-search-box">
+              <input
+                type="text"
+                placeholder="Ex : Que faire aujourd’hui ? Où manger ce soir ?"
+                value={aiQuestion}
+                onChange={(e) => setAiQuestion(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') askAssistant()
+                }}
+              />
+
+              <button onClick={() => askAssistant()}>
+                Envoyer
+              </button>
+            </div>
+          </section>
+
+          <section className="card suggestions-card">
+            <h2>✨ Suggestions rapides</h2>
+
+            <div className="suggestions-grid">
+              {quickSuggestions.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  onClick={() => askAssistant(suggestion)}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
           </section>
 
           <section className="card">
