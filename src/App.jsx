@@ -126,7 +126,8 @@ function App() {
       ? 0
       : Math.round((boughtShoppingItems.length / shoppingList.length) * 100)
 
-  const nextActivity = activities.length > 0 ? activities[0] : null
+  const sortedActivities = [...activities].sort((a, b) => new Date(a.date) - new Date(b.date))
+  const nextActivity = sortedActivities.length > 0 ? sortedActivities[0] : null
 
   function resetAppState() {
     setTravelDataId(null)
@@ -631,9 +632,14 @@ function App() {
   }
 
   function addActivity() {
-    if (activityDate === '' || activityName === '') return
+    if (activityDate === '' || activityName.trim() === '') return
 
-    setActivities([...activities, { id: Date.now(), date: activityDate, name: activityName }])
+    const updatedActivities = [
+      ...activities,
+      { id: Date.now(), date: activityDate, name: activityName.trim() },
+    ].sort((a, b) => new Date(a.date) - new Date(b.date))
+
+    setActivities(updatedActivities)
     setActivityDate('')
     setActivityName('')
   }
@@ -856,7 +862,7 @@ function App() {
           <ul className="expenses-list">
             {activities.length === 0 && <p>Aucune activité prévue.</p>}
 
-            {activities.map((activity) => (
+            {sortedActivities.map((activity) => (
               <li key={activity.id}>
                 <span><strong>{activity.date}</strong> — {activity.name}</span>
                 <button onClick={() => deleteActivity(activity.id)}>✕</button>
