@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
@@ -48,14 +48,6 @@ function App() {
   const [weather, setWeather] = useState(null)
   const [weatherLoading, setWeatherLoading] = useState(false)
   const [weatherError, setWeatherError] = useState('')
-
-  const [aiQuestion, setAiQuestion] = useState('')
-
-  const [aiAnswer, setAiAnswer] = useState('')
-  const [aiLoading, setAiLoading] = useState(false)
-  const [aiError, setAiError] = useState('')
-
-
   const [people, setPeople] = useState(['Famille'])
   const [selectedPerson, setSelectedPerson] = useState('Famille')
   const [newPersonName, setNewPersonName] = useState('')
@@ -93,15 +85,6 @@ function App() {
   const [documentFile, setDocumentFile] = useState(null)
   const [documentUploading, setDocumentUploading] = useState(false)
 
-  const quickSuggestions = useMemo(() => [
-    '🍽️ Trouver un restaurant',
-    '🏖️ Trouver une activité',
-    '📅 Résumer ma journée',
-    '🚗 Estimer un trajet',
-    '💰 Calculer mes frais de déplacement',
-    '👶 Activités pour les enfants',
-    '📍 Que faire à proximité ?',
-  ], [])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -172,7 +155,13 @@ function App() {
     return parseActivityDate(a.date) - parseActivityDate(b.date)
   })
 
-  const nextActivity = sortedActivities.length > 0 ? sortedActivities[0] : null
+  const todayForActivity = new Date()
+  todayForActivity.setHours(0, 0, 0, 0)
+
+  const nextActivity =
+    sortedActivities.find((activity) => parseActivityDate(activity.date) >= todayForActivity.getTime()) ||
+    sortedActivities[0] ||
+    null
 
   function resetAppState() {
     setTravelDataId(null)
@@ -182,7 +171,6 @@ function App() {
     setEndDate('')
     setWeather(null)
     setWeatherError('')
-    setAiQuestion('')
     setPeople(['Famille'])
     setSelectedPerson('Famille')
     setNewPersonName('')
@@ -213,47 +201,6 @@ function App() {
     setDocumentFile(null)
   }
 
-  const askAssistant = useCallback(async (questionOverride) => {
-    const finalQuestion = questionOverride || aiQuestion
-    if (!finalQuestion.trim() || aiLoading) return
-
-    try {
-      setAiLoading(true)
-      setAiError('')
-      setAiAnswer('')
-
-      const { data, error } = await supabase.functions.invoke('travel-assistant', {
-        body: {
-          question: finalQuestion,
-          context: {
-            tripName,
-            startDate,
-            endDate,
-            weather,
-            people,
-            packingLists,
-            budget,
-            expenses,
-            shoppingList,
-            activities,
-            places
-          }
-        }
-      })
-
-      if (error) {
-        setAiError("Impossible de contacter l'assistant IA.")
-        return
-      }
-
-      setAiAnswer(data?.answer || "Aucune réponse.")
-      setAiQuestion('')
-    } catch (e) {
-      setAiError("Erreur assistant IA.")
-    } finally {
-      setAiLoading(false)
-    }
-  }, [aiQuestion, aiLoading, tripName, startDate, endDate, weather, people, packingLists, budget, expenses, shoppingList, activities, places])
 
   function formatDate(dateValue) {
     if (!dateValue) return ''
@@ -316,6 +263,23 @@ function App() {
     if (startDate) return `📅 Départ le ${formatDate(startDate)}`
     if (endDate) return `📅 Retour le ${formatDate(endDate)}`
     return ''
+  }
+
+  function getActivityCountdownText(activity) {
+    if (!activity) return ''
+
+    const activityTime = parseActivityDate(activity.date)
+    if (activityTime === Number.MAX_SAFE_INTEGER) return 'Date à vérifier dans le planning.'
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const days = Math.ceil((activityTime - today.getTime()) / (1000 * 60 * 60 * 24))
+
+    if (days > 1) return `Dans ${days} jours`
+    if (days === 1) return 'Demain'
+    if (days === 0) return 'Aujourd’hui'
+    return 'Activité déjà passée'
   }
 
   function getAssistantAdvice() {
@@ -1170,50 +1134,26 @@ function App() {
             <button onClick={fetchWeather}>Actualiser météo</button>
           </section>
 
-          <section className="card assistant-card">
-            <h2>🤖 Assistant Travel Family</h2>
-            <p className="assistant-intro">Posez une question sur votre voyage.</p>
+          <section className="card next-activity-card">
+            <h2>📅 Prochaine activité</h2>
 
-            <div className="ai-search-box">
-              <input
-                type="text"
-                placeholder="Ex : Que faire aujourd’hui ? Où manger ce soir ?"
-                value={aiQuestion}
-                onChange={(e) => setAiQuestion(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') askAssistant()
-                }}
-              />
-
-              <button onClick={() => askAssistant()}>
-                Envoyer
-              </button>
-            </div>
-
-            {aiLoading && <p>🤖 L’assistant réfléchit...</p>}
-            {aiError && <p className="map-error">{aiError}</p>}
-            {aiAnswer && (
-              <div className="ai-answer">
-                <strong>Réponse de l’assistant :</strong>
-                <p>{aiAnswer}</p>
+            {nextActivity ? (
+              <div className="next-activity-box">
+                <strong>{nextActivity.name}</strong>
+                <p>📅 {nextActivity.date}</p>
+                <p>⏳ {getActivityCountdownText(nextActivity)}</p>
+                <button onClick={() => setActiveTab('planning')}>
+                  Voir le planning
+                </button>
+              </div>
+            ) : (
+              <div className="next-activity-box">
+                <p>Aucune activité prévue pour le moment.</p>
+                <button onClick={() => setActiveTab('planning')}>
+                  Ajouter une activité
+                </button>
               </div>
             )}
-          </section>
-
-          <section className="card suggestions-card">
-            <h2>✨ Suggestions rapides</h2>
-
-            <div className="suggestions-grid">
-              {quickSuggestions.map((suggestion) => (
-                <button
-                  key={suggestion}
-                  onClick={() => askAssistant(suggestion)}
-                  disabled={aiLoading}
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
           </section>
         </>
       )}
