@@ -101,7 +101,7 @@ function App() {
     '💰 Calculer mes frais de déplacement',
     '👶 Activités pour les enfants',
     '📍 Que faire à proximité ?',
-  ]
+  ], [])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -253,7 +253,7 @@ function App() {
     } finally {
       setAiLoading(false)
     }
-  }
+  }, [aiQuestion, aiLoading, tripName, startDate, endDate, weather, people, packingLists, budget, expenses, shoppingList, activities, places])
 
   function formatDate(dateValue) {
     if (!dateValue) return ''
@@ -1274,7 +1274,7 @@ function App() {
             ))}
           </div>
 
-          <ShoppingBeforeDeparture />
+          {ShoppingBeforeDeparture()}
         </section>
       )}
 
