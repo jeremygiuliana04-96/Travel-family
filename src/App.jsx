@@ -1223,9 +1223,11 @@ function App() {
               </div>
             ))}
           </div>
-
-          {ShoppingBeforeDeparture()}
         </section>
+      )}
+
+      {activeTab === 'shopping' && (
+        <ShoppingBeforeDeparture />
       )}
 
       {activeTab === 'planning' && (
@@ -1745,6 +1747,7 @@ function App() {
             {[
               ['home', '🏠', 'Accueil'],
               ['packing', '🧳', 'Valises'],
+              ['shopping', '🛒', 'Achats'],
               ['planning', '📅', 'Planning'],
               ['budget', '💰', 'Budget'],
               ['documents', '📁', 'Documents'],
