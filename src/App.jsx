@@ -1189,6 +1189,15 @@ function App() {
                 Envoyer
               </button>
             </div>
+
+            {aiLoading && <p>🤖 L’assistant réfléchit...</p>}
+            {aiError && <p className="map-error">{aiError}</p>}
+            {aiAnswer && (
+              <div className="ai-answer">
+                <strong>Réponse de l’assistant :</strong>
+                <p>{aiAnswer}</p>
+              </div>
+            )}
           </section>
 
           <section className="card suggestions-card">
@@ -1199,6 +1208,7 @@ function App() {
                 <button
                   key={suggestion}
                   onClick={() => askAssistant(suggestion)}
+                  disabled={aiLoading}
                 >
                   {suggestion}
                 </button>
