@@ -1038,49 +1038,6 @@ function App() {
     )
   }
 
-  function ShoppingBeforeDeparture() {
-    return (
-      <section className="card">
-        <h2>🛒 Achats avant départ</h2>
-
-        <div className="budget-summary">
-          <p>Acheté : <strong>{boughtShoppingItems.length}</strong></p>
-          <p>Restant : <strong>{missingShoppingItems.length}</strong></p>
-        </div>
-
-        <div className="expense-form">
-          <input
-            type="text"
-            placeholder="Ex : Crème solaire, brassards, lunettes..."
-            value={shoppingItem}
-            onChange={(e) => setShoppingItem(e.target.value)}
-          />
-
-          <button onClick={addShoppingItem}>Ajouter</button>
-        </div>
-
-        <div className="packing-list">
-          {shoppingList.length === 0 && <p>Aucun achat à prévoir pour le moment.</p>}
-
-          {shoppingList.map((item) => (
-            <div className="packing-row" key={item.id}>
-              <label className="check-item">
-                <input
-                  type="checkbox"
-                  checked={item.bought}
-                  onChange={() => toggleShoppingItem(item.id)}
-                />
-                <span className={item.bought ? 'checked' : ''}>{item.name}</span>
-              </label>
-
-              <button onClick={() => deleteShoppingItem(item.id)}>✕</button>
-            </div>
-          ))}
-        </div>
-      </section>
-    )
-  }
-
   if (sessionLoading || dataLoading) {
     return (
       <main className="app loading-screen">
@@ -1227,7 +1184,44 @@ function App() {
       )}
 
       {activeTab === 'shopping' && (
-        <ShoppingBeforeDeparture />
+        <section className="card">
+          <h2>🛒 Achats avant départ</h2>
+
+          <div className="budget-summary">
+            <p>Acheté : <strong>{boughtShoppingItems.length}</strong></p>
+            <p>Restant : <strong>{missingShoppingItems.length}</strong></p>
+          </div>
+
+          <div className="expense-form">
+            <input
+              type="text"
+              placeholder="Ex : Crème solaire, brassards, lunettes..."
+              value={shoppingItem}
+              onChange={(e) => setShoppingItem(e.target.value)}
+            />
+
+            <button onClick={addShoppingItem}>Ajouter</button>
+          </div>
+
+          <div className="packing-list">
+            {shoppingList.length === 0 && <p>Aucun achat à prévoir pour le moment.</p>}
+
+            {shoppingList.map((item) => (
+              <div className="packing-row" key={item.id}>
+                <label className="check-item">
+                  <input
+                    type="checkbox"
+                    checked={item.bought}
+                    onChange={() => toggleShoppingItem(item.id)}
+                  />
+                  <span className={item.bought ? 'checked' : ''}>{item.name}</span>
+                </label>
+
+                <button onClick={() => deleteShoppingItem(item.id)}>✕</button>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       {activeTab === 'planning' && (
