@@ -22,10 +22,52 @@ const emptyTripPayload = {
   places: [],
 }
 
+const translations = {
+  fr: {
+    appTagline: 'Organise tous tes voyages de famille au même endroit.',
+    preparingSpace: 'Préparation de ton espace voyage...',
+    home: 'Accueil', trips: 'Mes voyages', newTrip: 'Nouveau voyage', addNewTrip: 'Ajouter un nouveau voyage',
+    seeSavedTrips: 'Voir les voyages déjà enregistrés', createDestination: 'Créer une destination, des dates et une organisation',
+    account: 'Compte', connectedEmail: 'Email connecté', unavailable: 'Non disponible', signOut: 'Se déconnecter',
+    savedTrips: 'voyage(s) enregistré(s)', noTrip: 'Aucun voyage pour le moment.', addFirstTrip: 'Ajoute ton premier voyage pour commencer l’organisation.',
+    open: 'Ouvrir', delete: 'Supprimer', cancel: 'Annuler', createTrip: 'Créer le voyage', destination: 'Destination', icon: 'Icône', departureDate: 'Date de départ', returnDate: 'Date de retour',
+    destinationPlaceholder: 'Ex : Maspalomas 2026, Paris, Tenerife...', iconPlaceholder: 'Ex : 🌴 ✈️ 🏖️ 🏔️',
+    backTrips: 'Mes voyages', holidays: 'Vacances', datesToDefine: '📅 Dates à définir', departureOn: '📅 Départ le', returnOn: '📅 Retour le', fromTo: '📅 Du', to: 'au',
+    weatherTitle: 'Météo de la destination', loadingWeather: 'Chargement de la météo...', refreshWeather: 'Actualiser météo', feelsLike: 'ressenti', wind: 'Vent', humidity: 'Humidité', weatherNotFound: 'Destination introuvable pour la météo', weatherImpossible: 'Impossible de charger la météo',
+    assistant: 'Assistant voyage', nextActivity: 'Prochaine activité', seePlanning: 'Voir le planning', addActivity: 'Ajouter une activité', noActivityYet: 'Aucune activité prévue pour le moment.', noActivityPlanned: 'Aucune activité prévue.',
+    packing: 'Valises', preparation: 'Préparation', remaining: 'Restant', addPersonPlaceholder: 'Ajouter une personne : ex Eva', addPerson: 'Ajouter une personne', deletePerson: 'Supprimer', takeFor: 'À prendre pour', add: 'Ajouter', noObjectFor: 'Aucun objet pour',
+    shopping: 'Achats', shoppingTitle: 'Achats avant départ', bought: 'Acheté', shoppingPlaceholder: 'Ex : Crème solaire, brassards, lunettes...', noShopping: 'Aucun achat à prévoir pour le moment.',
+    planning: 'Planning', datePlaceholder: 'Date : ex 29 juin', activityPlaceholder: 'Activité : ex Restaurant',
+    budget: 'Budget', plannedBudget: 'Budget prévu', spent: 'Dépensé', expensePlaceholder: 'Ex : Restaurant', amount: 'Montant', noExpense: 'Aucune dépense enregistrée.',
+    documents: 'Documents', vault: 'Coffre-fort Voyage', documentNamePlaceholder: 'Nom du document : ex Passeport Jérémy', documentTypePlaceholder: 'Type : ex Passeport, Hôtel, Assurance...', fileSelected: '✅ Fichier sélectionné', chooseFile: '📎 Choisir une photo ou un PDF', uploading: 'Envoi en cours...', addDocument: 'Ajouter le document', noDocumentFor: 'Aucun document pour',
+    gallery: 'Galerie', galleryTitle: 'Galerie photo', tripMemories: 'Souvenirs du voyage', photos: 'photos', photo: 'photo', photoSelected: '✅ Photo sélectionnée', choosePhoto: '📷 Choisir une photo', captionPlaceholder: 'Petit souvenir : ex Plage, restaurant, aquarium...', addGallery: 'Ajouter à la galerie', noPhotoTrip: 'Aucune photo pour ce voyage.', addMemoriesHere: 'Ajoute tes souvenirs ici, ils resteront classés dans ce voyage.', enlarge: 'Agrandir', memoryPhoto: 'Photo souvenir', openNewTab: 'Ouvrir dans un nouvel onglet',
+    places: 'Lieux', favoritePlaces: 'Lieux favoris', placeNamePlaceholder: 'Nom : ex Hôtel, Aquarium...', placeTypePlaceholder: 'Type : Hôtel, Restaurant, Plage...', addressPlaceholder: 'Adresse ou lien Google Maps', addPlace: 'Ajouter le lieu', noPlace: 'Aucun lieu enregistré.', openMaps: 'Ouvrir Maps',
+    system: 'Système', openTrip: 'Voyage ouvert', status: 'Statut', connected: 'Connecté', application: 'Application', appName: 'Nom de l’application', version: 'Version', installMode: 'Mode d’installation', iphoneCompatible: 'Compatible iPhone / PWA', save: 'Sauvegarde', cloudSave: 'Sauvegarde cloud', enabledSupabase: 'Activée avec Supabase', syncedData: 'Données synchronisées', syncedDataText: 'Voyage, budget, valises, achats, lieux, documents et photos', data: 'Données', resetTrip: 'Réinitialiser ce voyage', session: 'Session', language: 'Langue', chooseLanguage: 'Choisis la langue de l’application', french: 'Français', english: 'English', spanish: 'Español', returnToTrips: 'Retour à mes voyages',
+    today: 'Aujourd’hui', tomorrow: 'Demain', daysIn: 'Dans', days: 'jours', pastActivity: 'Activité déjà passée', checkDate: 'Date à vérifier dans le planning.',
+    alertAddTripName: 'Ajoute au moins le nom du voyage.', alertCreateTripImpossible: 'Impossible de créer le voyage.',
+    confirmDeleteTrip: 'Supprimer le voyage', confirmDeleteDocument: 'Supprimer', confirmDeletePhoto: 'Supprimer cette photo ?', resetConfirm: 'Réinitialiser ce voyage ? Les valises, achats, planning, budget, lieux, documents et photos de ce voyage seront effacés.',
+    uploadFileImpossible: "Impossible d'envoyer le fichier.", saveDocumentImpossible: "Impossible d'enregistrer le document.", openDocumentImpossible: "Impossible d'ouvrir le document.", openPhotoImpossible: "Impossible d'ouvrir la photo.", notImage: 'Le fichier sélectionné n’est pas une image.', compressionImpossible: 'Impossible de compresser la photo.', jpgTry: 'Format photo non compatible. Essaie avec une photo JPG.', compressionUploadImpossible: 'Impossible de compresser ou d’envoyer la photo.', noPhotoSelected: 'Aucune photo sélectionnée.',
+    adviceDepartureIn: '✈️ Départ dans', adviceDepartureTomorrow: '✈️ Départ demain ! Dernière vérification des valises.', adviceDepartureToday: '✈️ C’est le jour du départ ! Vérifie documents, valises et trajet.', adviceTripStarted: '🌴 Le voyage a déjà commencé. Profite bien !', adviceShoppingLeft: '🛒 Il reste', adviceShoppingLeftEnd: 'achat(s) à faire avant le départ.', adviceShoppingDone: '🛒 Tous les achats avant départ sont faits.', adviceDocs: '📁 Coffre-fort :', adviceDocsEnd: 'document(s) enregistré(s).', adviceDocsEmpty: '📁 Pense à ajouter les documents importants dans le coffre-fort.', advicePhotos: '📸 Galerie :', advicePhotosEnd: 'photo(s) enregistrée(s) pour ce voyage.', advicePhotosEmpty: '📸 Tu pourras ajouter les photos souvenirs dans la galerie du voyage.', adviceGoodWeather: '☀️ Temps idéal pour prévoir une activité extérieure ou une sortie plage.', adviceBadWeather: '🌧️ Météo moins favorable : une activité intérieure serait plus confortable.', adviceOkWeather: '🌤️ Météo correcte : garde une activité flexible selon l’énergie de la famille.', advicePackingLeft: '🧳 Il reste', advicePackingLeftEnd: 'objet(s) non cochés dans les valises.', advicePackingReady: '✅ Toutes les valises sont prêtes. Nickel pour partir tranquille.', adviceBudgetOver: '⚠️ Le budget est dépassé de', adviceBudgetWatch: '💰 Il reste', adviceBudgetWatchEnd: '€. Budget à surveiller.', adviceBudgetLeft: '💰 Budget restant :', adviceBudgetLeftEnd: '€. Tu as encore une bonne marge.', adviceNextActivity: '📅 Prochaine activité prévue :', adviceNoPlanning: '📅 Aucun planning prévu pour le moment. Tu peux ajouter une activité simple.'
+  },
+  en: {
+    appTagline: 'Organize all your family trips in one place.', preparingSpace: 'Preparing your travel space...', home: 'Home', trips: 'My trips', newTrip: 'New trip', addNewTrip: 'Add a new trip', seeSavedTrips: 'View saved trips', createDestination: 'Create a destination, dates and organization', account: 'Account', connectedEmail: 'Connected email', unavailable: 'Unavailable', signOut: 'Sign out', savedTrips: 'saved trip(s)', noTrip: 'No trip yet.', addFirstTrip: 'Add your first trip to start organizing.', open: 'Open', delete: 'Delete', cancel: 'Cancel', createTrip: 'Create trip', destination: 'Destination', icon: 'Icon', departureDate: 'Departure date', returnDate: 'Return date', destinationPlaceholder: 'E.g. Maspalomas 2026, Paris, Tenerife...', iconPlaceholder: 'E.g. 🌴 ✈️ 🏖️ 🏔️', backTrips: 'My trips', holidays: 'Holiday', datesToDefine: '📅 Dates to define', departureOn: '📅 Departure on', returnOn: '📅 Return on', fromTo: '📅 From', to: 'to', weatherTitle: 'Destination weather', loadingWeather: 'Loading weather...', refreshWeather: 'Refresh weather', feelsLike: 'feels like', wind: 'Wind', humidity: 'Humidity', weatherNotFound: 'Destination not found for weather', weatherImpossible: 'Unable to load weather', assistant: 'Travel assistant', nextActivity: 'Next activity', seePlanning: 'View planning', addActivity: 'Add activity', noActivityYet: 'No activity planned yet.', noActivityPlanned: 'No activity planned.', packing: 'Packing', preparation: 'Preparation', remaining: 'Remaining', addPersonPlaceholder: 'Add a person: e.g. Eva', addPerson: 'Add person', deletePerson: 'Delete', takeFor: 'To pack for', add: 'Add', noObjectFor: 'No item for', shopping: 'Shopping', shoppingTitle: 'Pre-departure shopping', bought: 'Bought', shoppingPlaceholder: 'E.g. Sunscreen, armbands, sunglasses...', noShopping: 'No shopping planned yet.', planning: 'Planning', datePlaceholder: 'Date: e.g. June 29', activityPlaceholder: 'Activity: e.g. Restaurant', budget: 'Budget', plannedBudget: 'Planned budget', spent: 'Spent', expensePlaceholder: 'E.g. Restaurant', amount: 'Amount', noExpense: 'No expense recorded.', documents: 'Documents', vault: 'Travel vault', documentNamePlaceholder: 'Document name: e.g. Jeremy passport', documentTypePlaceholder: 'Type: e.g. Passport, Hotel, Insurance...', fileSelected: '✅ File selected', chooseFile: '📎 Choose a photo or PDF', uploading: 'Uploading...', addDocument: 'Add document', noDocumentFor: 'No document for', gallery: 'Gallery', galleryTitle: 'Photo gallery', tripMemories: 'Trip memories', photos: 'photos', photo: 'photo', photoSelected: '✅ Photo selected', choosePhoto: '📷 Choose a photo', captionPlaceholder: 'Small memory: e.g. Beach, restaurant, aquarium...', addGallery: 'Add to gallery', noPhotoTrip: 'No photo for this trip.', addMemoriesHere: 'Add your memories here; they will stay organized in this trip.', enlarge: 'Enlarge', memoryPhoto: 'Travel memory', openNewTab: 'Open in a new tab', places: 'Places', favoritePlaces: 'Favorite places', placeNamePlaceholder: 'Name: e.g. Hotel, Aquarium...', placeTypePlaceholder: 'Type: Hotel, Restaurant, Beach...', addressPlaceholder: 'Address or Google Maps link', addPlace: 'Add place', noPlace: 'No saved place.', openMaps: 'Open Maps', system: 'Settings', openTrip: 'Open trip', status: 'Status', connected: 'Connected', application: 'Application', appName: 'Application name', version: 'Version', installMode: 'Installation mode', iphoneCompatible: 'iPhone / PWA compatible', save: 'Backup', cloudSave: 'Cloud backup', enabledSupabase: 'Enabled with Supabase', syncedData: 'Synced data', syncedDataText: 'Trip, budget, packing, shopping, places, documents and photos', data: 'Data', resetTrip: 'Reset this trip', session: 'Session', language: 'Language', chooseLanguage: 'Choose the app language', french: 'Français', english: 'English', spanish: 'Español', returnToTrips: 'Back to my trips', today: 'Today', tomorrow: 'Tomorrow', daysIn: 'In', days: 'days', pastActivity: 'Activity already passed', checkDate: 'Date to check in planning.', alertAddTripName: 'Add at least the trip name.', alertCreateTripImpossible: 'Unable to create trip.', confirmDeleteTrip: 'Delete trip', confirmDeleteDocument: 'Delete', confirmDeletePhoto: 'Delete this photo?', resetConfirm: 'Reset this trip? Packing lists, shopping, planning, budget, places, documents and photos for this trip will be deleted.', uploadFileImpossible: 'Unable to upload the file.', saveDocumentImpossible: 'Unable to save the document.', openDocumentImpossible: 'Unable to open the document.', openPhotoImpossible: 'Unable to open the photo.', notImage: 'The selected file is not an image.', compressionImpossible: 'Unable to compress the photo.', jpgTry: 'Photo format not compatible. Try with a JPG photo.', compressionUploadImpossible: 'Unable to compress or upload the photo.', noPhotoSelected: 'No photo selected.', adviceDepartureIn: '✈️ Departure in', adviceDepartureTomorrow: '✈️ Departure tomorrow! Last check for packing.', adviceDepartureToday: '✈️ Today is departure day! Check documents, bags and route.', adviceTripStarted: '🌴 The trip has already started. Enjoy!', adviceShoppingLeft: '🛒', adviceShoppingLeftEnd: 'shopping item(s) left before departure.', adviceShoppingDone: '🛒 All pre-departure shopping is done.', adviceDocs: '📁 Vault:', adviceDocsEnd: 'document(s) saved.', adviceDocsEmpty: '📁 Remember to add important documents to the vault.', advicePhotos: '📸 Gallery:', advicePhotosEnd: 'photo(s) saved for this trip.', advicePhotosEmpty: '📸 You can add travel memories to the trip gallery.', adviceGoodWeather: '☀️ Great weather for an outdoor activity or beach outing.', adviceBadWeather: '🌧️ Less favorable weather: an indoor activity would be more comfortable.', adviceOkWeather: '🌤️ Decent weather: keep the activity flexible depending on the family’s energy.', advicePackingLeft: '🧳', advicePackingLeftEnd: 'unchecked item(s) left in the packing lists.', advicePackingReady: '✅ All bags are ready. Perfect for a stress-free departure.', adviceBudgetOver: '⚠️ Budget exceeded by', adviceBudgetWatch: '💰', adviceBudgetWatchEnd: '€ left. Keep an eye on the budget.', adviceBudgetLeft: '💰 Remaining budget:', adviceBudgetLeftEnd: '€. You still have a good margin.', adviceNextActivity: '📅 Next planned activity:', adviceNoPlanning: '📅 No planning yet. You can add a simple activity.'
+  },
+  es: {
+    appTagline: 'Organiza todos tus viajes familiares en un solo lugar.', preparingSpace: 'Preparando tu espacio de viaje...', home: 'Inicio', trips: 'Mis viajes', newTrip: 'Nuevo viaje', addNewTrip: 'Añadir un nuevo viaje', seeSavedTrips: 'Ver viajes guardados', createDestination: 'Crear un destino, fechas y organización', account: 'Cuenta', connectedEmail: 'Correo conectado', unavailable: 'No disponible', signOut: 'Cerrar sesión', savedTrips: 'viaje(s) guardado(s)', noTrip: 'No hay viajes por ahora.', addFirstTrip: 'Añade tu primer viaje para empezar la organización.', open: 'Abrir', delete: 'Eliminar', cancel: 'Cancelar', createTrip: 'Crear viaje', destination: 'Destino', icon: 'Icono', departureDate: 'Fecha de salida', returnDate: 'Fecha de regreso', destinationPlaceholder: 'Ej.: Maspalomas 2026, París, Tenerife...', iconPlaceholder: 'Ej.: 🌴 ✈️ 🏖️ 🏔️', backTrips: 'Mis viajes', holidays: 'Vacaciones', datesToDefine: '📅 Fechas por definir', departureOn: '📅 Salida el', returnOn: '📅 Regreso el', fromTo: '📅 Del', to: 'al', weatherTitle: 'Tiempo del destino', loadingWeather: 'Cargando el tiempo...', refreshWeather: 'Actualizar tiempo', feelsLike: 'sensación', wind: 'Viento', humidity: 'Humedad', weatherNotFound: 'Destino no encontrado para el tiempo', weatherImpossible: 'No se puede cargar el tiempo', assistant: 'Asistente de viaje', nextActivity: 'Próxima actividad', seePlanning: 'Ver planificación', addActivity: 'Añadir actividad', noActivityYet: 'No hay actividad prevista por ahora.', noActivityPlanned: 'No hay actividad prevista.', packing: 'Maletas', preparation: 'Preparación', remaining: 'Restante', addPersonPlaceholder: 'Añadir una persona: ej. Eva', addPerson: 'Añadir persona', deletePerson: 'Eliminar', takeFor: 'Para llevar para', add: 'Añadir', noObjectFor: 'Ningún objeto para', shopping: 'Compras', shoppingTitle: 'Compras antes de salir', bought: 'Comprado', shoppingPlaceholder: 'Ej.: Protector solar, manguitos, gafas...', noShopping: 'No hay compras previstas por ahora.', planning: 'Planificación', datePlaceholder: 'Fecha: ej. 29 de junio', activityPlaceholder: 'Actividad: ej. Restaurante', budget: 'Presupuesto', plannedBudget: 'Presupuesto previsto', spent: 'Gastado', expensePlaceholder: 'Ej.: Restaurante', amount: 'Importe', noExpense: 'No hay gastos registrados.', documents: 'Documentos', vault: 'Caja fuerte de viaje', documentNamePlaceholder: 'Nombre del documento: ej. Pasaporte Jeremy', documentTypePlaceholder: 'Tipo: ej. Pasaporte, Hotel, Seguro...', fileSelected: '✅ Archivo seleccionado', chooseFile: '📎 Elegir una foto o PDF', uploading: 'Enviando...', addDocument: 'Añadir documento', noDocumentFor: 'Ningún documento para', gallery: 'Galería', galleryTitle: 'Galería de fotos', tripMemories: 'Recuerdos del viaje', photos: 'fotos', photo: 'foto', photoSelected: '✅ Foto seleccionada', choosePhoto: '📷 Elegir una foto', captionPlaceholder: 'Pequeño recuerdo: ej. Playa, restaurante, acuario...', addGallery: 'Añadir a la galería', noPhotoTrip: 'No hay fotos para este viaje.', addMemoriesHere: 'Añade tus recuerdos aquí; quedarán guardados en este viaje.', enlarge: 'Ampliar', memoryPhoto: 'Foto recuerdo', openNewTab: 'Abrir en una nueva pestaña', places: 'Lugares', favoritePlaces: 'Lugares favoritos', placeNamePlaceholder: 'Nombre: ej. Hotel, Acuario...', placeTypePlaceholder: 'Tipo: Hotel, Restaurante, Playa...', addressPlaceholder: 'Dirección o enlace de Google Maps', addPlace: 'Añadir lugar', noPlace: 'Ningún lugar guardado.', openMaps: 'Abrir Maps', system: 'Sistema', openTrip: 'Viaje abierto', status: 'Estado', connected: 'Conectado', application: 'Aplicación', appName: 'Nombre de la aplicación', version: 'Versión', installMode: 'Modo de instalación', iphoneCompatible: 'Compatible iPhone / PWA', save: 'Copia de seguridad', cloudSave: 'Copia en la nube', enabledSupabase: 'Activada con Supabase', syncedData: 'Datos sincronizados', syncedDataText: 'Viaje, presupuesto, maletas, compras, lugares, documentos y fotos', data: 'Datos', resetTrip: 'Reiniciar este viaje', session: 'Sesión', language: 'Idioma', chooseLanguage: 'Elige el idioma de la aplicación', french: 'Français', english: 'English', spanish: 'Español', returnToTrips: 'Volver a mis viajes', today: 'Hoy', tomorrow: 'Mañana', daysIn: 'En', days: 'días', pastActivity: 'Actividad ya pasada', checkDate: 'Fecha a revisar en la planificación.', alertAddTripName: 'Añade al menos el nombre del viaje.', alertCreateTripImpossible: 'No se puede crear el viaje.', confirmDeleteTrip: 'Eliminar el viaje', confirmDeleteDocument: 'Eliminar', confirmDeletePhoto: '¿Eliminar esta foto?', resetConfirm: '¿Reiniciar este viaje? Se borrarán maletas, compras, planificación, presupuesto, lugares, documentos y fotos de este viaje.', uploadFileImpossible: 'No se puede enviar el archivo.', saveDocumentImpossible: 'No se puede guardar el documento.', openDocumentImpossible: 'No se puede abrir el documento.', openPhotoImpossible: 'No se puede abrir la foto.', notImage: 'El archivo seleccionado no es una imagen.', compressionImpossible: 'No se puede comprimir la foto.', jpgTry: 'Formato de foto no compatible. Prueba con una foto JPG.', compressionUploadImpossible: 'No se puede comprimir o enviar la foto.', noPhotoSelected: 'No hay foto seleccionada.', adviceDepartureIn: '✈️ Salida en', adviceDepartureTomorrow: '✈️ ¡Salida mañana! Última revisión de maletas.', adviceDepartureToday: '✈️ ¡Hoy es el día de salida! Revisa documentos, maletas y trayecto.', adviceTripStarted: '🌴 El viaje ya ha comenzado. ¡Disfruta!', adviceShoppingLeft: '🛒 Quedan', adviceShoppingLeftEnd: 'compra(s) antes de salir.', adviceShoppingDone: '🛒 Todas las compras antes de salir están hechas.', adviceDocs: '📁 Caja fuerte:', adviceDocsEnd: 'documento(s) guardado(s).', adviceDocsEmpty: '📁 Piensa en añadir los documentos importantes a la caja fuerte.', advicePhotos: '📸 Galería:', advicePhotosEnd: 'foto(s) guardada(s) para este viaje.', advicePhotosEmpty: '📸 Podrás añadir recuerdos en la galería del viaje.', adviceGoodWeather: '☀️ Tiempo ideal para una actividad exterior o playa.', adviceBadWeather: '🌧️ Tiempo menos favorable: una actividad interior sería más cómoda.', adviceOkWeather: '🌤️ Tiempo correcto: mantén una actividad flexible según la energía de la familia.', advicePackingLeft: '🧳 Quedan', advicePackingLeftEnd: 'objeto(s) sin marcar en las maletas.', advicePackingReady: '✅ Todas las maletas están listas. Perfecto para salir tranquilo.', adviceBudgetOver: '⚠️ Presupuesto superado por', adviceBudgetWatch: '💰 Quedan', adviceBudgetWatchEnd: '€. Hay que vigilar el presupuesto.', adviceBudgetLeft: '💰 Presupuesto restante:', adviceBudgetLeftEnd: '€. Todavía tienes buen margen.', adviceNextActivity: '📅 Próxima actividad prevista:', adviceNoPlanning: '📅 No hay planificación por ahora. Puedes añadir una actividad simple.'
+  },
+}
+
+function getSavedLanguage() {
+  if (typeof window === 'undefined') return 'fr'
+  return localStorage.getItem('travel-family-language') || 'fr'
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState('home')
   const [mainView, setMainView] = useState('dashboard')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [language, setLanguage] = useState(getSavedLanguage)
+  const t = translations[language] || translations.fr
 
   const [session, setSession] = useState(null)
   const [sessionLoading, setSessionLoading] = useState(true)
@@ -108,6 +150,10 @@ function App() {
       listener.subscription.unsubscribe()
     }
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('travel-family-language', language)
+  }, [language])
 
   useEffect(() => {
     if (session) loadTrips()
@@ -277,7 +323,7 @@ function App() {
 
   function formatDate(dateValue) {
     if (!dateValue) return ''
-    return new Date(dateValue).toLocaleDateString('fr-BE')
+    return new Date(dateValue).toLocaleDateString(language === 'en' ? 'en-GB' : language === 'es' ? 'es-ES' : 'fr-BE')
   }
 
   function parseActivityDate(dateText) {
@@ -335,27 +381,27 @@ function App() {
     const tripStart = trip ? trip.start_date : startDate
     const tripEnd = trip ? trip.end_date : endDate
 
-    if (tripStart && tripEnd) return `📅 Du ${formatDate(tripStart)} au ${formatDate(tripEnd)}`
-    if (tripStart) return `📅 Départ le ${formatDate(tripStart)}`
-    if (tripEnd) return `📅 Retour le ${formatDate(tripEnd)}`
-    return '📅 Dates à définir'
+    if (tripStart && tripEnd) return `${t.fromTo} ${formatDate(tripStart)} ${t.to} ${formatDate(tripEnd)}`
+    if (tripStart) return `${t.departureOn} ${formatDate(tripStart)}`
+    if (tripEnd) return `${t.returnOn} ${formatDate(tripEnd)}`
+    return t.datesToDefine
   }
 
   function getActivityCountdownText(activity) {
     if (!activity) return ''
 
     const activityTime = parseActivityDate(activity.date)
-    if (activityTime === Number.MAX_SAFE_INTEGER) return 'Date à vérifier dans le planning.'
+    if (activityTime === Number.MAX_SAFE_INTEGER) return t.checkDate
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
     const days = Math.ceil((activityTime - today.getTime()) / (1000 * 60 * 60 * 24))
 
-    if (days > 1) return `Dans ${days} jours`
-    if (days === 1) return 'Demain'
-    if (days === 0) return 'Aujourd’hui'
-    return 'Activité déjà passée'
+    if (days > 1) return `${t.daysIn} ${days} ${t.days}`
+    if (days === 1) return t.tomorrow
+    if (days === 0) return t.today
+    return t.pastActivity
   }
 
   function getAssistantAdvice() {
@@ -363,56 +409,56 @@ function App() {
     const daysUntilStart = getDaysUntilStart()
 
     if (daysUntilStart !== null) {
-      if (daysUntilStart > 1) advice.push(`✈️ Départ dans ${daysUntilStart} jours.`)
-      else if (daysUntilStart === 1) advice.push('✈️ Départ demain ! Dernière vérification des valises.')
-      else if (daysUntilStart === 0) advice.push('✈️ C’est le jour du départ ! Vérifie documents, valises et trajet.')
-      else advice.push('🌴 Le voyage a déjà commencé. Profite bien !')
+      if (daysUntilStart > 1) advice.push(`${t.adviceDepartureIn} ${daysUntilStart} ${t.days}.`)
+      else if (daysUntilStart === 1) advice.push(t.adviceDepartureTomorrow)
+      else if (daysUntilStart === 0) advice.push(t.adviceDepartureToday)
+      else advice.push(t.adviceTripStarted)
     }
 
     if (missingShoppingItems.length > 0) {
-      advice.push(`🛒 Il reste ${missingShoppingItems.length} achat(s) à faire avant le départ.`)
+      advice.push(`${t.adviceShoppingLeft} ${missingShoppingItems.length} ${t.adviceShoppingLeftEnd}`)
     } else if (shoppingList.length > 0) {
-      advice.push('🛒 Tous les achats avant départ sont faits.')
+      advice.push(t.adviceShoppingDone)
     }
 
     if (documents.length > 0) {
-      advice.push(`📁 Coffre-fort : ${documents.length} document(s) enregistré(s).`)
+      advice.push(`${t.adviceDocs} ${documents.length} ${t.adviceDocsEnd}`)
     } else {
-      advice.push('📁 Pense à ajouter les documents importants dans le coffre-fort.')
+      advice.push(t.adviceDocsEmpty)
     }
 
     if (photos.length > 0) {
-      advice.push(`📸 Galerie : ${photos.length} photo(s) enregistrée(s) pour ce voyage.`)
+      advice.push(`${t.advicePhotos} ${photos.length} ${t.advicePhotosEnd}`)
     } else {
-      advice.push('📸 Tu pourras ajouter les photos souvenirs dans la galerie du voyage.')
+      advice.push(t.advicePhotosEmpty)
     }
 
     if (weather) {
       if (weather.temperature >= 27 && weather.wind <= 25) {
-        advice.push('☀️ Temps idéal pour prévoir une activité extérieure ou une sortie plage.')
+        advice.push(t.adviceGoodWeather)
       } else if (weather.temperature <= 20 || weather.code >= 51) {
-        advice.push('🌧️ Météo moins favorable : une activité intérieure serait plus confortable.')
+        advice.push(t.adviceBadWeather)
       } else {
-        advice.push('🌤️ Météo correcte : garde une activité flexible selon l’énergie de la famille.')
+        advice.push(t.adviceOkWeather)
       }
     }
 
     if (uncheckedPackingItems.length > 0) {
-      advice.push(`🧳 Il reste ${uncheckedPackingItems.length} objet(s) non cochés dans les valises.`)
+      advice.push(`${t.advicePackingLeft} ${uncheckedPackingItems.length} ${t.advicePackingLeftEnd}`)
     } else if (allPackingItems.length > 0) {
-      advice.push('✅ Toutes les valises sont prêtes. Nickel pour partir tranquille.')
+      advice.push(t.advicePackingReady)
     }
 
     if (budget > 0) {
-      if (remaining < 0) advice.push(`⚠️ Le budget est dépassé de ${Math.abs(remaining)} €.`)
-      else if (remaining <= budget * 0.2) advice.push(`💰 Il reste ${remaining} €. Budget à surveiller.`)
-      else advice.push(`💰 Budget restant : ${remaining} €. Tu as encore une bonne marge.`)
+      if (remaining < 0) advice.push(`${t.adviceBudgetOver} ${Math.abs(remaining)} €.`)
+      else if (remaining <= budget * 0.2) advice.push(`${t.adviceBudgetWatch} ${remaining} ${t.adviceBudgetWatchEnd}`)
+      else advice.push(`${t.adviceBudgetLeft} ${remaining} ${t.adviceBudgetLeftEnd}`)
     }
 
     if (nextActivity) {
-      advice.push(`📅 Prochaine activité prévue : ${nextActivity.name} (${nextActivity.date}).`)
+      advice.push(`${t.adviceNextActivity} ${nextActivity.name} (${nextActivity.date}).`)
     } else {
-      advice.push('📅 Aucun planning prévu pour le moment. Tu peux ajouter une activité simple.')
+      advice.push(t.adviceNoPlanning)
     }
 
     return advice
@@ -441,7 +487,7 @@ function App() {
   async function createTrip() {
     const cleanName = newTripName.trim()
     if (cleanName === '') {
-      alert('Ajoute au moins le nom du voyage.')
+      alert(t.alertAddTripName)
       return
     }
 
@@ -463,7 +509,7 @@ function App() {
 
     if (error) {
       console.error(error)
-      alert("Impossible de créer le voyage.")
+      alert(t.alertCreateTripImpossible)
       setDataLoading(false)
       return
     }
@@ -530,7 +576,7 @@ function App() {
   }
 
   async function deleteTrip(trip) {
-    const confirmDelete = confirm(`Supprimer le voyage "${trip.trip_name}" ?`)
+    const confirmDelete = confirm(`${t.confirmDeleteTrip} "${trip.trip_name}" ?`)
     if (!confirmDelete) return
 
     const { data: docs } = await supabase
@@ -653,7 +699,7 @@ function App() {
   }
 
   async function deleteDocument(document) {
-    const confirmDelete = confirm(`Supprimer ${document.document_name} ?`)
+    const confirmDelete = confirm(`${t.confirmDeleteDocument} ${document.document_name} ?`)
     if (!confirmDelete) return
 
     await supabase.storage.from('travel-documents').remove([document.file_url])
@@ -840,7 +886,7 @@ function App() {
   }
 
   async function deletePhoto(photo) {
-    const confirmDelete = confirm('Supprimer cette photo ?')
+    const confirmDelete = confirm(t.confirmDeletePhoto)
     if (!confirmDelete) return
 
     await supabase.storage.from('travel-photos').remove([photo.photo_url])
@@ -851,7 +897,7 @@ function App() {
 
   async function resetCurrentTripData() {
     const confirmReset = confirm(
-      'Réinitialiser ce voyage ? Les valises, achats, planning, budget, lieux, documents et photos de ce voyage seront effacés.'
+      t.resetConfirm
     )
 
     if (!confirmReset || !session || !selectedTripId) return
@@ -933,14 +979,14 @@ function App() {
       setWeatherError('')
 
       const geoResponse = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=fr&format=json`
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=${language}&format=json`
       )
 
       const geoData = await geoResponse.json()
 
       if (!geoData.results || geoData.results.length === 0) {
         setWeather(null)
-        setWeatherError('Destination introuvable pour la météo')
+        setWeatherError(t.weatherNotFound)
         return
       }
 
@@ -962,7 +1008,7 @@ function App() {
         code: weatherData.current.weather_code,
       })
     } catch {
-      setWeatherError('Impossible de charger la météo')
+      setWeatherError(t.weatherImpossible)
     } finally {
       setWeatherLoading(false)
     }
@@ -1110,7 +1156,7 @@ function App() {
       <main className="app loading-screen">
         <section className="hero-card">
           <h1>✈️ Travel Family</h1>
-          <p>Préparation de ton espace voyage...</p>
+          <p>{t.preparingSpace}</p>
         </section>
       </main>
     )
@@ -1123,32 +1169,32 @@ function App() {
       <main className="app">
         <section className="hero-card">
           <h1>✈️ Travel Family</h1>
-          <p>Organise tous tes voyages de famille au même endroit.</p>
+          <p>{t.appTagline}</p>
         </section>
 
         <section className="card dashboard-card">
-          <h2>🌴 Accueil</h2>
+          <h2>🌴 {t.home}</h2>
 
           <div className="dashboard-actions">
             <button onClick={() => setMainView('trips')}>
               <span>🌍</span>
-              <strong>Mes voyages</strong>
-              <small>Voir les voyages déjà enregistrés</small>
+              <strong>{t.trips}</strong>
+              <small>{t.seeSavedTrips}</small>
             </button>
 
             <button onClick={() => setMainView('newTrip')}>
               <span>➕</span>
-              <strong>Ajouter un nouveau voyage</strong>
-              <small>Créer une destination, des dates et une organisation</small>
+              <strong>{t.addNewTrip}</strong>
+              <small>{t.createDestination}</small>
             </button>
           </div>
         </section>
 
         <section className="card system-card">
-          <h2>⚙️ Compte</h2>
+          <h2>⚙️ {t.account}</h2>
           <div className="system-row">
-            <strong>Email connecté</strong>
-            <span>{session?.user?.email || 'Non disponible'}</span>
+            <strong>{t.connectedEmail}</strong>
+            <span>{session?.user?.email || t.unavailable}</span>
           </div>
           <button className="delete-person-button" onClick={signOut}>
             Se déconnecter
@@ -1165,22 +1211,22 @@ function App() {
           <button className="menu-button" onClick={() => setMainView('dashboard')}>
             ←
           </button>
-          <h1>🌍 Mes voyages</h1>
-          <p>{trips.length} voyage(s) enregistré(s)</p>
+          <h1>🌍 {t.trips}</h1>
+          <p>{trips.length} {t.savedTrips}</p>
         </section>
 
         <section className="card">
           <div className="document-actions">
             <button className="open-document" onClick={() => setMainView('newTrip')}>
-              ➕ Ajouter un nouveau voyage
+              ➕ {t.addNewTrip}
             </button>
           </div>
 
           <div className="trip-list">
             {trips.length === 0 && (
               <div className="empty-state">
-                <strong>Aucun voyage pour le moment.</strong>
-                <p>Ajoute ton premier voyage pour commencer l’organisation.</p>
+                <strong>{t.noTrip}</strong>
+                <p>{t.addFirstTrip}</p>
               </div>
             )}
 
@@ -1199,7 +1245,7 @@ function App() {
                     Ouvrir
                   </button>
                   <button className="delete-document" onClick={() => deleteTrip(trip)}>
-                    Supprimer
+                    {t.delete}
                   </button>
                 </div>
               </div>
@@ -1217,35 +1263,35 @@ function App() {
           <button className="menu-button" onClick={() => setMainView('dashboard')}>
             ←
           </button>
-          <h1>➕ Nouveau voyage</h1>
-          <p>Crée ta destination et prépare l’organisation.</p>
+          <h1>➕ {t.newTrip}</h1>
+          <p>{t.createDestination}</p>
         </section>
 
         <section className="card">
-          <h2>✈️ Ajouter un nouveau voyage</h2>
+          <h2>✈️ {t.addNewTrip}</h2>
 
           <label className="field">
-            Destination
+            {t.destination}
             <input
               type="text"
-              placeholder="Ex : Maspalomas 2026, Paris, Tenerife..."
+              placeholder={t.destinationPlaceholder}
               value={newTripName}
               onChange={(e) => setNewTripName(e.target.value)}
             />
           </label>
 
           <label className="field">
-            Icône
+            {t.icon}
             <input
               type="text"
-              placeholder="Ex : 🌴 ✈️ 🏖️ 🏔️"
+              placeholder={t.iconPlaceholder}
               value={newTripIcon}
               onChange={(e) => setNewTripIcon(e.target.value)}
             />
           </label>
 
           <label className="field">
-            Date de départ
+            {t.departureDate}
             <input
               type="date"
               value={newTripStartDate}
@@ -1254,7 +1300,7 @@ function App() {
           </label>
 
           <label className="field">
-            Date de retour
+            {t.returnDate}
             <input
               type="date"
               value={newTripEndDate}
@@ -1264,10 +1310,10 @@ function App() {
 
           <div className="document-actions">
             <button className="open-document" onClick={createTrip}>
-              Créer le voyage
+              {t.createTrip}
             </button>
             <button className="delete-document" onClick={() => setMainView('dashboard')}>
-              Annuler
+              {t.cancel}
             </button>
           </div>
         </section>
@@ -1283,20 +1329,20 @@ function App() {
         </button>
 
         <button className="back-trip-button" onClick={closeTrip}>
-          ← Mes voyages
+          ← {t.backTrips}
         </button>
 
         <h1>{tripIcon} Travel Family</h1>
-        <p>Vacances {tripName}</p>
+        <p>{t.holidays} {tripName}</p>
         {getTripDatesText() && <p>{getTripDatesText()}</p>}
       </section>
 
       {activeTab === 'home' && (
         <>
           <section className="card weather-card">
-            <h2>🌤️ Météo de la destination</h2>
+            <h2>🌤️ {t.weatherTitle}</h2>
 
-            {weatherLoading && <p>Chargement de la météo...</p>}
+            {weatherLoading && <p>{t.loadingWeather}</p>}
             {weatherError && <p>{weatherError}</p>}
 
             {weather && (
@@ -1305,22 +1351,22 @@ function App() {
                   <span className="weather-icon">{getWeatherIcon(weather.code)}</span>
                   <div>
                     <strong>{weather.city}, {weather.country}</strong>
-                    <p>{weather.temperature}°C — ressenti {weather.feelsLike}°C</p>
+                    <p>{weather.temperature}°C — {t.feelsLike} {weather.feelsLike}°C</p>
                   </div>
                 </div>
 
                 <div className="weather-details">
-                  <p>💨 Vent : <strong>{weather.wind} km/h</strong></p>
-                  <p>💧 Humidité : <strong>{weather.humidity}%</strong></p>
+                  <p>💨 {t.wind} : <strong>{weather.wind} km/h</strong></p>
+                  <p>💧 {t.humidity} : <strong>{weather.humidity}%</strong></p>
                 </div>
               </div>
             )}
 
-            <button onClick={fetchWeather}>Actualiser météo</button>
+            <button onClick={fetchWeather}>{t.refreshWeather}</button>
           </section>
 
           <section className="card next-activity-card">
-            <h2>🤖 Assistant voyage</h2>
+            <h2>🤖 {t.assistant}</h2>
 
             <div className="next-activity-box">
               {getAssistantAdvice().slice(0, 6).map((advice, index) => (
@@ -1330,7 +1376,7 @@ function App() {
           </section>
 
           <section className="card next-activity-card">
-            <h2>📅 Prochaine activité</h2>
+            <h2>📅 {t.nextActivity}</h2>
 
             {nextActivity ? (
               <div className="next-activity-box">
@@ -1338,14 +1384,14 @@ function App() {
                 <p>📅 {nextActivity.date}</p>
                 <p>⏳ {getActivityCountdownText(nextActivity)}</p>
                 <button onClick={() => setActiveTab('planning')}>
-                  Voir le planning
+                  {t.seePlanning}
                 </button>
               </div>
             ) : (
               <div className="next-activity-box">
-                <p>Aucune activité prévue pour le moment.</p>
+                <p>{t.noActivityYet}</p>
                 <button onClick={() => setActiveTab('planning')}>
-                  Ajouter une activité
+                  {t.addActivity}
                 </button>
               </div>
             )}
@@ -1355,21 +1401,21 @@ function App() {
 
       {activeTab === 'packing' && (
         <section className="card">
-          <h2>🧳 Valises</h2>
+          <h2>🧳 {t.packing}</h2>
 
           <div className="budget-summary">
-            <p>Préparation : <strong>{packingProgress}%</strong></p>
-            <p>Restant : <strong>{uncheckedPackingItems.length}</strong></p>
+            <p>{t.preparation} : <strong>{packingProgress}%</strong></p>
+            <p>{t.remaining} : <strong>{uncheckedPackingItems.length}</strong></p>
           </div>
 
           <div className="expense-form">
             <input
               type="text"
-              placeholder="Ajouter une personne : ex Eva"
+              placeholder={t.addPersonPlaceholder}
               value={newPersonName}
               onChange={(e) => setNewPersonName(e.target.value)}
             />
-            <button onClick={addPerson}>Ajouter une personne</button>
+            <button onClick={addPerson}>{t.addPerson}</button>
           </div>
 
           <div className="person-tabs">
@@ -1386,7 +1432,7 @@ function App() {
 
           {selectedPerson !== 'Famille' && (
             <button className="delete-person-button" onClick={() => deletePerson(selectedPerson)}>
-              Supprimer {selectedPerson}
+              {t.delete} {selectedPerson}
             </button>
           )}
 
@@ -1401,7 +1447,7 @@ function App() {
           </div>
 
           <div className="packing-list">
-            {currentPackingList.length === 0 && <p>Aucun objet pour {selectedPerson}.</p>}
+            {currentPackingList.length === 0 && <p>{t.noObjectFor} {selectedPerson}.</p>}
 
             {currentPackingList.map((item) => (
               <div className="packing-row" key={item.id}>
@@ -1423,17 +1469,17 @@ function App() {
 
       {activeTab === 'shopping' && (
         <section className="card">
-          <h2>🛒 Achats avant départ</h2>
+          <h2>🛒 {t.shoppingTitle}</h2>
 
           <div className="budget-summary">
-            <p>Acheté : <strong>{boughtShoppingItems.length}</strong></p>
-            <p>Restant : <strong>{missingShoppingItems.length}</strong></p>
+            <p>{t.bought} : <strong>{boughtShoppingItems.length}</strong></p>
+            <p>{t.remaining} : <strong>{missingShoppingItems.length}</strong></p>
           </div>
 
           <div className="expense-form">
             <input
               type="text"
-              placeholder="Ex : Crème solaire, brassards, lunettes..."
+              placeholder={t.shoppingPlaceholder}
               value={shoppingItem}
               onChange={(e) => setShoppingItem(e.target.value)}
             />
@@ -1442,7 +1488,7 @@ function App() {
           </div>
 
           <div className="packing-list">
-            {shoppingList.length === 0 && <p>Aucun achat à prévoir pour le moment.</p>}
+            {shoppingList.length === 0 && <p>{t.noShopping}</p>}
 
             {shoppingList.map((item) => (
               <div className="packing-row" key={item.id}>
@@ -1464,26 +1510,26 @@ function App() {
 
       {activeTab === 'planning' && (
         <section className="card">
-          <h2>📅 Planning</h2>
+          <h2>📅 {t.planning}</h2>
 
           <div className="expense-form">
             <input
               type="text"
-              placeholder="Date : ex 29 juin"
+              placeholder={t.datePlaceholder}
               value={activityDate}
               onChange={(e) => setActivityDate(e.target.value)}
             />
             <input
               type="text"
-              placeholder="Activité : ex Restaurant"
+              placeholder={t.activityPlaceholder}
               value={activityName}
               onChange={(e) => setActivityName(e.target.value)}
             />
-            <button onClick={addActivity}>Ajouter une activité</button>
+            <button onClick={addActivity}>{t.addActivity}</button>
           </div>
 
           <ul className="expenses-list">
-            {activities.length === 0 && <p>Aucune activité prévue.</p>}
+            {activities.length === 0 && <p>{t.noActivityPlanned}</p>}
 
             {sortedActivities.map((activity) => (
               <li key={activity.id}>
@@ -1497,10 +1543,10 @@ function App() {
 
       {activeTab === 'budget' && (
         <section className="card">
-          <h2>💰 Budget</h2>
+          <h2>💰 {t.budget}</h2>
 
           <label className="field">
-            Budget prévu
+            {t.plannedBudget}
             <input
               type="number"
               value={budget}
@@ -1509,20 +1555,20 @@ function App() {
           </label>
 
           <div className="budget-summary">
-            <p>Dépensé : <strong>{totalSpent} €</strong></p>
-            <p>Reste : <strong>{remaining} €</strong></p>
+            <p>{t.spent} : <strong>{totalSpent} €</strong></p>
+            <p>{t.remaining} : <strong>{remaining} €</strong></p>
           </div>
 
           <div className="expense-form">
             <input
               type="text"
-              placeholder="Ex : Restaurant"
+              placeholder={t.expensePlaceholder}
               value={expenseName}
               onChange={(e) => setExpenseName(e.target.value)}
             />
             <input
               type="number"
-              placeholder="Montant"
+              placeholder={t.amount}
               value={expenseAmount}
               onChange={(e) => setExpenseAmount(e.target.value)}
             />
@@ -1530,7 +1576,7 @@ function App() {
           </div>
 
           <ul className="expenses-list">
-            {expenses.length === 0 && <p>Aucune dépense enregistrée.</p>}
+            {expenses.length === 0 && <p>{t.noExpense}</p>}
 
             {expenses.map((expense) => (
               <li key={expense.id}>
@@ -1545,7 +1591,7 @@ function App() {
 
       {activeTab === 'documents' && (
         <section className="card vault-card">
-          <h2>📁 Coffre-fort Voyage</h2>
+          <h2>📁 {t.vault}</h2>
 
           <div className="person-tabs">
             {people.map((person) => (
@@ -1562,20 +1608,20 @@ function App() {
           <div className="expense-form">
             <input
               type="text"
-              placeholder="Nom du document : ex Passeport Jérémy"
+              placeholder={t.documentNamePlaceholder}
               value={documentName}
               onChange={(e) => setDocumentName(e.target.value)}
             />
 
             <input
               type="text"
-              placeholder="Type : ex Passeport, Hôtel, Assurance..."
+              placeholder={t.documentTypePlaceholder}
               value={documentType}
               onChange={(e) => setDocumentType(e.target.value)}
             />
 
             <label className="file-picker-button" htmlFor="document-file-input">
-              {documentFile ? '✅ Fichier sélectionné' : '📎 Choisir une photo ou un PDF'}
+              {documentFile ? t.fileSelected : t.chooseFile}
             </label>
 
             <input
@@ -1603,12 +1649,12 @@ function App() {
             />
 
             <button onClick={addDocument} disabled={documentUploading}>
-              {documentUploading ? 'Envoi en cours...' : 'Ajouter le document'}
+              {documentUploading ? t.uploading : t.addDocument}
             </button>
           </div>
 
           <div className="document-list">
-            {filteredDocuments.length === 0 && <p>Aucun document pour {documentPerson}.</p>}
+            {filteredDocuments.length === 0 && <p>{t.noDocumentFor} {documentPerson}.</p>}
 
             {filteredDocuments.map((document) => (
               <div className="document-row" key={document.id}>
@@ -1627,7 +1673,7 @@ function App() {
                     className="delete-document"
                     onClick={() => deleteDocument(document)}
                   >
-                    Supprimer
+                    {t.delete}
                   </button>
                 </div>
               </div>
@@ -1640,19 +1686,19 @@ function App() {
         <section className="card gallery-card">
           <div className="gallery-header">
             <div>
-              <h2>📸 Galerie photo</h2>
-              <p className="muted-text">Souvenirs du voyage : <strong>{tripName}</strong></p>
+              <h2>📸 {t.galleryTitle}</h2>
+              <p className="muted-text">{t.tripMemories} : <strong>{tripName}</strong></p>
             </div>
 
             <div className="gallery-counter">
               <strong>{photos.length}</strong>
-              <span>{photos.length > 1 ? 'photos' : 'photo'}</span>
+              <span>{photos.length > 1 ? t.photos : t.photo}</span>
             </div>
           </div>
 
           <div className="gallery-upload-box">
             <label className="file-picker-button" htmlFor="photo-file-input">
-              {photoFile ? '✅ Photo sélectionnée' : '📷 Choisir une photo'}
+              {photoFile ? t.photoSelected : t.choosePhoto}
             </label>
 
             <input
@@ -1681,20 +1727,20 @@ function App() {
 
             <input
               type="text"
-              placeholder="Petit souvenir : ex Plage, restaurant, aquarium..."
+              placeholder={t.captionPlaceholder}
               value={photoCaption}
               onChange={(e) => setPhotoCaption(e.target.value)}
             />
 
             <button onClick={addPhoto} disabled={photoUploading}>
-              {photoUploading ? 'Envoi en cours...' : 'Ajouter à la galerie'}
+              {photoUploading ? t.uploading : t.addGallery}
             </button>
           </div>
 
           {photos.length === 0 && (
             <div className="empty-state">
-              <strong>Aucune photo pour ce voyage.</strong>
-              <p>Ajoute tes souvenirs ici, ils resteront classés dans ce voyage.</p>
+              <strong>{t.noPhotoTrip}</strong>
+              <p>{t.addMemoriesHere}</p>
             </div>
           )}
 
@@ -1706,18 +1752,18 @@ function App() {
                     <img
                       className="gallery-thumbnail"
                       src={getPhotoUrl(photo.photo_url)}
-                      alt={photo.caption || 'Photo souvenir'}
+                      alt={photo.caption || t.memoryPhoto}
                     />
-                    <span className="photo-open-hint">Agrandir</span>
+                    <span className="photo-open-hint">{t.enlarge}</span>
                   </button>
 
                   <div className="photo-card-info">
-                    <strong>{photo.caption || 'Photo souvenir'}</strong>
+                    <strong>{photo.caption || t.memoryPhoto}</strong>
                     <small>{getPhotoDate(photo)}</small>
                   </div>
 
                   <button className="delete-photo-button" onClick={() => deletePhoto(photo)}>
-                    Supprimer
+                    {t.delete}
                   </button>
                 </article>
               ))}
@@ -1728,35 +1774,35 @@ function App() {
 
       {activeTab === 'places' && (
         <section className="card places-card">
-          <h2>📍 Lieux favoris</h2>
+          <h2>📍 {t.favoritePlaces}</h2>
 
           <div className="expense-form">
             <input
               type="text"
-              placeholder="Nom : ex Hôtel, Aquarium..."
+              placeholder={t.placeNamePlaceholder}
               value={placeName}
               onChange={(e) => setPlaceName(e.target.value)}
             />
 
             <input
               type="text"
-              placeholder="Type : Hôtel, Restaurant, Plage..."
+              placeholder={t.placeTypePlaceholder}
               value={placeType}
               onChange={(e) => setPlaceType(e.target.value)}
             />
 
             <input
               type="text"
-              placeholder="Adresse ou lien Google Maps"
+              placeholder={t.addressPlaceholder}
               value={placeAddress}
               onChange={(e) => setPlaceAddress(e.target.value)}
             />
 
-            <button onClick={addPlace}>Ajouter le lieu</button>
+            <button onClick={addPlace}>{t.addPlace}</button>
           </div>
 
           <div className="document-list">
-            {places.length === 0 && <p>Aucun lieu enregistré.</p>}
+            {places.length === 0 && <p>{t.noPlace}</p>}
 
             {places.map((place) => (
               <div className="document-row" key={place.id}>
@@ -1766,11 +1812,11 @@ function App() {
 
                 <div className="document-actions">
                   <button className="open-document" onClick={() => openPlace(place)}>
-                    Ouvrir Maps
+                    {t.openMaps}
                   </button>
 
                   <button className="delete-document" onClick={() => deletePlace(place.id)}>
-                    Supprimer
+                    {t.delete}
                   </button>
                 </div>
               </div>
@@ -1781,10 +1827,10 @@ function App() {
 
       {activeTab === 'system' && (
         <section className="card system-card">
-          <h2>⚙️ Système</h2>
+          <h2>⚙️ {t.system}</h2>
 
           <div className="system-section">
-            <h3>✈️ Voyage ouvert</h3>
+            <h3>✈️ {t.openTrip}</h3>
             <div className="system-row">
               <strong>{selectedTrip?.trip_name || tripName}</strong>
               <span>{getTripDatesText()}</span>
@@ -1792,54 +1838,83 @@ function App() {
           </div>
 
           <div className="system-section">
-            <h3>👤 Compte</h3>
+            <h3>👤 {t.account}</h3>
             <div className="system-row">
-              <strong>Email connecté</strong>
-              <span>{session?.user?.email || 'Non disponible'}</span>
+              <strong>{t.connectedEmail}</strong>
+              <span>{session?.user?.email || t.unavailable}</span>
             </div>
             <div className="system-row">
-              <strong>Statut</strong>
-              <span>Connecté</span>
+              <strong>{t.status}</strong>
+              <span>{t.connected}</span>
+            </div>
+          </div>
+
+
+          <div className="system-section">
+            <h3>🌍 {t.language}</h3>
+            <div className="system-row">
+              <strong>{t.chooseLanguage}</strong>
+              <span>{language.toUpperCase()}</span>
+            </div>
+            <div className="document-actions language-actions">
+              <button
+                className={language === 'fr' ? 'open-document' : ''}
+                onClick={() => setLanguage('fr')}
+              >
+                🇫🇷 {t.french}
+              </button>
+              <button
+                className={language === 'en' ? 'open-document' : ''}
+                onClick={() => setLanguage('en')}
+              >
+                🇬🇧 {t.english}
+              </button>
+              <button
+                className={language === 'es' ? 'open-document' : ''}
+                onClick={() => setLanguage('es')}
+              >
+                🇪🇸 {t.spanish}
+              </button>
             </div>
           </div>
 
           <div className="system-section">
-            <h3>📱 Application</h3>
+            <h3>📱 {t.application}</h3>
             <div className="system-row">
-              <strong>Nom de l’application</strong>
+              <strong>{t.appName}</strong>
               <span>Travel Family</span>
             </div>
             <div className="system-row">
-              <strong>Version</strong>
+              <strong>{t.version}</strong>
               <span>2.0.0 - Multi-voyages</span>
             </div>
             <div className="system-row">
-              <strong>Mode d’installation</strong>
-              <span>Compatible iPhone / PWA</span>
+              <strong>{t.installMode}</strong>
+              <span>{t.iphoneCompatible}</span>
             </div>
           </div>
 
           <div className="system-section">
-            <h3>💾 Sauvegarde</h3>
+            <h3>💾 {t.save}</h3>
             <div className="system-row">
-              <strong>Sauvegarde cloud</strong>
-              <span>Activée avec Supabase</span>
+              <strong>{t.cloudSave}</strong>
+              <span>{t.enabledSupabase}</span>
             </div>
             <div className="system-row">
-              <strong>Données synchronisées</strong>
-              <span>Voyage, budget, valises, achats, lieux, documents et photos</span>
+              <strong>{t.syncedData}</strong>
+              <span>{t.syncedDataText}</span>
             </div>
           </div>
 
           <div className="system-section">
-            <h3>🗑️ Données</h3>
+            <h3>🗑️ {t.data}</h3>
             <button className="delete-person-button" onClick={resetCurrentTripData}>
-              Réinitialiser ce voyage
+              {t.resetTrip}
             </button>
           </div>
 
           <div className="system-section">
-            <h3>🚪 Session</h3>
+            <h3>🚪 {t.session}</h3>
             <button className="delete-person-button" onClick={signOut}>
               Se déconnecter
             </button>
@@ -1851,20 +1926,20 @@ function App() {
         <div className="photo-modal-overlay" onClick={() => setSelectedPhoto(null)}>
           <div className="photo-modal" onClick={(e) => e.stopPropagation()}>
             <button className="photo-modal-close" onClick={() => setSelectedPhoto(null)}>×</button>
-            <img src={getPhotoUrl(selectedPhoto.photo_url)} alt={selectedPhoto.caption || 'Photo souvenir'} />
+            <img src={getPhotoUrl(selectedPhoto.photo_url)} alt={selectedPhoto.caption || t.memoryPhoto} />
             <div className="photo-modal-info">
-              <strong>{selectedPhoto.caption || 'Photo souvenir'}</strong>
+              <strong>{selectedPhoto.caption || t.memoryPhoto}</strong>
               <span>{getPhotoDate(selectedPhoto)}</span>
             </div>
             <div className="document-actions">
               <button className="open-document" onClick={() => openPhoto(selectedPhoto.photo_url)}>
-                Ouvrir dans un nouvel onglet
+                {t.openNewTab}
               </button>
               <button className="delete-document" onClick={() => {
                 deletePhoto(selectedPhoto)
                 setSelectedPhoto(null)
               }}>
-                Supprimer
+                {t.delete}
               </button>
             </div>
           </div>
@@ -1879,15 +1954,15 @@ function App() {
             <h2>🌴 Travel Family</h2>
 
             {[
-              ['home', '🏠', 'Accueil'],
-              ['packing', '🧳', 'Valises'],
-              ['shopping', '🛒', 'Achats'],
-              ['planning', '📅', 'Planning'],
-              ['budget', '💰', 'Budget'],
-              ['documents', '📁', 'Documents'],
-              ['gallery', '📸', 'Galerie'],
-              ['places', '📍', 'Lieux'],
-              ['system', '⚙️', 'Système'],
+              ['home', '🏠', t.home],
+              ['packing', '🧳', t.packing],
+              ['shopping', '🛒', t.shopping],
+              ['planning', '📅', t.planning],
+              ['budget', '💰', t.budget],
+              ['documents', '📁', t.documents],
+              ['gallery', '📸', t.gallery],
+              ['places', '📍', t.places],
+              ['system', '⚙️', t.system],
             ].map(([tab, icon, label]) => (
               <button
                 key={tab}
@@ -1904,7 +1979,7 @@ function App() {
 
             <button onClick={closeTrip}>
               <span>🌍</span>
-              Retour à mes voyages
+              {t.returnToTrips}
             </button>
           </aside>
         </div>
