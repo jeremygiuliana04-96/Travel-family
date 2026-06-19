@@ -1561,15 +1561,6 @@ function App() {
             </div>
           </div>
 
-          {photos[0] && (
-            <button className="featured-photo" onClick={() => setSelectedPhoto(photos[0])}>
-              <img src={getPhotoUrl(photos[0].photo_url)} alt={photos[0].caption || 'Photo souvenir'} />
-              <div>
-                <span>Dernier souvenir ajouté</span>
-                <strong>{photos[0].caption || 'Photo souvenir'}</strong>
-                <small>{getPhotoDate(photos[0])}</small>
-              </div>
-            </button>
           )}
 
           <div className="gallery-upload-box">
