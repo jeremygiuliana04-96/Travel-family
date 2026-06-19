@@ -1513,41 +1513,17 @@ button:disabled {
     margin-top: 12px;
   }
 }
-/* Galerie photo premium */
-
-.premium-photo-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.photo-preview-button {
-  width: 100%;
-  border: none;
-  padding: 0;
-  background: transparent;
-  overflow: hidden;
-  border-radius: 16px;
-}
 
 .photo-preview-button img {
   width: 100%;
-  height: 160px;
+  height: 90px;
   object-fit: cover;
   display: block;
-  border-radius: 16px;
+  border-radius: 12px;
 }
 
-.premium-photo-card {
-  overflow: hidden;
-}
-
-@media (max-width: 520px) {
-  .premium-photo-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .photo-preview-button img {
-    height: 130px;
-  }
+.premium-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
