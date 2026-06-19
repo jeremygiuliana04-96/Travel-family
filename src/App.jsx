@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
@@ -84,6 +84,8 @@ function App() {
   const [documentType, setDocumentType] = useState('Passeport')
   const [documentFile, setDocumentFile] = useState(null)
   const [documentUploading, setDocumentUploading] = useState(false)
+  const [documentFileInputKey, setDocumentFileInputKey] = useState(Date.now())
+  const documentFileInputRef = useRef(null)
 
 
   useEffect(() => {
@@ -163,6 +165,30 @@ function App() {
     sortedActivities[0] ||
     null
 
+  function resetDocumentFileInput() {
+    setDocumentFile(null)
+
+    if (documentFileInputRef.current) {
+      documentFileInputRef.current.value = ''
+    }
+
+    // Correction spéciale iPhone / Photothèque :
+    // on force React à supprimer et recréer le champ fichier.
+    setDocumentFileInputKey(Date.now())
+
+    // Double reset retardé pour Safari iOS, qui garde parfois
+    // visuellement la dernière photo sélectionnée.
+    setTimeout(() => {
+      setDocumentFile(null)
+
+      if (documentFileInputRef.current) {
+        documentFileInputRef.current.value = ''
+      }
+
+      setDocumentFileInputKey(Date.now())
+    }, 150)
+  }
+
   function resetAppState() {
     setTravelDataId(null)
     setTripName('Mon voyage')
@@ -198,7 +224,7 @@ function App() {
     setDocumentPerson('Famille')
     setDocumentName('')
     setDocumentType('Passeport')
-    setDocumentFile(null)
+    resetDocumentFileInput()
   }
 
 
@@ -471,8 +497,9 @@ function App() {
 
       setDocumentName('')
       setDocumentType('Passeport')
-      setDocumentFile(null)
+      resetDocumentFileInput()
       await loadDocuments()
+      resetDocumentFileInput()
     } finally {
       setDocumentUploading(false)
     }
@@ -1336,11 +1363,36 @@ function App() {
               onChange={(e) => setDocumentType(e.target.value)}
             />
 
+            <label className="file-picker-button" htmlFor="document-file-input">
+              {documentFile ? '✅ Fichier sélectionné' : '📎 Choisir une photo ou un PDF'}
+            </label>
+
             <input
+              id="document-file-input"
+              key={documentFileInputKey}
+              ref={documentFileInputRef}
               className="file-input"
               type="file"
-              accept="image/*,.pdf"
-              onChange={(e) => setDocumentFile(e.target.files[0])}
+              accept="image/*,.heic,.heif,.jpg,.jpeg,.png,.pdf"
+              onClick={(e) => {
+                e.target.value = ''
+              }}
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null
+                setDocumentFile(file)
+
+                // Correction spéciale Photothèque iPhone :
+                // Safari garde parfois le fichier dans l'input natif.
+                // On attend que la sélection soit bien transmise à React,
+                // puis on vide uniquement l'input natif.
+                setTimeout(() => {
+                  if (documentFileInputRef.current) {
+                    documentFileInputRef.current.value = ''
+                  }
+
+                  setDocumentFileInputKey(Date.now())
+                }, 50)
+              }}
             />
 
             <button onClick={addDocument} disabled={documentUploading}>
