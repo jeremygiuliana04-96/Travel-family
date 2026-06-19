@@ -1299,3 +1299,217 @@ button:disabled {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* TRAVEL FAMILY V2 - MULTI VOYAGES */
+
+.dashboard-card {
+  text-align: left;
+}
+
+.dashboard-actions {
+  display: grid;
+  gap: 13px;
+}
+
+.dashboard-actions button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 13px;
+  align-items: center;
+  text-align: left;
+  border: none;
+  border-radius: 24px;
+  padding: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(236, 254, 255, 0.84));
+  color: #0f172a;
+  border: 1px solid rgba(186, 230, 253, 0.92);
+  box-shadow: var(--shadow-soft);
+}
+
+.dashboard-actions button span {
+  grid-row: span 2;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--green), var(--turquoise));
+  color: white;
+  font-size: 23px;
+}
+
+.dashboard-actions button strong {
+  font-size: 18px;
+  letter-spacing: -0.25px;
+}
+
+.dashboard-actions button small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.trip-list {
+  display: grid;
+  gap: 13px;
+  margin-top: 16px;
+}
+
+.trip-row {
+  padding: 14px;
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(226, 232, 240, 0.94);
+  box-shadow: var(--shadow-soft);
+}
+
+.trip-open-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0;
+  color: #0f172a;
+}
+
+.trip-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 19px;
+  background: linear-gradient(135deg, var(--turquoise), var(--blue-dark));
+  color: white;
+  font-size: 25px;
+  box-shadow: 0 12px 24px rgba(14, 165, 233, 0.18);
+}
+
+.trip-open-button strong {
+  display: block;
+  font-size: 18px;
+  letter-spacing: -0.2px;
+}
+
+.trip-open-button small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.empty-state {
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 247, 230, 0.78));
+  border: 1px dashed rgba(14, 165, 233, 0.42);
+  color: #334155;
+}
+
+.empty-state strong {
+  color: #0f172a;
+}
+
+.empty-state p {
+  margin: 7px 0 0;
+}
+
+.back-trip-button {
+  margin-top: 0 !important;
+  margin-bottom: 14px;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: white !important;
+  font-weight: 950;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.gallery-card {
+  border-color: rgba(251, 207, 232, 0.92);
+}
+
+.muted-text {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.photo-card {
+  padding: 12px;
+  border-radius: 23px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(226, 232, 240, 0.94);
+  box-shadow: var(--shadow-soft);
+}
+
+.photo-card > button:first-child {
+  width: 100%;
+  min-height: 135px;
+  display: grid;
+  place-items: center;
+  gap: 5px;
+  border: none;
+  border-radius: 18px;
+  padding: 14px;
+  background:
+    linear-gradient(135deg, rgba(236, 254, 255, 0.92), rgba(255, 247, 230, 0.85));
+  color: #0f172a;
+  text-align: center;
+}
+
+.photo-card > button:first-child span {
+  font-size: 35px;
+}
+
+.photo-card > button:first-child strong {
+  font-size: 15px;
+}
+
+.photo-card > button:first-child small {
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.delete-photo-button {
+  width: 100%;
+  margin-top: 9px;
+  border: none;
+  border-radius: 16px;
+  padding: 10px;
+  background: #ffe4e6;
+  color: #be123c;
+  font-weight: 950;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+@media (max-width: 520px) {
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-actions button {
+    padding: 16px;
+  }
+
+  .trip-row .document-actions {
+    margin-top: 12px;
+  }
+}

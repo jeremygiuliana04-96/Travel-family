@@ -1,60 +1,60 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
-import 'leaflet/dist/leaflet.css'
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
-import L from 'leaflet'
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import Auth from './Auth.jsx'
 import { supabase } from './supabase.js'
-
-delete L.Icon.Default.prototype._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-})
-
-function ChangeMapView({ center, zoom = 13 }) {
-  const map = useMap()
-
-  useEffect(() => {
-    if (center) map.setView(center, zoom)
-  }, [center, zoom, map])
-
-  return null
-}
 
 const defaultPackingLists = {
   Famille: [],
 }
 
+const emptyTripPayload = {
+  trip_name: 'Mon voyage',
+  trip_icon: '✈️',
+  start_date: null,
+  end_date: null,
+  people: ['Famille'],
+  packing_lists: defaultPackingLists,
+  budget: 0,
+  expenses: [],
+  shopping_list: [],
+  activities: [],
+  places: [],
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState('home')
+  const [mainView, setMainView] = useState('dashboard')
   const [menuOpen, setMenuOpen] = useState(false)
 
   const [session, setSession] = useState(null)
   const [sessionLoading, setSessionLoading] = useState(true)
   const [dataLoading, setDataLoading] = useState(false)
   const [dataLoaded, setDataLoaded] = useState(false)
-  const [travelDataId, setTravelDataId] = useState(null)
+
+  const [trips, setTrips] = useState([])
+  const [selectedTripId, setSelectedTripId] = useState(null)
 
   const [tripName, setTripName] = useState('Mon voyage')
   const [tripIcon, setTripIcon] = useState('✈️')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
 
+  const [newTripName, setNewTripName] = useState('')
+  const [newTripIcon, setNewTripIcon] = useState('✈️')
+  const [newTripStartDate, setNewTripStartDate] = useState('')
+  const [newTripEndDate, setNewTripEndDate] = useState('')
+
   const [weather, setWeather] = useState(null)
   const [weatherLoading, setWeatherLoading] = useState(false)
   const [weatherError, setWeatherError] = useState('')
+
   const [people, setPeople] = useState(['Famille'])
   const [selectedPerson, setSelectedPerson] = useState('Famille')
   const [newPersonName, setNewPersonName] = useState('')
   const [packingItemName, setPackingItemName] = useState('')
   const [packingLists, setPackingLists] = useState(defaultPackingLists)
 
-  const [budget, setBudget] = useState(1500)
+  const [budget, setBudget] = useState(0)
   const [expenseName, setExpenseName] = useState('')
   const [expenseAmount, setExpenseAmount] = useState('')
   const [expenses, setExpenses] = useState([])
@@ -71,13 +71,6 @@ function App() {
   const [placeType, setPlaceType] = useState('Hôtel')
   const [placeAddress, setPlaceAddress] = useState('')
 
-  const [startAddress, setStartAddress] = useState('')
-  const [startPoint, setStartPoint] = useState(null)
-  const [mapSearch, setMapSearch] = useState('')
-  const [mapResult, setMapResult] = useState(null)
-  const [mapLoading, setMapLoading] = useState(false)
-  const [mapError, setMapError] = useState('')
-
   const [documents, setDocuments] = useState([])
   const [documentPerson, setDocumentPerson] = useState('Famille')
   const [documentName, setDocumentName] = useState('')
@@ -87,6 +80,13 @@ function App() {
   const [documentFileInputKey, setDocumentFileInputKey] = useState(Date.now())
   const documentFileInputRef = useRef(null)
 
+  const [photos, setPhotos] = useState([])
+  const [photoFile, setPhotoFile] = useState(null)
+  const [photoCaption, setPhotoCaption] = useState('')
+  const [photoUploading, setPhotoUploading] = useState(false)
+  const [photoFileInputKey, setPhotoFileInputKey] = useState(Date.now())
+  const [selectedPhoto, setSelectedPhoto] = useState(null)
+  const photoFileInputRef = useRef(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -109,14 +109,15 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (session) {
-      loadTravelData()
-      loadDocuments()
-    }
+    if (session) loadTrips()
   }, [session])
 
   useEffect(() => {
-    if (session && dataLoaded && travelDataId) saveTravelData()
+    if (selectedTripId) fetchWeather()
+  }, [tripName, selectedTripId])
+
+  useEffect(() => {
+    if (session && dataLoaded && selectedTripId && mainView === 'trip') saveCurrentTrip()
   }, [
     tripName,
     tripIcon,
@@ -131,17 +132,14 @@ function App() {
     places,
   ])
 
-  useEffect(() => {
-    fetchWeather()
-  }, [tripName])
-
+  const selectedTrip = trips.find((trip) => trip.id === selectedTripId) || null
   const currentPackingList = packingLists[selectedPerson] || []
   const filteredDocuments = documents.filter((doc) => doc.person_name === documentPerson)
 
-  const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
-  const remaining = budget - totalSpent
+  const totalSpent = expenses.reduce((total, expense) => total + Number(expense.amount || 0), 0)
+  const remaining = Number(budget || 0) - totalSpent
 
-  const allPackingItems = Object.values(packingLists).flat()
+  const allPackingItems = Object.values(packingLists || {}).flat()
   const uncheckedPackingItems = allPackingItems.filter((item) => !item.checked)
   const checkedPackingItems = allPackingItems.filter((item) => item.checked)
 
@@ -172,12 +170,8 @@ function App() {
       documentFileInputRef.current.value = ''
     }
 
-    // Correction spéciale iPhone / Photothèque :
-    // on force React à supprimer et recréer le champ fichier.
     setDocumentFileInputKey(Date.now())
 
-    // Double reset retardé pour Safari iOS, qui garde parfois
-    // visuellement la dernière photo sélectionnée.
     setTimeout(() => {
       setDocumentFile(null)
 
@@ -189,8 +183,35 @@ function App() {
     }, 150)
   }
 
-  function resetAppState() {
-    setTravelDataId(null)
+  function resetPhotoFileInput() {
+    setPhotoFile(null)
+
+    if (photoFileInputRef.current) {
+      photoFileInputRef.current.value = ''
+    }
+
+    setPhotoFileInputKey(Date.now())
+
+    setTimeout(() => {
+      setPhotoFile(null)
+
+      if (photoFileInputRef.current) {
+        photoFileInputRef.current.value = ''
+      }
+
+      setPhotoFileInputKey(Date.now())
+    }, 150)
+  }
+
+  function resetTripForm() {
+    setNewTripName('')
+    setNewTripIcon('✈️')
+    setNewTripStartDate('')
+    setNewTripEndDate('')
+  }
+
+  function resetCurrentTripState() {
+    setSelectedTripId(null)
     setTripName('Mon voyage')
     setTripIcon('✈️')
     setStartDate('')
@@ -215,18 +236,43 @@ function App() {
     setPlaceName('')
     setPlaceType('Hôtel')
     setPlaceAddress('')
-    setStartAddress('')
-    setStartPoint(null)
-    setMapSearch('')
-    setMapResult(null)
-    setMapError('')
     setDocuments([])
     setDocumentPerson('Famille')
     setDocumentName('')
     setDocumentType('Passeport')
+    setPhotos([])
+    setPhotoCaption('')
+    setSelectedPhoto(null)
     resetDocumentFileInput()
+    resetPhotoFileInput()
   }
 
+  function resetAppState() {
+    setTrips([])
+    setMainView('dashboard')
+    setActiveTab('home')
+    resetTripForm()
+    resetCurrentTripState()
+  }
+
+  function hydrateTrip(trip) {
+    setSelectedTripId(trip.id)
+    setTripName(trip.trip_name || 'Mon voyage')
+    setTripIcon(trip.trip_icon || '✈️')
+    setStartDate(trip.start_date || '')
+    setEndDate(trip.end_date || '')
+    setPeople(trip.people || ['Famille'])
+    setPackingLists(trip.packing_lists || defaultPackingLists)
+    setBudget(Number(trip.budget) || 0)
+    setExpenses(trip.expenses || [])
+    setShoppingList(trip.shopping_list || [])
+    setActivities(trip.activities || [])
+    setPlaces(trip.places || [])
+    setSelectedPerson('Famille')
+    setDocumentPerson('Famille')
+    setActiveTab('home')
+    setMainView('trip')
+  }
 
   function formatDate(dateValue) {
     if (!dateValue) return ''
@@ -284,11 +330,14 @@ function App() {
     return Math.ceil((departure - today) / (1000 * 60 * 60 * 24))
   }
 
-  function getTripDatesText() {
-    if (startDate && endDate) return `📅 Du ${formatDate(startDate)} au ${formatDate(endDate)}`
-    if (startDate) return `📅 Départ le ${formatDate(startDate)}`
-    if (endDate) return `📅 Retour le ${formatDate(endDate)}`
-    return ''
+  function getTripDatesText(trip = null) {
+    const tripStart = trip ? trip.start_date : startDate
+    const tripEnd = trip ? trip.end_date : endDate
+
+    if (tripStart && tripEnd) return `📅 Du ${formatDate(tripStart)} au ${formatDate(tripEnd)}`
+    if (tripStart) return `📅 Départ le ${formatDate(tripStart)}`
+    if (tripEnd) return `📅 Retour le ${formatDate(tripEnd)}`
+    return '📅 Dates à définir'
   }
 
   function getActivityCountdownText(activity) {
@@ -331,10 +380,10 @@ function App() {
       advice.push('📁 Pense à ajouter les documents importants dans le coffre-fort.')
     }
 
-    if (places.length > 0) {
-      advice.push(`🗺️ Tu as ${places.length} lieu(x) enregistré(s) pour le voyage.`)
+    if (photos.length > 0) {
+      advice.push(`📸 Galerie : ${photos.length} photo(s) enregistrée(s) pour ce voyage.`)
     } else {
-      advice.push('🗺️ Ajoute ton hôtel, l’aéroport ou tes lieux favoris pour les retrouver vite.')
+      advice.push('📸 Tu pourras ajouter les photos souvenirs dans la galerie du voyage.')
     }
 
     if (weather) {
@@ -368,14 +417,14 @@ function App() {
     return advice
   }
 
-  async function loadTravelData() {
+  async function loadTrips() {
     setDataLoading(true)
 
     const { data, error } = await supabase
       .from('travel_data')
       .select('*')
       .eq('user_id', session.user.id)
-      .maybeSingle()
+      .order('updated_at', { ascending: false })
 
     if (error) {
       console.error(error)
@@ -383,50 +432,57 @@ function App() {
       return
     }
 
-    if (data) {
-      setTravelDataId(data.id)
-      setTripName(data.trip_name || 'Mon voyage')
-      setTripIcon(data.trip_icon || '✈️')
-      setStartDate(data.start_date || '')
-      setEndDate(data.end_date || '')
-      setPeople(data.people || ['Famille'])
-      setPackingLists(data.packing_lists || defaultPackingLists)
-      setBudget(Number(data.budget) || 0)
-      setExpenses(data.expenses || [])
-      setShoppingList(data.shopping_list || [])
-      setActivities(data.activities || [])
-      setPlaces(data.places || [])
-      setSelectedPerson('Famille')
-      setDocumentPerson('Famille')
-    } else {
-      const { data: newData } = await supabase
-        .from('travel_data')
-        .insert({
-          user_id: session.user.id,
-          trip_name: 'Mon voyage',
-          trip_icon: '✈️',
-          start_date: null,
-          end_date: null,
-          people: ['Famille'],
-          packing_lists: defaultPackingLists,
-          budget: 0,
-          expenses: [],
-          shopping_list: [],
-          activities: [],
-          places: [],
-        })
-        .select()
-        .single()
-
-      if (newData) setTravelDataId(newData.id)
-    }
-
+    setTrips(data || [])
     setDataLoaded(true)
     setDataLoading(false)
   }
 
-  async function saveTravelData() {
-    await supabase
+  async function createTrip() {
+    const cleanName = newTripName.trim()
+    if (cleanName === '') {
+      alert('Ajoute au moins le nom du voyage.')
+      return
+    }
+
+    setDataLoading(true)
+
+    const { data, error } = await supabase
+      .from('travel_data')
+      .insert({
+        user_id: session.user.id,
+        ...emptyTripPayload,
+        trip_name: cleanName,
+        trip_icon: newTripIcon.trim() || '✈️',
+        start_date: newTripStartDate || null,
+        end_date: newTripEndDate || null,
+        updated_at: new Date().toISOString(),
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error(error)
+      alert("Impossible de créer le voyage.")
+      setDataLoading(false)
+      return
+    }
+
+    resetTripForm()
+    setTrips([data, ...trips])
+    hydrateTrip(data)
+    await loadDocuments(data.id)
+    await loadPhotos(data.id)
+    setDataLoading(false)
+  }
+
+  async function openTrip(trip) {
+    hydrateTrip(trip)
+    await loadDocuments(trip.id)
+    await loadPhotos(trip.id)
+  }
+
+  async function saveCurrentTrip() {
+    const { error } = await supabase
       .from('travel_data')
       .update({
         trip_name: tripName,
@@ -442,14 +498,89 @@ function App() {
         places,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', travelDataId)
+      .eq('id', selectedTripId)
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    setTrips((currentTrips) =>
+      currentTrips.map((trip) =>
+        trip.id === selectedTripId
+          ? {
+              ...trip,
+              trip_name: tripName,
+              trip_icon: tripIcon,
+              start_date: startDate || null,
+              end_date: endDate || null,
+              people,
+              packing_lists: packingLists,
+              budget,
+              expenses,
+              shopping_list: shoppingList,
+              activities,
+              places,
+              updated_at: new Date().toISOString(),
+            }
+          : trip
+      )
+    )
   }
 
-  async function loadDocuments() {
+  async function deleteTrip(trip) {
+    const confirmDelete = confirm(`Supprimer le voyage "${trip.trip_name}" ?`)
+    if (!confirmDelete) return
+
+    const { data: docs } = await supabase
+      .from('travel_documents')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .eq('trip_id', trip.id)
+
+    const documentPaths = (docs || []).map((document) => document.file_url)
+
+    if (documentPaths.length > 0) {
+      await supabase.storage.from('travel-documents').remove(documentPaths)
+    }
+
+    const { data: tripPhotos } = await supabase
+      .from('travel_photos')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .eq('trip_id', trip.id)
+
+    const photoPaths = (tripPhotos || []).map((photo) => photo.photo_url)
+
+    if (photoPaths.length > 0) {
+      await supabase.storage.from('travel-photos').remove(photoPaths)
+    }
+
+    await supabase.from('travel_documents').delete().eq('user_id', session.user.id).eq('trip_id', trip.id)
+    await supabase.from('travel_photos').delete().eq('user_id', session.user.id).eq('trip_id', trip.id)
+    await supabase.from('travel_data').delete().eq('id', trip.id)
+
+    setTrips(trips.filter((item) => item.id !== trip.id))
+
+    if (selectedTripId === trip.id) {
+      resetCurrentTripState()
+      setMainView('trips')
+    }
+  }
+
+  function closeTrip() {
+    resetCurrentTripState()
+    setMainView('trips')
+  }
+
+  async function loadDocuments(tripId = selectedTripId) {
+    if (!tripId) return
+
     const { data, error } = await supabase
       .from('travel_documents')
       .select('*')
       .eq('user_id', session.user.id)
+      .eq('trip_id', tripId)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -461,13 +592,13 @@ function App() {
   }
 
   async function addDocument() {
-    if (!documentFile || documentName.trim() === '') return
+    if (!selectedTripId || !documentFile || documentName.trim() === '') return
 
     try {
       setDocumentUploading(true)
 
       const cleanFileName = documentFile.name.replaceAll(' ', '-')
-      const filePath = `${session.user.id}/${Date.now()}-${cleanFileName}`
+      const filePath = `${session.user.id}/${selectedTripId}/${Date.now()}-${cleanFileName}`
 
       const { error: uploadError } = await supabase.storage
         .from('travel-documents')
@@ -483,6 +614,7 @@ function App() {
         .from('travel_documents')
         .insert({
           user_id: session.user.id,
+          trip_id: selectedTripId,
           person_name: documentPerson,
           document_name: documentName.trim(),
           document_type: documentType,
@@ -529,33 +661,129 @@ function App() {
     await loadDocuments()
   }
 
-  async function resetCurrentAccountData() {
-    const confirmReset = confirm(
-      'Réinitialiser ce compte ? Toutes les données de ce compte seront effacées.'
-    )
+  async function loadPhotos(tripId = selectedTripId) {
+    if (!tripId) return
 
-    if (!confirmReset || !session || !travelDataId) return
-
-    const { data: docs } = await supabase
-      .from('travel_documents')
+    const { data, error } = await supabase
+      .from('travel_photos')
       .select('*')
       .eq('user_id', session.user.id)
+      .eq('trip_id', tripId)
+      .order('created_at', { ascending: false })
 
-    const filePaths = (docs || []).map((document) => document.file_url)
-
-    if (filePaths.length > 0) {
-      await supabase.storage.from('travel-documents').remove(filePaths)
+    if (error) {
+      console.error(error)
+      return
     }
 
-    await supabase.from('travel_documents').delete().eq('user_id', session.user.id)
+    setPhotos(data || [])
+  }
+
+  async function addPhoto() {
+    if (!selectedTripId || !photoFile) return
+
+    try {
+      setPhotoUploading(true)
+
+      const cleanFileName = photoFile.name.replaceAll(' ', '-')
+      const filePath = `${session.user.id}/${selectedTripId}/${Date.now()}-${cleanFileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('travel-photos')
+        .upload(filePath, photoFile)
+
+      if (uploadError) {
+        console.error(uploadError)
+        alert("Impossible d'envoyer la photo.")
+        return
+      }
+
+      const { error: insertError } = await supabase
+        .from('travel_photos')
+        .insert({
+          user_id: session.user.id,
+          trip_id: selectedTripId,
+          photo_url: filePath,
+          caption: photoCaption.trim(),
+        })
+
+      if (insertError) {
+        console.error(insertError)
+        alert("Impossible d'enregistrer la photo.")
+        return
+      }
+
+      setPhotoCaption('')
+      resetPhotoFileInput()
+      await loadPhotos()
+      resetPhotoFileInput()
+    } finally {
+      setPhotoUploading(false)
+    }
+  }
+
+  async function openPhoto(filePath) {
+    const { data, error } = await supabase.storage
+      .from('travel-photos')
+      .createSignedUrl(filePath, 60)
+
+    if (error) {
+      console.error(error)
+      alert("Impossible d'ouvrir la photo.")
+      return
+    }
+
+    window.open(data.signedUrl, '_blank')
+  }
+
+  function getPhotoUrl(filePath) {
+    const { data } = supabase.storage
+      .from('travel-photos')
+      .getPublicUrl(filePath)
+
+    return data?.publicUrl || ''
+  }
+
+  function getPhotoDate(photo) {
+    if (!photo?.created_at) return ''
+
+    return new Date(photo.created_at).toLocaleDateString('fr-BE')
+  }
+
+  async function deletePhoto(photo) {
+    const confirmDelete = confirm('Supprimer cette photo ?')
+    if (!confirmDelete) return
+
+    await supabase.storage.from('travel-photos').remove([photo.photo_url])
+    await supabase.from('travel_photos').delete().eq('id', photo.id)
+
+    await loadPhotos()
+  }
+
+  async function resetCurrentTripData() {
+    const confirmReset = confirm(
+      'Réinitialiser ce voyage ? Les valises, achats, planning, budget, lieux, documents et photos de ce voyage seront effacés.'
+    )
+
+    if (!confirmReset || !session || !selectedTripId) return
+
+    const documentPaths = documents.map((document) => document.file_url)
+    const photoPaths = photos.map((photo) => photo.photo_url)
+
+    if (documentPaths.length > 0) {
+      await supabase.storage.from('travel-documents').remove(documentPaths)
+    }
+
+    if (photoPaths.length > 0) {
+      await supabase.storage.from('travel-photos').remove(photoPaths)
+    }
+
+    await supabase.from('travel_documents').delete().eq('user_id', session.user.id).eq('trip_id', selectedTripId)
+    await supabase.from('travel_photos').delete().eq('user_id', session.user.id).eq('trip_id', selectedTripId)
 
     await supabase
       .from('travel_data')
       .update({
-        trip_name: 'Mon voyage',
-        trip_icon: '✈️',
-        start_date: null,
-        end_date: null,
         people: ['Famille'],
         packing_lists: defaultPackingLists,
         budget: 0,
@@ -565,11 +793,27 @@ function App() {
         places: [],
         updated_at: new Date().toISOString(),
       })
-      .eq('id', travelDataId)
+      .eq('id', selectedTripId)
 
-    resetAppState()
-    await loadTravelData()
-    await loadDocuments()
+    const currentTrip = trips.find((trip) => trip.id === selectedTripId)
+
+    if (currentTrip) {
+      const resetTrip = {
+        ...currentTrip,
+        people: ['Famille'],
+        packing_lists: defaultPackingLists,
+        budget: 0,
+        expenses: [],
+        shopping_list: [],
+        activities: [],
+        places: [],
+      }
+
+      setTrips(trips.map((trip) => (trip.id === selectedTripId ? resetTrip : trip)))
+      hydrateTrip(resetTrip)
+      setDocuments([])
+      setPhotos([])
+    }
   }
 
   async function signOut() {
@@ -716,265 +960,6 @@ function App() {
     setShoppingList(shoppingList.filter((item) => item.id !== id))
   }
 
-  async function searchAddress(query) {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=${encodeURIComponent(query)}`
-    )
-
-    const data = await response.json()
-
-    if (!data || data.length === 0) return null
-
-    return {
-      name: data[0].display_name.split(',')[0],
-      address: data[0].display_name,
-      latitude: Number(data[0].lat),
-      longitude: Number(data[0].lon),
-      countryCode: data[0].address?.country_code || '',
-      country: data[0].address?.country || '',
-      city:
-        data[0].address?.city ||
-        data[0].address?.town ||
-        data[0].address?.village ||
-        data[0].address?.municipality ||
-        '',
-    }
-  }
-
-  function useCurrentPosition() {
-    if (!navigator.geolocation) {
-      setMapError('La géolocalisation n’est pas disponible sur cet appareil.')
-      return
-    }
-
-    setMapLoading(true)
-    setMapError('')
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setStartPoint({
-          name: 'Ma position actuelle',
-          address: 'Position GPS actuelle',
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          countryCode: '',
-          country: '',
-          city: '',
-        })
-        setMapLoading(false)
-      },
-      () => {
-        setMapError('Impossible de récupérer ta position.')
-        setMapLoading(false)
-      }
-    )
-  }
-
-  async function defineStartAddress() {
-    if (startAddress.trim() === '') return
-
-    setMapLoading(true)
-    setMapError('')
-
-    try {
-      const result = await searchAddress(startAddress)
-
-      if (!result) {
-        setMapError('Adresse de départ introuvable.')
-        return
-      }
-
-      setStartPoint(result)
-    } catch {
-      setMapError('Erreur pendant la recherche de l’adresse.')
-    } finally {
-      setMapLoading(false)
-    }
-  }
-
-  async function searchMapPlace() {
-    if (mapSearch.trim() === '') return
-
-    setMapLoading(true)
-    setMapError('')
-    setMapResult(null)
-
-    try {
-      const result = await searchAddress(mapSearch)
-
-      if (!result) {
-        setMapError('Lieu introuvable.')
-        return
-      }
-
-      setMapResult({
-        id: Date.now(),
-        name: result.name,
-        type: 'Lieu recherché',
-        address: result.address,
-        latitude: result.latitude,
-        longitude: result.longitude,
-        countryCode: result.countryCode,
-        country: result.country,
-        city: result.city,
-      })
-    } catch {
-      setMapError('Erreur pendant la recherche du lieu.')
-    } finally {
-      setMapLoading(false)
-    }
-  }
-
-  function addMapResultToPlaces() {
-    if (!mapResult) return
-
-    setPlaces([
-      ...places,
-      {
-        ...mapResult,
-        id: Date.now(),
-      },
-    ])
-
-    setMapSearch('')
-    setMapResult(null)
-  }
-
-  function getDistanceKm(destination) {
-    if (!startPoint || !destination.latitude || !destination.longitude) return null
-
-    const earthRadius = 6371
-    const dLat = ((destination.latitude - startPoint.latitude) * Math.PI) / 180
-    const dLon = ((destination.longitude - startPoint.longitude) * Math.PI) / 180
-    const lat1 = (startPoint.latitude * Math.PI) / 180
-    const lat2 = (destination.latitude * Math.PI) / 180
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2)
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    return Math.max(1, Math.round(earthRadius * c * 1.25))
-  }
-
-  function getLocalPriceSettings(destination) {
-    const text = `${destination.address || ''} ${destination.countryCode || ''} ${destination.country || ''}`.toLowerCase()
-
-    if (
-      text.includes('gran canaria') ||
-      text.includes('canarias') ||
-      text.includes('canary') ||
-      text.includes('españa') ||
-      text.includes('spain') ||
-      text.includes(' es ')
-    ) {
-      return {
-        zone: 'Espagne / Canaries',
-        taxiStart: 3.5,
-        taxiKm: 1.35,
-        busMin: 2,
-        busMax: 6,
-        fuelLiter: 1.6,
-        consumption: 6.5,
-      }
-    }
-
-    if (
-      text.includes('belgique') ||
-      text.includes('belgië') ||
-      text.includes('belgium') ||
-      text.includes(' be ')
-    ) {
-      return {
-        zone: 'Belgique',
-        taxiStart: 5,
-        taxiKm: 2.4,
-        busMin: 2.5,
-        busMax: 5,
-        fuelLiter: 1.75,
-        consumption: 6.5,
-      }
-    }
-
-    if (text.includes('france') || text.includes(' fr ')) {
-      return {
-        zone: 'France',
-        taxiStart: 4,
-        taxiKm: 1.8,
-        busMin: 2,
-        busMax: 5,
-        fuelLiter: 1.8,
-        consumption: 6.5,
-      }
-    }
-
-    return {
-      zone: 'Tarif moyen estimé',
-      taxiStart: 4,
-      taxiKm: 1.6,
-      busMin: 2,
-      busMax: 6,
-      fuelLiter: 1.7,
-      consumption: 6.5,
-    }
-  }
-
-  function getTripCostEstimate(destination) {
-    const distance = getDistanceKm(destination)
-    if (!distance) return null
-
-    const settings = getLocalPriceSettings(destination)
-    const taxiMin = Math.round(settings.taxiStart + distance * settings.taxiKm * 0.9)
-    const taxiMax = Math.round(settings.taxiStart + distance * settings.taxiKm * 1.2)
-    const carFuel = Math.round(((distance / 100) * settings.consumption * settings.fuelLiter) * 10) / 10
-
-    return {
-      distance,
-      zone: settings.zone,
-      taxiMin,
-      taxiMax,
-      busMin: settings.busMin,
-      busMax: settings.busMax,
-      carFuel,
-    }
-  }
-
-  function getRouteLink(destination, mode = 'driving') {
-    const origin = startPoint
-      ? `${startPoint.latitude},${startPoint.longitude}`
-      : ''
-
-    const destinationText =
-      destination.latitude && destination.longitude
-        ? `${destination.latitude},${destination.longitude}`
-        : destination.address
-
-    return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(
-      origin
-    )}&destination=${encodeURIComponent(destinationText)}&travelmode=${mode}`
-  }
-
-  function getAiMapAdvice(destination) {
-    const estimate = getTripCostEstimate(destination)
-
-    if (!startPoint) return 'Définis d’abord un point de départ pour obtenir une recommandation.'
-    if (!estimate) return 'Estimation indisponible pour ce lieu.'
-
-    if (estimate.distance <= 2) {
-      return 'Le lieu semble proche. La marche peut être intéressante si le trajet est agréable et adapté à la famille.'
-    }
-
-    if (estimate.distance <= 8) {
-      return 'Le taxi ou la voiture seront probablement les plus confortables. Le bus peut être intéressant si l’arrêt est proche.'
-    }
-
-    if (estimate.distance <= 25) {
-      return 'Pour une famille, le taxi ou la voiture sont souvent plus simples. Le bus reste intéressant si tu veux réduire le budget.'
-    }
-
-    return 'Le trajet semble assez long. Il vaut mieux comparer l’itinéraire Google Maps avant de choisir entre voiture, taxi ou transport en commun.'
-  }
-
   function addPlace() {
     if (placeName.trim() === '' || placeAddress.trim() === '') return
 
@@ -1031,46 +1016,12 @@ function App() {
     setExpenses(expenses.filter((expense) => expense.id !== id))
   }
 
-  function CostBox({ destination }) {
-    if (!startPoint) {
-      return (
-        <div className="map-cost-box">
-          <strong>💶 Estimation IA du trajet</strong>
-          <p>Définis d’abord un point de départ pour calculer le coût.</p>
-        </div>
-      )
-    }
-
-    const estimate = getTripCostEstimate(destination)
-
-    if (!estimate) {
-      return (
-        <div className="map-cost-box">
-          <strong>💶 Estimation IA du trajet</strong>
-          <p>Impossible de calculer l’estimation pour ce lieu.</p>
-        </div>
-      )
-    }
-
-    return (
-      <div className="map-cost-box">
-        <strong>💶 Estimation IA du trajet</strong>
-        <p>📍 Zone détectée : {estimate.zone}</p>
-        <p>📏 Distance estimée : {estimate.distance} km</p>
-        <p>🚕 Taxi : ± {estimate.taxiMin} à {estimate.taxiMax} €</p>
-        <p>🚗 Voiture : ± {estimate.carFuel} € de carburant</p>
-        <p>🚌 Bus : ± {estimate.busMin} à {estimate.busMax} € / personne</p>
-        <small>Estimation indicative, à vérifier avec l’itinéraire réel.</small>
-      </div>
-    )
-  }
-
   if (sessionLoading || dataLoading) {
     return (
       <main className="app loading-screen">
         <section className="hero-card">
           <h1>✈️ Travel Family</h1>
-          <p>Préparation de ton voyage...</p>
+          <p>Préparation de ton espace voyage...</p>
         </section>
       </main>
     )
@@ -1078,11 +1029,172 @@ function App() {
 
   if (!session) return <Auth />
 
+  if (mainView === 'dashboard') {
+    return (
+      <main className="app">
+        <section className="hero-card">
+          <h1>✈️ Travel Family</h1>
+          <p>Organise tous tes voyages de famille au même endroit.</p>
+        </section>
+
+        <section className="card dashboard-card">
+          <h2>🌴 Accueil</h2>
+
+          <div className="dashboard-actions">
+            <button onClick={() => setMainView('trips')}>
+              <span>🌍</span>
+              <strong>Mes voyages</strong>
+              <small>Voir les voyages déjà enregistrés</small>
+            </button>
+
+            <button onClick={() => setMainView('newTrip')}>
+              <span>➕</span>
+              <strong>Ajouter un nouveau voyage</strong>
+              <small>Créer une destination, des dates et une organisation</small>
+            </button>
+          </div>
+        </section>
+
+        <section className="card system-card">
+          <h2>⚙️ Compte</h2>
+          <div className="system-row">
+            <strong>Email connecté</strong>
+            <span>{session?.user?.email || 'Non disponible'}</span>
+          </div>
+          <button className="delete-person-button" onClick={signOut}>
+            Se déconnecter
+          </button>
+        </section>
+      </main>
+    )
+  }
+
+  if (mainView === 'trips') {
+    return (
+      <main className="app">
+        <section className="hero-card">
+          <button className="menu-button" onClick={() => setMainView('dashboard')}>
+            ←
+          </button>
+          <h1>🌍 Mes voyages</h1>
+          <p>{trips.length} voyage(s) enregistré(s)</p>
+        </section>
+
+        <section className="card">
+          <div className="document-actions">
+            <button className="open-document" onClick={() => setMainView('newTrip')}>
+              ➕ Ajouter un nouveau voyage
+            </button>
+          </div>
+
+          <div className="trip-list">
+            {trips.length === 0 && (
+              <div className="empty-state">
+                <strong>Aucun voyage pour le moment.</strong>
+                <p>Ajoute ton premier voyage pour commencer l’organisation.</p>
+              </div>
+            )}
+
+            {trips.map((trip) => (
+              <div className="trip-row" key={trip.id}>
+                <button className="trip-open-button" onClick={() => openTrip(trip)}>
+                  <span className="trip-icon">{trip.trip_icon || '✈️'}</span>
+                  <span>
+                    <strong>{trip.trip_name || 'Mon voyage'}</strong>
+                    <small>{getTripDatesText(trip)}</small>
+                  </span>
+                </button>
+
+                <div className="document-actions">
+                  <button className="open-document" onClick={() => openTrip(trip)}>
+                    Ouvrir
+                  </button>
+                  <button className="delete-document" onClick={() => deleteTrip(trip)}>
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+    )
+  }
+
+  if (mainView === 'newTrip') {
+    return (
+      <main className="app">
+        <section className="hero-card">
+          <button className="menu-button" onClick={() => setMainView('dashboard')}>
+            ←
+          </button>
+          <h1>➕ Nouveau voyage</h1>
+          <p>Crée ta destination et prépare l’organisation.</p>
+        </section>
+
+        <section className="card">
+          <h2>✈️ Ajouter un nouveau voyage</h2>
+
+          <label className="field">
+            Destination
+            <input
+              type="text"
+              placeholder="Ex : Maspalomas 2026, Paris, Tenerife..."
+              value={newTripName}
+              onChange={(e) => setNewTripName(e.target.value)}
+            />
+          </label>
+
+          <label className="field">
+            Icône
+            <input
+              type="text"
+              placeholder="Ex : 🌴 ✈️ 🏖️ 🏔️"
+              value={newTripIcon}
+              onChange={(e) => setNewTripIcon(e.target.value)}
+            />
+          </label>
+
+          <label className="field">
+            Date de départ
+            <input
+              type="date"
+              value={newTripStartDate}
+              onChange={(e) => setNewTripStartDate(e.target.value)}
+            />
+          </label>
+
+          <label className="field">
+            Date de retour
+            <input
+              type="date"
+              value={newTripEndDate}
+              onChange={(e) => setNewTripEndDate(e.target.value)}
+            />
+          </label>
+
+          <div className="document-actions">
+            <button className="open-document" onClick={createTrip}>
+              Créer le voyage
+            </button>
+            <button className="delete-document" onClick={() => setMainView('dashboard')}>
+              Annuler
+            </button>
+          </div>
+        </section>
+      </main>
+    )
+  }
+
   return (
     <main className="app">
       <section className="hero-card">
         <button className="menu-button" onClick={() => setMenuOpen(true)}>
           ☰
+        </button>
+
+        <button className="back-trip-button" onClick={closeTrip}>
+          ← Mes voyages
         </button>
 
         <h1>{tripIcon} Travel Family</h1>
@@ -1116,6 +1228,16 @@ function App() {
             )}
 
             <button onClick={fetchWeather}>Actualiser météo</button>
+          </section>
+
+          <section className="card next-activity-card">
+            <h2>🤖 Assistant voyage</h2>
+
+            <div className="next-activity-box">
+              {getAssistantAdvice().slice(0, 6).map((advice, index) => (
+                <p key={index}>{advice}</p>
+              ))}
+            </div>
           </section>
 
           <section className="card next-activity-card">
@@ -1381,10 +1503,6 @@ function App() {
                 const file = e.target.files?.[0] || null
                 setDocumentFile(file)
 
-                // Correction spéciale Photothèque iPhone :
-                // Safari garde parfois le fichier dans l'input natif.
-                // On attend que la sélection soit bien transmise à React,
-                // puis on vide uniquement l'input natif.
                 setTimeout(() => {
                   if (documentFileInputRef.current) {
                     documentFileInputRef.current.value = ''
@@ -1429,176 +1547,106 @@ function App() {
         </section>
       )}
 
-      {activeTab === 'maps' && (
-        <section className="card maps-card">
-          <h2>🗺️ Cartes intelligentes</h2>
-
-          <div className="map-start-box">
-            <h3>📍 Point de départ</h3>
-
-            <div className="map-actions">
-              <button onClick={useCurrentPosition}>📍 Ma position actuelle</button>
-              <button onClick={defineStartAddress}>🏨 Rechercher une adresse</button>
+      {activeTab === 'gallery' && (
+        <section className="card gallery-card">
+          <div className="gallery-header">
+            <div>
+              <h2>📸 Galerie photo</h2>
+              <p className="muted-text">Souvenirs du voyage : <strong>{tripName}</strong></p>
             </div>
 
+            <div className="gallery-counter">
+              <strong>{photos.length}</strong>
+              <span>{photos.length > 1 ? 'photos' : 'photo'}</span>
+            </div>
+          </div>
+
+          {photos[0] && (
+            <button className="featured-photo" onClick={() => setSelectedPhoto(photos[0])}>
+              <img src={getPhotoUrl(photos[0].photo_url)} alt={photos[0].caption || 'Photo souvenir'} />
+              <div>
+                <span>Dernier souvenir ajouté</span>
+                <strong>{photos[0].caption || 'Photo souvenir'}</strong>
+                <small>{getPhotoDate(photos[0])}</small>
+              </div>
+            </button>
+          )}
+
+          <div className="gallery-upload-box">
+            <label className="file-picker-button" htmlFor="photo-file-input">
+              {photoFile ? '✅ Photo sélectionnée' : '📷 Choisir une photo'}
+            </label>
+
             <input
-              type="text"
-              placeholder="Adresse de départ : hôtel, aéroport, appartement..."
-              value={startAddress}
-              onChange={(e) => setStartAddress(e.target.value)}
+              id="photo-file-input"
+              key={photoFileInputKey}
+              ref={photoFileInputRef}
+              className="file-input"
+              type="file"
+              accept="image/*,.heic,.heif,.jpg,.jpeg,.png"
+              onClick={(e) => {
+                e.target.value = ''
+              }}
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null
+                setPhotoFile(file)
+
+                setTimeout(() => {
+                  if (photoFileInputRef.current) {
+                    photoFileInputRef.current.value = ''
+                  }
+
+                  setPhotoFileInputKey(Date.now())
+                }, 50)
+              }}
             />
 
-            {startPoint && (
-              <div className="map-info-box">
-                <strong>Point de départ défini :</strong>
-                <p>{startPoint.name}</p>
-                <span>{startPoint.address}</span>
-              </div>
-            )}
-          </div>
-
-          <div className="map-search-box">
-            <h3>🔎 Recherche de lieu</h3>
-
             <input
               type="text"
-              placeholder="Rechercher un lieu..."
-              value={mapSearch}
-              onChange={(e) => setMapSearch(e.target.value)}
+              placeholder="Petit souvenir : ex Plage, restaurant, aquarium..."
+              value={photoCaption}
+              onChange={(e) => setPhotoCaption(e.target.value)}
             />
 
-            <button onClick={searchMapPlace}>🔍 Rechercher</button>
+            <button onClick={addPhoto} disabled={photoUploading}>
+              {photoUploading ? 'Envoi en cours...' : 'Ajouter à la galerie'}
+            </button>
           </div>
 
-          {mapLoading && <p>Recherche en cours...</p>}
-          {mapError && <p className="map-error">{mapError}</p>}
-
-          <div className="travel-map">
-            <MapContainer
-              center={
-                mapResult
-                  ? [mapResult.latitude, mapResult.longitude]
-                  : startPoint
-                    ? [startPoint.latitude, startPoint.longitude]
-                    : [20, 0]
-              }
-              zoom={mapResult || startPoint ? 13 : 2}
-              scrollWheelZoom={false}
-              style={{ height: '320px', width: '100%', borderRadius: '22px' }}
-            >
-              <TileLayer
-                attribution="&copy; OpenStreetMap"
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-
-              {mapResult ? (
-                <ChangeMapView center={[mapResult.latitude, mapResult.longitude]} zoom={13} />
-              ) : startPoint ? (
-                <ChangeMapView center={[startPoint.latitude, startPoint.longitude]} zoom={13} />
-              ) : null}
-
-              {startPoint && (
-                <Marker position={[startPoint.latitude, startPoint.longitude]}>
-                  <Popup>📍 {startPoint.name}</Popup>
-                </Marker>
-              )}
-
-              {mapResult && (
-                <Marker position={[mapResult.latitude, mapResult.longitude]}>
-                  <Popup>{mapResult.name}</Popup>
-                </Marker>
-              )}
-
-              {places
-                .filter((place) => place.latitude && place.longitude)
-                .map((place) => (
-                  <Marker key={place.id} position={[place.latitude, place.longitude]}>
-                    <Popup>{place.name}</Popup>
-                  </Marker>
-                ))}
-            </MapContainer>
-          </div>
-
-          {mapResult && (
-            <div className="document-row map-result-card">
-              <strong>📍 {mapResult.name}</strong>
-              <span>{mapResult.address}</span>
-
-              <CostBox destination={mapResult} />
-
-              <div className="ai-map-advice">
-                <strong>🤖 Recommandation IA</strong>
-                <p>{getAiMapAdvice(mapResult)}</p>
-              </div>
-
-              <div className="document-actions">
-                <button className="open-document" onClick={addMapResultToPlaces}>
-                  ➕ Ajouter à ma liste
-                </button>
-
-                <button
-                  className="open-document"
-                  onClick={() => window.open(getRouteLink(mapResult, 'driving'), '_blank')}
-                >
-                  🚗 Voiture / taxi
-                </button>
-
-                <button
-                  className="open-document"
-                  onClick={() => window.open(getRouteLink(mapResult, 'transit'), '_blank')}
-                >
-                  🚌 Bus
-                </button>
-              </div>
+          {photos.length === 0 && (
+            <div className="empty-state">
+              <strong>Aucune photo pour ce voyage.</strong>
+              <p>Ajoute tes souvenirs ici, ils resteront classés dans ce voyage.</p>
             </div>
           )}
 
-          <div className="document-list">
-            <h3>📌 Ma liste</h3>
-
-            {places.length === 0 && <p>Aucun lieu ajouté.</p>}
-
-            {places.map((place) => (
-              <div className="document-row" key={place.id}>
-                <strong>📍 {place.name}</strong>
-                <span>{place.type}</span>
-                <p>{place.address}</p>
-
-                <CostBox destination={place} />
-
-                <div className="ai-map-advice">
-                  <strong>🤖 Analyse depuis le point de départ</strong>
-                  <p>{getAiMapAdvice(place)}</p>
-                </div>
-
-                <div className="document-actions">
-                  <button
-                    className="open-document"
-                    onClick={() => window.open(getRouteLink(place, 'driving'), '_blank')}
-                  >
-                    🚗 Voiture / taxi
+          {photos.length > 0 && (
+            <div className="photo-grid premium-photo-grid">
+              {photos.map((photo) => (
+                <article className="photo-card premium-photo-card" key={photo.id}>
+                  <button className="photo-preview-button" onClick={() => setSelectedPhoto(photo)}>
+                    <img src={getPhotoUrl(photo.photo_url)} alt={photo.caption || 'Photo souvenir'} />
+                    <span className="photo-open-hint">Agrandir</span>
                   </button>
 
-                  <button
-                    className="open-document"
-                    onClick={() => window.open(getRouteLink(place, 'transit'), '_blank')}
-                  >
-                    🚌 Bus
-                  </button>
+                  <div className="photo-card-info">
+                    <strong>{photo.caption || 'Photo souvenir'}</strong>
+                    <small>{getPhotoDate(photo)}</small>
+                  </div>
 
-                  <button className="delete-document" onClick={() => deletePlace(place.id)}>
+                  <button className="delete-photo-button" onClick={() => deletePhoto(photo)}>
                     Supprimer
                   </button>
-                </div>
-              </div>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       )}
 
       {activeTab === 'places' && (
         <section className="card places-card">
-          <h2>🗺️ Lieux favoris</h2>
+          <h2>📍 Lieux favoris</h2>
 
           <div className="expense-form">
             <input
@@ -1649,128 +1697,62 @@ function App() {
         </section>
       )}
 
-      {activeTab === 'destination' && (
-        <section className="card">
-          <h2>✈️ Ma destination</h2>
-
-          <label className="field">
-            Destination
-            <input
-              type="text"
-              placeholder="Ex : Italie, Paris, Tenerife..."
-              value={tripName}
-              onChange={(e) => setTripName(e.target.value)}
-            />
-          </label>
-
-          <label className="field">
-            Icône
-            <input
-              type="text"
-              placeholder="Ex : 🌴 ✈️ 🏖️ 🏔️"
-              value={tripIcon}
-              onChange={(e) => setTripIcon(e.target.value)}
-            />
-          </label>
-
-          <label className="field">
-            Date de départ
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-          </label>
-
-          <label className="field">
-            Date de retour
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-          </label>
-        </section>
-      )}
-
       {activeTab === 'system' && (
         <section className="card system-card">
           <h2>⚙️ Système</h2>
 
           <div className="system-section">
+            <h3>✈️ Voyage ouvert</h3>
+            <div className="system-row">
+              <strong>{selectedTrip?.trip_name || tripName}</strong>
+              <span>{getTripDatesText()}</span>
+            </div>
+          </div>
+
+          <div className="system-section">
             <h3>👤 Compte</h3>
             <div className="system-row">
-              <div>
-                <strong>Email connecté</strong>
-                <span>{session?.user?.email || 'Non disponible'}</span>
-              </div>
+              <strong>Email connecté</strong>
+              <span>{session?.user?.email || 'Non disponible'}</span>
             </div>
             <div className="system-row">
-              <div>
-                <strong>Statut</strong>
-                <span>Connecté</span>
-              </div>
+              <strong>Statut</strong>
+              <span>Connecté</span>
             </div>
           </div>
 
           <div className="system-section">
             <h3>📱 Application</h3>
             <div className="system-row">
-              <div>
-                <strong>Nom de l’application</strong>
-                <span>Travel Family</span>
-              </div>
+              <strong>Nom de l’application</strong>
+              <span>Travel Family</span>
             </div>
             <div className="system-row">
-              <div>
-                <strong>Version</strong>
-                <span>1.0.0</span>
-              </div>
+              <strong>Version</strong>
+              <span>2.0.0 - Multi-voyages</span>
             </div>
             <div className="system-row">
-              <div>
-                <strong>Mode d’installation</strong>
-                <span>Compatible iPhone / PWA</span>
-              </div>
+              <strong>Mode d’installation</strong>
+              <span>Compatible iPhone / PWA</span>
             </div>
           </div>
 
           <div className="system-section">
             <h3>💾 Sauvegarde</h3>
             <div className="system-row">
-              <div>
-                <strong>Sauvegarde cloud</strong>
-                <span>Activée avec Supabase</span>
-              </div>
+              <strong>Sauvegarde cloud</strong>
+              <span>Activée avec Supabase</span>
             </div>
             <div className="system-row">
-              <div>
-                <strong>Données synchronisées</strong>
-                <span>Voyage, budget, valises, achats, lieux et documents</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="system-section">
-            <h3>🎨 Apparence</h3>
-            <div className="system-row">
-              <div>
-                <strong>Thème actuel</strong>
-                <span>Tropical clair</span>
-              </div>
-            </div>
-            <div className="system-row">
-              <div>
-                <strong>Interface</strong>
-                <span>Optimisée mobile</span>
-              </div>
+              <strong>Données synchronisées</strong>
+              <span>Voyage, budget, valises, achats, lieux, documents et photos</span>
             </div>
           </div>
 
           <div className="system-section">
             <h3>🗑️ Données</h3>
-            <button className="delete-person-button" onClick={resetCurrentAccountData}>
-              Réinitialiser mon voyage
+            <button className="delete-person-button" onClick={resetCurrentTripData}>
+              Réinitialiser ce voyage
             </button>
           </div>
 
@@ -1781,6 +1763,30 @@ function App() {
             </button>
           </div>
         </section>
+      )}
+
+      {selectedPhoto && (
+        <div className="photo-modal-overlay" onClick={() => setSelectedPhoto(null)}>
+          <div className="photo-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="photo-modal-close" onClick={() => setSelectedPhoto(null)}>×</button>
+            <img src={getPhotoUrl(selectedPhoto.photo_url)} alt={selectedPhoto.caption || 'Photo souvenir'} />
+            <div className="photo-modal-info">
+              <strong>{selectedPhoto.caption || 'Photo souvenir'}</strong>
+              <span>{getPhotoDate(selectedPhoto)}</span>
+            </div>
+            <div className="document-actions">
+              <button className="open-document" onClick={() => openPhoto(selectedPhoto.photo_url)}>
+                Ouvrir dans un nouvel onglet
+              </button>
+              <button className="delete-document" onClick={() => {
+                deletePhoto(selectedPhoto)
+                setSelectedPhoto(null)
+              }}>
+                Supprimer
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {menuOpen && (
@@ -1797,9 +1803,8 @@ function App() {
               ['planning', '📅', 'Planning'],
               ['budget', '💰', 'Budget'],
               ['documents', '📁', 'Documents'],
-              ['maps', '🗺️', 'Cartes'],
+              ['gallery', '📸', 'Galerie'],
               ['places', '📍', 'Lieux'],
-              ['destination', '✈️', 'Ma destination'],
               ['system', '⚙️', 'Système'],
             ].map(([tab, icon, label]) => (
               <button
@@ -1814,6 +1819,11 @@ function App() {
                 {label}
               </button>
             ))}
+
+            <button onClick={closeTrip}>
+              <span>🌍</span>
+              Retour à mes voyages
+            </button>
           </aside>
         </div>
       )}
