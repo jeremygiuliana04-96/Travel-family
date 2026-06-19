@@ -1578,3 +1578,32 @@ button:disabled {
   grid-template-columns: repeat(3, 110px) !important;
   gap: 8px !important;
 }
+
+.gallery-thumbnail {
+  width: 100% !important;
+  height: 95px !important;
+  object-fit: cover !important;
+  display: block !important;
+  border-radius: 14px !important;
+}
+
+.photo-preview-button {
+  width: 100% !important;
+  height: 95px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: none !important;
+  border-radius: 14px !important;
+}
+
+.premium-photo-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 8px !important;
+}
+
+.photo-modal img {
+  width: 100% !important;
+  max-height: 80vh !important;
+  object-fit: contain !important;
+}
