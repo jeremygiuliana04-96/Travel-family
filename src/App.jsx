@@ -62,12 +62,55 @@ function getSavedLanguage() {
   return localStorage.getItem('travel-family-language') || 'fr'
 }
 
+
+function getSavedAppearance() {
+  if (typeof window === 'undefined') return 'tropical'
+  return localStorage.getItem('travel-family-appearance') || 'tropical'
+}
+
+const appearanceLabels = {
+  fr: {
+    title: 'Apparence',
+    description: 'Choisis le style visuel de l’application',
+    current: 'Style actuel',
+    tropical: 'Classique tropical',
+    premium: 'Premium sable',
+    ocean: 'Bleu océan',
+    dark: 'Mode sombre',
+    minimal: 'Minimal clair',
+  },
+  en: {
+    title: 'Appearance',
+    description: 'Choose the visual style of the app',
+    current: 'Current style',
+    tropical: 'Classic tropical',
+    premium: 'Premium sand',
+    ocean: 'Ocean blue',
+    dark: 'Dark mode',
+    minimal: 'Light minimal',
+  },
+  es: {
+    title: 'Apariencia',
+    description: 'Elige el estilo visual de la aplicación',
+    current: 'Estilo actual',
+    tropical: 'Tropical clásico',
+    premium: 'Arena premium',
+    ocean: 'Azul océano',
+    dark: 'Modo oscuro',
+    minimal: 'Minimal claro',
+  },
+}
+
+const appearanceOptions = ['tropical', 'premium', 'ocean', 'dark', 'minimal']
+
 function App() {
   const [activeTab, setActiveTab] = useState('home')
   const [mainView, setMainView] = useState('dashboard')
   const [menuOpen, setMenuOpen] = useState(false)
   const [language, setLanguage] = useState(getSavedLanguage)
+  const [appearance, setAppearance] = useState(getSavedAppearance)
   const t = translations[language] || translations.fr
+  const appearanceText = appearanceLabels[language] || appearanceLabels.fr
 
   const [session, setSession] = useState(null)
   const [sessionLoading, setSessionLoading] = useState(true)
@@ -154,6 +197,21 @@ function App() {
   useEffect(() => {
     localStorage.setItem('travel-family-language', language)
   }, [language])
+
+  useEffect(() => {
+    localStorage.setItem('travel-family-appearance', appearance)
+
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove(
+        'theme-tropical',
+        'theme-premium',
+        'theme-ocean',
+        'theme-dark',
+        'theme-minimal'
+      )
+      document.body.classList.add(`theme-${appearance}`)
+    }
+  }, [appearance])
 
   useEffect(() => {
     if (session) loadTrips()
@@ -1153,7 +1211,7 @@ function App() {
 
   if (sessionLoading || dataLoading) {
     return (
-      <main className="app loading-screen">
+      <main className={`app theme-${appearance} loading-screen`}>
         <section className="hero-card">
           <h1>✈️ Travel Family</h1>
           <p>{t.preparingSpace}</p>
@@ -1166,7 +1224,7 @@ function App() {
 
   if (mainView === 'dashboard') {
     return (
-      <main className="app">
+      <main className={`app theme-${appearance}`}>
         <section className="hero-card">
           <h1>✈️ Travel Family</h1>
           <p>{t.appTagline}</p>
@@ -1206,7 +1264,7 @@ function App() {
 
   if (mainView === 'trips') {
     return (
-      <main className="app">
+      <main className={`app theme-${appearance}`}>
         <section className="hero-card">
           <button className="menu-button" onClick={() => setMainView('dashboard')}>
             ←
@@ -1258,7 +1316,7 @@ function App() {
 
   if (mainView === 'newTrip') {
     return (
-      <main className="app">
+      <main className={`app theme-${appearance}`}>
         <section className="hero-card">
           <button className="menu-button" onClick={() => setMainView('dashboard')}>
             ←
@@ -1322,7 +1380,7 @@ function App() {
   }
 
   return (
-    <main className="app">
+    <main className={`app theme-${appearance}`}>
       <section className="hero-card">
         <button className="menu-button" onClick={() => setMenuOpen(true)}>
           ☰
@@ -1876,6 +1934,28 @@ function App() {
                 🇪🇸 {t.spanish}
               </button>
             </div>
+          </div>
+
+          <div className="system-section">
+            <h3>🎨 {appearanceText.title}</h3>
+            <div className="system-row">
+              <strong>{appearanceText.description}</strong>
+              <span>{appearanceText.current} : {appearanceText[appearance]}</span>
+            </div>
+
+            <label className="field appearance-field">
+              {appearanceText.title}
+              <select
+                value={appearance}
+                onChange={(e) => setAppearance(e.target.value)}
+              >
+                {appearanceOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {appearanceText[option]}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
           <div className="system-section">
