@@ -679,56 +679,77 @@ function App() {
     setPhotos(data || [])
   }
 
-  function compressPhoto(file, maxWidth = 1600, quality = 0.78) {
-    return new Promise((resolve) => {
-      if (!file || !file.type?.startsWith('image/')) {
-        resolve(file)
+  function compressPhoto(file, maxWidth = 1000, quality = 0.55) {
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        reject(new Error('Aucune photo sélectionnée.'))
         return
       }
 
-      const image = new Image()
-      const objectUrl = URL.createObjectURL(file)
+      if (!file.type?.startsWith('image/')) {
+        reject(new Error('Le fichier sélectionné n’est pas une image.'))
+        return
+      }
 
-      image.onload = () => {
-        const scale = Math.min(1, maxWidth / image.width)
-        const width = Math.round(image.width * scale)
-        const height = Math.round(image.height * scale)
+      const reader = new FileReader()
 
-        const canvas = document.createElement('canvas')
-        canvas.width = width
-        canvas.height = height
+      reader.onload = () => {
+        const image = new Image()
 
-        const context = canvas.getContext('2d')
-        context.drawImage(image, 0, 0, width, height)
+        image.onload = () => {
+          const canvas = document.createElement('canvas')
+          const scale = Math.min(1, maxWidth / image.width)
+          const width = Math.max(1, Math.round(image.width * scale))
+          const height = Math.max(1, Math.round(image.height * scale))
 
-        canvas.toBlob(
-          (blob) => {
-            URL.revokeObjectURL(objectUrl)
+          canvas.width = width
+          canvas.height = height
 
-            if (!blob) {
-              resolve(file)
-              return
-            }
+          const context = canvas.getContext('2d')
 
-            const compressedFile = new File(
-              [blob],
-              `${Date.now()}-photo-voyage.jpg`,
-              { type: 'image/jpeg' }
+          if (!context) {
+            reject(new Error('Impossible de préparer la compression de la photo.'))
+            return
+          }
+
+          context.drawImage(image, 0, 0, width, height)
+
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error('Impossible de compresser cette photo.'))
+                return
+              }
+
+              const compressedFile = new File(
+                [blob],
+                `${Date.now()}-photo-voyage.jpg`,
+                { type: 'image/jpeg' }
+              )
+
+              resolve(compressedFile)
+            },
+            'image/jpeg',
+            quality
+          )
+        }
+
+        image.onerror = () => {
+          reject(
+            new Error(
+              'Cette photo ne peut pas être compressée automatiquement. Sur iPhone, règle Appareil photo > Formats > Le plus compatible, puis réessaie avec une photo JPG.'
             )
+          )
+        }
 
-            resolve(compressedFile)
-          },
-          'image/jpeg',
-          quality
-        )
+        image.src = reader.result
       }
 
-      image.onerror = () => {
-        URL.revokeObjectURL(objectUrl)
-        resolve(file)
+      reader.onerror = () => {
+        reject(new Error('Impossible de lire la photo sélectionnée.'))
       }
 
-      image.src = objectUrl
+      reader.readAsDataURL(file)
     })
   }
 
@@ -774,6 +795,9 @@ function App() {
       resetPhotoFileInput()
       await loadPhotos()
       resetPhotoFileInput()
+    } catch (error) {
+      console.error(error)
+      alert(error.message || 'Impossible de compresser ou d’envoyer la photo.')
     } finally {
       setPhotoUploading(false)
     }
