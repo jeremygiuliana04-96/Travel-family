@@ -709,7 +709,7 @@ function App() {
 
       if (insertError) {
         console.error(insertError)
-        alert("Impossible d'enregistrer la photo.")
+        alert(insertError.message)
         return
       }
 
