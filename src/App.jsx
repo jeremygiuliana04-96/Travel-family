@@ -1614,7 +1614,11 @@ function App() {
               {photos.map((photo) => (
                 <article className="photo-card premium-photo-card" key={photo.id}>
                   <button className="photo-preview-button" onClick={() => setSelectedPhoto(photo)}>
-                    <img src={getPhotoUrl(photo.photo_url)} alt={photo.caption || 'Photo souvenir'} />
+                    <img
+                      src={getPhotoUrl(photo.photo_url)}
+                      alt={photo.caption || 'Photo souvenir'}
+                      className="gallery-thumbnail"
+                    />
                     <span className="photo-open-hint">Agrandir</span>
                   </button>
 

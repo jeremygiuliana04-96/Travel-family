@@ -1527,3 +1527,54 @@ button:disabled {
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
+
+/* FORCE galerie photo */
+
+.gallery-card img,
+.photo-card img,
+.premium-photo-card img,
+.photo-preview-button img {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100px !important;
+  max-height: 100px !important;
+  object-fit: cover !important;
+  display: block !important;
+  border-radius: 12px !important;
+}
+
+.premium-photo-grid,
+.photo-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 8px !important;
+}
+
+.gallery-thumbnail {
+  width: 100px !important;
+  height: 100px !important;
+  max-width: 100px !important;
+  max-height: 100px !important;
+  object-fit: cover !important;
+  border-radius: 14px !important;
+  display: block !important;
+}
+
+.photo-preview-button {
+  width: 100px !important;
+  height: 100px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-radius: 14px !important;
+}
+
+.premium-photo-card {
+  width: 110px !important;
+  padding: 5px !important;
+}
+
+.premium-photo-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 110px) !important;
+  gap: 8px !important;
+}
