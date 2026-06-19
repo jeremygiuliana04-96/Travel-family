@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import Auth from './Auth.jsx'
 import { supabase } from './supabase.js'
+import heic2any from 'heic2any'
 
 const defaultPackingLists = {
   Famille: [],
@@ -679,79 +680,80 @@ function App() {
     setPhotos(data || [])
   }
 
-  function compressPhoto(file, maxWidth = 1000, quality = 0.55) {
-    return new Promise((resolve, reject) => {
-      if (!file) {
-        reject(new Error('Aucune photo sélectionnée.'))
-        return
-      }
+  async function compressPhoto(file, maxWidth = 1000, quality = 0.55) {
+  if (!file) throw new Error('Aucune photo sélectionnée.')
 
-      if (!file.type?.startsWith('image/')) {
-        reject(new Error('Le fichier sélectionné n’est pas une image.'))
-        return
-      }
+  let imageFile = file
 
-      const reader = new FileReader()
+  const isHeic =
+    file.type === 'image/heic' ||
+    file.type === 'image/heif' ||
+    file.name.toLowerCase().endsWith('.heic') ||
+    file.name.toLowerCase().endsWith('.heif')
 
-      reader.onload = () => {
-        const image = new Image()
+  if (isHeic) {
+    const convertedBlob = await heic2any({
+      blob: file,
+      toType: 'image/jpeg',
+      quality,
+    })
 
-        image.onload = () => {
-          const canvas = document.createElement('canvas')
-          const scale = Math.min(1, maxWidth / image.width)
-          const width = Math.max(1, Math.round(image.width * scale))
-          const height = Math.max(1, Math.round(image.height * scale))
+    imageFile = new File(
+      [Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob],
+      `${Date.now()}-photo-converted.jpg`,
+      { type: 'image/jpeg' }
+    )
+  }
 
-          canvas.width = width
-          canvas.height = height
+  return new Promise((resolve, reject) => {
+    if (!imageFile.type?.startsWith('image/')) {
+      reject(new Error('Le fichier sélectionné n’est pas une image.'))
+      return
+    }
 
-          const context = canvas.getContext('2d')
+    const image = new Image()
+    const objectUrl = URL.createObjectURL(imageFile)
 
-          if (!context) {
-            reject(new Error('Impossible de préparer la compression de la photo.'))
+    image.onload = () => {
+      const scale = Math.min(1, maxWidth / image.width)
+      const width = Math.round(image.width * scale)
+      const height = Math.round(image.height * scale)
+
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+
+      const context = canvas.getContext('2d')
+      context.drawImage(image, 0, 0, width, height)
+
+      canvas.toBlob(
+        (blob) => {
+          URL.revokeObjectURL(objectUrl)
+
+          if (!blob) {
+            reject(new Error('Impossible de compresser la photo.'))
             return
           }
 
-          context.drawImage(image, 0, 0, width, height)
-
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                reject(new Error('Impossible de compresser cette photo.'))
-                return
-              }
-
-              const compressedFile = new File(
-                [blob],
-                `${Date.now()}-photo-voyage.jpg`,
-                { type: 'image/jpeg' }
-              )
-
-              resolve(compressedFile)
-            },
-            'image/jpeg',
-            quality
+          resolve(
+            new File([blob], `${Date.now()}-photo-voyage.jpg`, {
+              type: 'image/jpeg',
+            })
           )
-        }
+        },
+        'image/jpeg',
+        quality
+      )
+    }
 
-        image.onerror = () => {
-          reject(
-            new Error(
-              'Cette photo ne peut pas être compressée automatiquement. Sur iPhone, règle Appareil photo > Formats > Le plus compatible, puis réessaie avec une photo JPG.'
-            )
-          )
-        }
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl)
+      reject(new Error('Format photo non compatible. Essaie avec une photo JPG.'))
+    }
 
-        image.src = reader.result
-      }
-
-      reader.onerror = () => {
-        reject(new Error('Impossible de lire la photo sélectionnée.'))
-      }
-
-      reader.readAsDataURL(file)
-    })
-  }
+    image.src = objectUrl
+  })
+}
 
   async function addPhoto() {
     if (!selectedTripId || !photoFile) return
@@ -760,6 +762,12 @@ function App() {
       setPhotoUploading(true)
 
       const compressedPhoto = await compressPhoto(photoFile)
+      alert(
+        `Original : ${(photoFile.size / 1024 / 1024).toFixed(2)} MB\n` +
+        `Compressé : ${(compressedPhoto.size / 1024 / 1024).toFixed(2)} MB\n` +
+        `Type : ${photoFile.type}`
+      )
+
       const cleanFileName = compressedPhoto.name.replaceAll(' ', '-')
       const filePath = `${session.user.id}/${selectedTripId}/${cleanFileName}`
 
