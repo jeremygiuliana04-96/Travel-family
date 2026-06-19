@@ -679,18 +679,75 @@ function App() {
     setPhotos(data || [])
   }
 
+  function compressPhoto(file, maxWidth = 1600, quality = 0.78) {
+    return new Promise((resolve) => {
+      if (!file || !file.type?.startsWith('image/')) {
+        resolve(file)
+        return
+      }
+
+      const image = new Image()
+      const objectUrl = URL.createObjectURL(file)
+
+      image.onload = () => {
+        const scale = Math.min(1, maxWidth / image.width)
+        const width = Math.round(image.width * scale)
+        const height = Math.round(image.height * scale)
+
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+
+        const context = canvas.getContext('2d')
+        context.drawImage(image, 0, 0, width, height)
+
+        canvas.toBlob(
+          (blob) => {
+            URL.revokeObjectURL(objectUrl)
+
+            if (!blob) {
+              resolve(file)
+              return
+            }
+
+            const compressedFile = new File(
+              [blob],
+              `${Date.now()}-photo-voyage.jpg`,
+              { type: 'image/jpeg' }
+            )
+
+            resolve(compressedFile)
+          },
+          'image/jpeg',
+          quality
+        )
+      }
+
+      image.onerror = () => {
+        URL.revokeObjectURL(objectUrl)
+        resolve(file)
+      }
+
+      image.src = objectUrl
+    })
+  }
+
   async function addPhoto() {
     if (!selectedTripId || !photoFile) return
 
     try {
       setPhotoUploading(true)
 
-      const cleanFileName = photoFile.name.replaceAll(' ', '-')
-      const filePath = `${session.user.id}/${selectedTripId}/${Date.now()}-${cleanFileName}`
+      const compressedPhoto = await compressPhoto(photoFile)
+      const cleanFileName = compressedPhoto.name.replaceAll(' ', '-')
+      const filePath = `${session.user.id}/${selectedTripId}/${cleanFileName}`
 
       const { error: uploadError } = await supabase.storage
         .from('travel-photos')
-        .upload(filePath, photoFile)
+        .upload(filePath, compressedPhoto, {
+          contentType: compressedPhoto.type || 'image/jpeg',
+          upsert: false,
+        })
 
       if (uploadError) {
         console.error(uploadError)
