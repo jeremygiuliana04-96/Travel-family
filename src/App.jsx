@@ -694,7 +694,7 @@ function App() {
 
       if (uploadError) {
         console.error(uploadError)
-        alert("Impossible d'envoyer la photo.")
+        alert(uploadError.message)
         return
       }
 
