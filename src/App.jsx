@@ -1561,8 +1561,6 @@ function App() {
             </div>
           </div>
 
-          )}
-
           <div className="gallery-upload-box">
             <label className="file-picker-button" htmlFor="photo-file-input">
               {photoFile ? '✅ Photo sélectionnée' : '📷 Choisir une photo'}
