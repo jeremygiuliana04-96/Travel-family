@@ -121,46 +121,44 @@ function Auth() {
         </p>
 
         <label className={`auth-input-wrap ${email ? (isEmailValid ? 'input-valid' : 'input-invalid') : ''}`}>
-          <span>✉️</span>
-          <input
-            type="email"
-            placeholder="Adresse e-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <span className="auth-input-icon">✉️</span>
+          <div className="auth-input-content">
+            <small>Adresse e-mail</small>
+            <input
+              type="email"
+              placeholder="exemple@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
           {email && <strong>{isEmailValid ? '✓' : '!'}</strong>}
         </label>
 
         <label className={`auth-input-wrap ${password ? (isPasswordValid ? 'input-valid' : 'input-invalid') : ''}`}>
-          <span>🔒</span>
-          <input
-            type="password"
-            placeholder="Mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <span className="auth-input-icon">🔒</span>
+          <div className="auth-input-content">
+            <small>Mot de passe</small>
+            <input
+              type="password"
+              placeholder="Votre mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
         </label>
-
-        {!isRegister && (
-          <button
-            type="button"
-            className="forgot-password-button"
-            onClick={resetPassword}
-            disabled={loading}
-          >
-            Mot de passe oublié ?
-          </button>
-        )}
 
         {isRegister && (
           <label className={`auth-input-wrap ${confirmPassword ? (passwordsMatch ? 'input-valid' : 'input-invalid') : ''}`}>
-            <span>🔒</span>
-            <input
-              type="password"
-              placeholder="Confirmer le mot de passe"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+            <span className="auth-input-icon">🔒</span>
+            <div className="auth-input-content">
+              <small>Confirmation</small>
+              <input
+                type="password"
+                placeholder="Retapez votre mot de passe"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
           </label>
         )}
 
@@ -181,6 +179,17 @@ function Auth() {
               ? 'Créer mon compte'
               : 'Se connecter'}
         </button>
+
+        {!isRegister && (
+          <button
+            type="button"
+            className="forgot-password-button auth-forgot-link"
+            onClick={resetPassword}
+            disabled={loading}
+          >
+            Mot de passe oublié ?
+          </button>
+        )}
 
         <div className="auth-separator">
           <span></span>

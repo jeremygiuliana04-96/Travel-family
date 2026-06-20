@@ -3780,34 +3780,3 @@ body.theme-dark .packing-row {
 .forgot-password-button {
   color: white !important;
 }
-
-/* ===== SUPPRESSION BORDURE BLANCHE LOGO ===== */
-
-.auth-premium-logo {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-.auth-premium-logo img {
-  width: 120px !important;
-  height: 120px !important;
-  object-fit: contain !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.planning-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    var(--turquoise),
-    var(--blue-dark)
-  );
-  flex-shrink: 0;
-  box-shadow: 0 0 0 6px rgba(20, 184, 212, 0.12);
-}
