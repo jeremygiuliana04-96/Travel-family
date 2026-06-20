@@ -3755,3 +3755,28 @@ body.theme-dark .packing-row {
   font-weight: 900 !important;
   box-shadow: none !important;
 }
+
+
+/* =========================================================
+   TRAVEL FAMILY - Ajustements écran connexion
+   Logo plus grand, boutons plus fins, texte lisible
+   ========================================================= */
+
+.auth-premium-logo img {
+  width: 120px !important;
+  height: 120px !important;
+  object-fit: contain !important;
+}
+
+.auth-primary-button,
+.auth-create-button,
+.forgot-password-button {
+  min-height: 48px !important;
+  padding: 10px 18px !important;
+  font-size: 18px !important;
+  border-radius: 18px !important;
+}
+
+.forgot-password-button {
+  color: white !important;
+}
