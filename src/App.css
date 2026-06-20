@@ -3621,3 +3621,69 @@ body.theme-dark .packing-row {
     height: 34px !important;
   }
 }
+
+.auth-switch-animation {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.auth-switch-animation.register-mode {
+  animation: authFadeIn 0.25s ease;
+}
+
+.auth-switch-animation.login-mode {
+  animation: authFadeIn 0.25s ease;
+}
+
+@keyframes authFadeIn {
+  from {
+    opacity: 0.75;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.input-valid {
+  border-color: rgba(34, 197, 94, 0.75) !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+.input-invalid {
+  border-color: rgba(239, 68, 68, 0.75) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.auth-input-wrap strong {
+  margin-left: auto;
+  font-size: 1rem;
+  color: #16a34a;
+}
+
+.password-eye-button {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.forgot-password-button {
+  align-self: flex-end;
+  margin-top: -6px;
+  margin-bottom: 8px;
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-helper-error {
+  margin: -4px 0 8px;
+  color: #ef4444;
+  font-size: 0.85rem;
+  font-weight: 700;
+}

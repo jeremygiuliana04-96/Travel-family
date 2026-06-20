@@ -4,12 +4,22 @@ import { supabase } from './supabase.js'
 function Auth() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [isRegister, setIsRegister] = useState(false)
 
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  const isPasswordValid = password.length >= 6
+  const passwordsMatch = password === confirmPassword
+
   async function signIn() {
-    if (!email || !password) return
+    if (!email || !password) {
+      setMessage('Remplis ton email et ton mot de passe.')
+      return
+    }
 
     setLoading(true)
     setMessage('')
@@ -27,7 +37,20 @@ function Auth() {
   }
 
   async function signUp() {
-    if (!email || !password) return
+    if (!isEmailValid) {
+      setMessage('Adresse e-mail invalide.')
+      return
+    }
+
+    if (!isPasswordValid) {
+      setMessage('Le mot de passe doit contenir au moins 6 caractères.')
+      return
+    }
+
+    if (!passwordsMatch) {
+      setMessage('Les mots de passe ne correspondent pas.')
+      return
+    }
 
     setLoading(true)
     setMessage('')
@@ -49,8 +72,31 @@ function Auth() {
     setLoading(false)
   }
 
+  async function resetPassword() {
+    if (!isEmailValid) {
+      setMessage('Entre ton adresse e-mail pour réinitialiser ton mot de passe.')
+      return
+    }
+
+    setLoading(true)
+    setMessage('')
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    })
+
+    if (error) {
+      setMessage(error.message)
+    } else {
+      setMessage('Email de réinitialisation envoyé.')
+    }
+
+    setLoading(false)
+  }
+
   function switchMode() {
     setMessage('')
+    setConfirmPassword('')
     setIsRegister(!isRegister)
   }
 
@@ -66,7 +112,7 @@ function Auth() {
         <p>Organisez vos voyages<br />en toute simplicité</p>
       </section>
 
-      <section className="auth-card auth-premium-card">
+      <section className={`auth-card auth-premium-card auth-switch-animation ${isRegister ? 'register-mode' : 'login-mode'}`}>
         <h2>{isRegister ? 'Créer un compte' : 'Bienvenue !'}</h2>
 
         <p>
@@ -75,7 +121,7 @@ function Auth() {
             : 'Connectez-vous à votre compte'}
         </p>
 
-        <label className="auth-input-wrap">
+        <label className={`auth-input-wrap ${email ? (isEmailValid ? 'input-valid' : 'input-invalid') : ''}`}>
           <span>✉️</span>
           <input
             type="email"
@@ -83,17 +129,59 @@ function Auth() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          {email && <strong>{isEmailValid ? '✓' : '!'}</strong>}
         </label>
 
-        <label className="auth-input-wrap">
+        <label className={`auth-input-wrap ${password ? (isPasswordValid ? 'input-valid' : 'input-invalid') : ''}`}>
           <span>🔒</span>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             placeholder="Mot de passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <button
+            type="button"
+            className="password-eye-button"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? '🙈' : '👁️'}
+          </button>
         </label>
+
+        {!isRegister && (
+          <button
+            type="button"
+            className="forgot-password-button"
+            onClick={resetPassword}
+            disabled={loading}
+          >
+            Mot de passe oublié ?
+          </button>
+        )}
+
+        {isRegister && (
+          <label className={`auth-input-wrap ${confirmPassword ? (passwordsMatch ? 'input-valid' : 'input-invalid') : ''}`}>
+            <span>🔒</span>
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="Confirmer le mot de passe"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="password-eye-button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? '🙈' : '👁️'}
+            </button>
+          </label>
+        )}
+
+        {isRegister && confirmPassword && !passwordsMatch && (
+          <p className="auth-helper-error">Les mots de passe ne correspondent pas.</p>
+        )}
 
         {message && <p className="auth-message">{message}</p>}
 
