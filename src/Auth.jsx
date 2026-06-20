@@ -5,8 +5,6 @@ function Auth() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [isRegister, setIsRegister] = useState(false)
@@ -102,12 +100,13 @@ function Auth() {
 
   return (
     <main className="auth-page auth-premium-page">
-      <div className="auth-soft-plane">✈️</div>
       <div className="auth-soft-cloud auth-soft-cloud-one"></div>
       <div className="auth-soft-cloud auth-soft-cloud-two"></div>
 
       <section className="auth-premium-hero">
-        <div className="auth-premium-logo">✈️</div>
+        <div className="auth-premium-logo">
+          <img src="/logo-travel-family.png" alt="Travel Family" />
+        </div>
         <h1>Travel Family</h1>
         <p>Organisez vos voyages<br />en toute simplicité</p>
       </section>
@@ -135,18 +134,11 @@ function Auth() {
         <label className={`auth-input-wrap ${password ? (isPasswordValid ? 'input-valid' : 'input-invalid') : ''}`}>
           <span>🔒</span>
           <input
-            type={showPassword ? 'text' : 'password'}
+            type="password"
             placeholder="Mot de passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button
-            type="button"
-            className="password-eye-button"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? '🙈' : '👁️'}
-          </button>
         </label>
 
         {!isRegister && (
@@ -164,18 +156,11 @@ function Auth() {
           <label className={`auth-input-wrap ${confirmPassword ? (passwordsMatch ? 'input-valid' : 'input-invalid') : ''}`}>
             <span>🔒</span>
             <input
-              type={showConfirmPassword ? 'text' : 'password'}
+              type="password"
               placeholder="Confirmer le mot de passe"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
-            <button
-              type="button"
-              className="password-eye-button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? '🙈' : '👁️'}
-            </button>
           </label>
         )}
 
@@ -208,7 +193,7 @@ function Auth() {
           onClick={switchMode}
           disabled={loading}
         >
-          {isRegister ? '← Retour à la connexion' : '👤+ Créer un compte'}
+          {isRegister ? '← Retour à la connexion' : '👤 + Créer un compte'}
         </button>
       </section>
 
