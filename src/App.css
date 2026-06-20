@@ -3798,3 +3798,16 @@ body.theme-dark .packing-row {
   border: none !important;
   box-shadow: none !important;
 }
+
+.planning-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--turquoise),
+    var(--blue-dark)
+  );
+  flex-shrink: 0;
+  box-shadow: 0 0 0 6px rgba(20, 184, 212, 0.12);
+}

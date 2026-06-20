@@ -1758,7 +1758,7 @@ function App() {
             {sortedActivities.map((activity, index) => (
               <article className="timeline-item" key={activity.id}>
                 <div className="timeline-date"><strong>{activity.date}</strong><span>{getActivityCountdownText(activity)}</span></div>
-                <div className="timeline-dot">{index % 3 === 0 ? '🌴' : index % 3 === 1 ? '🍽️' : '🏖️'}</div>
+                <div className="timeline-dot">●</div>
                 <div className="timeline-card"><strong>{activity.name}</strong><button onClick={() => deleteActivity(activity.id)}>✕</button></div>
               </article>
             ))}
