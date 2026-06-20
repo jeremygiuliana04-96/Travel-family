@@ -36,7 +36,7 @@ function Auth() {
       password,
       options: {
         emailRedirectTo: window.location.origin
-      } 
+      }
     })
 
     if (error) {
@@ -49,40 +49,44 @@ function Auth() {
   }
 
   return (
-    <main className="auth-page">
-      <div className="auth-plane">✈️</div>
-      <div className="auth-trail"></div>
+    <main className="auth-page auth-premium-page">
+      <div className="auth-soft-plane">✈️</div>
+      <div className="auth-soft-cloud auth-soft-cloud-one"></div>
+      <div className="auth-soft-cloud auth-soft-cloud-two"></div>
 
-      <div className="auth-palm auth-palm-right">🌴</div>
-      <div className="auth-palm auth-palm-left">🌴</div>
-
-      <section className="auth-hero">
-        <div className="auth-logo">🌴</div>
+      <section className="auth-premium-hero">
+        <div className="auth-premium-logo">✈️</div>
         <h1>Travel Family</h1>
-        <p>Vos vacances. Vos documents. Votre tranquillité.</p>
+        <p>Organisez vos voyages<br />en toute simplicité</p>
       </section>
 
-      <section className="auth-card">
-        <h2>Connexion</h2>
-        <p>Bienvenue parmi nous 👋</p>
+      <section className="auth-card auth-premium-card">
+        <h2>Bienvenue !</h2>
+        <p>Connectez-vous à votre compte</p>
 
-        <input
-          type="email"
-          placeholder="Adresse e-mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <label className="auth-input-wrap">
+          <span>✉️</span>
+          <input
+            type="email"
+            placeholder="Adresse e-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </label>
 
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <label className="auth-input-wrap">
+          <span>🔒</span>
+          <input
+            type="password"
+            placeholder="Mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
 
         {message && <p className="auth-message">{message}</p>}
 
-        <button onClick={signIn} disabled={loading}>
+        <button className="auth-primary-button" onClick={signIn} disabled={loading}>
           {loading ? 'Chargement...' : 'Se connecter'}
         </button>
 
@@ -92,22 +96,23 @@ function Auth() {
           <span></span>
         </div>
 
-        <button className="secondary-auth-button" onClick={signUp} disabled={loading}>
-          Créer un compte
+        <button className="secondary-auth-button auth-create-button" onClick={signUp} disabled={loading}>
+          👤+ Créer un compte
         </button>
       </section>
 
-      <section className="auth-features">
-        <div>🧳 Valises</div>
-        <div>💰 Budget</div>
-        <div>📁 Documents</div>
-        <div>🗺️ Lieux</div>
-        <div>🌤️ Météo</div>
-        <div>🤖 Assistant</div>
+      <section className="auth-features auth-premium-features">
+        <div><span>🧳</span><strong>Valises</strong></div>
+        <div><span>💰</span><strong>Budget</strong></div>
+        <div><span>📁</span><strong>Documents</strong></div>
+        <div><span>📅</span><strong>Planning</strong></div>
+        <div><span>🖼️</span><strong>Galerie</strong></div>
+        <div><span>🤖</span><strong>Assistant</strong></div>
       </section>
 
-      <p className="auth-footer">
-        Prêt pour l’aventure ? ✈️🌴
+      <p className="auth-footer auth-premium-footer">
+        Prêt pour l’aventure ? 💙<br />
+        <span>Travel Family · Tous vos voyages au même endroit</span>
       </p>
     </main>
   )

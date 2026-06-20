@@ -103,6 +103,17 @@ const appearanceLabels = {
 
 const appearanceOptions = ['tropical', 'premium', 'ocean', 'dark', 'minimal']
 
+const COVER_META_ID = '__travel_family_cover__'
+const coverOptions = [
+  { value: 'auto', icon: '✨', fr: 'Automatique selon la destination', en: 'Automatic based on destination', es: 'Automático según el destino' },
+  { value: 'beach', icon: '🏖️', fr: 'Plage / soleil', en: 'Beach / sun', es: 'Playa / sol' },
+  { value: 'ski', icon: '⛷️', fr: 'Ski / montagne', en: 'Ski / mountains', es: 'Esquí / montaña' },
+  { value: 'city', icon: '🏙️', fr: 'Ville / city-trip', en: 'City trip', es: 'Ciudad / escapada' },
+  { value: 'nature', icon: '🌲', fr: 'Nature / aventure', en: 'Nature / adventure', es: 'Naturaleza / aventura' },
+  { value: 'family', icon: '🎢', fr: 'Parc / famille', en: 'Theme park / family', es: 'Parque / familia' },
+  { value: 'generic', icon: '✈️', fr: 'Voyage générique', en: 'Generic travel', es: 'Viaje genérico' },
+]
+
 function App() {
   const [activeTab, setActiveTab] = useState('home')
   const [mainView, setMainView] = useState('dashboard')
@@ -129,6 +140,7 @@ function App() {
   const [newTripIcon, setNewTripIcon] = useState('✈️')
   const [newTripStartDate, setNewTripStartDate] = useState('')
   const [newTripEndDate, setNewTripEndDate] = useState('')
+  const [newTripCoverType, setNewTripCoverType] = useState('auto')
 
   const [weather, setWeather] = useState(null)
   const [weatherLoading, setWeatherLoading] = useState(false)
@@ -275,6 +287,80 @@ function App() {
     return (person || '?').trim().charAt(0).toUpperCase()
   }
 
+  function getCoverTypeFromPlaces(sourcePlaces = places) {
+    return sourcePlaces.find((place) => place?.id === COVER_META_ID)?.coverType || 'auto'
+  }
+
+  function withCoverType(sourcePlaces = [], coverType = 'auto') {
+    const visiblePlaces = sourcePlaces.filter((place) => place?.id !== COVER_META_ID)
+    return [
+      ...visiblePlaces,
+      {
+        id: COVER_META_ID,
+        name: '__cover__',
+        type: 'meta',
+        address: coverType,
+        coverType,
+        hidden: true,
+      },
+    ]
+  }
+
+  function getVisiblePlaces(sourcePlaces = places) {
+    return sourcePlaces.filter((place) => place?.id !== COVER_META_ID)
+  }
+
+  function getCoverLabel(option) {
+    const currentLanguage = language === 'en' || language === 'es' ? language : 'fr'
+    return `${option.icon} ${option[currentLanguage]}`
+  }
+
+  function getDestinationImageUrl(destination = '', selectedCoverType = 'auto') {
+    const coverImages = {
+      beach: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1100&q=85',
+      ski: 'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=1100&q=85',
+      city: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1100&q=85',
+      nature: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1100&q=85',
+      family: 'https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?auto=format&fit=crop&w=1100&q=85',
+      generic: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1100&q=85',
+    }
+
+    if (selectedCoverType && selectedCoverType !== 'auto') {
+      return coverImages[selectedCoverType] || coverImages.generic
+    }
+
+    const cleanDestination = destination
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+
+    if (cleanDestination.includes('ski') || cleanDestination.includes('montagne') || cleanDestination.includes('alpes') || cleanDestination.includes('courchevel') || cleanDestination.includes('chamonix')) {
+      return coverImages.ski
+    }
+
+    if (cleanDestination.includes('maspalomas') || cleanDestination.includes('gran canaria') || cleanDestination.includes('tenerife') || cleanDestination.includes('ibiza') || cleanDestination.includes('majorque')) {
+      return coverImages.beach
+    }
+
+    if (cleanDestination.includes('paris')) {
+      return 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1100&q=85'
+    }
+
+    if (cleanDestination.includes('rome') || cleanDestination.includes('roma')) {
+      return 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1100&q=85'
+    }
+
+    if (cleanDestination.includes('barcelone') || cleanDestination.includes('barcelona')) {
+      return 'https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=1100&q=85'
+    }
+
+    if (cleanDestination.includes('new york') || cleanDestination.includes('londres') || cleanDestination.includes('london')) {
+      return coverImages.city
+    }
+
+    return coverImages.generic
+  }
+
   function resetDocumentFileInput() {
     setDocumentFile(null)
 
@@ -322,6 +408,7 @@ function App() {
     setNewTripIcon('✈️')
     setNewTripStartDate('')
     setNewTripEndDate('')
+    setNewTripCoverType('auto')
   }
 
   function resetCurrentTripState() {
@@ -456,6 +543,30 @@ function App() {
     return t.datesToDefine
   }
 
+  function getTripStatusText(trip) {
+    if (!trip?.start_date) return t.datesToDefine
+
+    const today = new Date()
+    const departure = new Date(trip.start_date)
+    const returnDate = trip.end_date ? new Date(trip.end_date) : null
+
+    today.setHours(0, 0, 0, 0)
+    departure.setHours(0, 0, 0, 0)
+    if (returnDate) returnDate.setHours(0, 0, 0, 0)
+
+    const daysUntilDeparture = Math.ceil((departure - today) / (1000 * 60 * 60 * 24))
+
+    if (returnDate && today > returnDate) return 'Terminé'
+    if (daysUntilDeparture > 1) return `Dans ${daysUntilDeparture} jours`
+    if (daysUntilDeparture === 1) return t.tomorrow
+    if (daysUntilDeparture === 0) return t.today
+    return 'En cours'
+  }
+
+  function getTripPeopleCount(trip) {
+    return Array.isArray(trip?.people) ? trip.people.length : 1
+  }
+
   function getActivityCountdownText(activity) {
     if (!activity) return ''
 
@@ -571,6 +682,7 @@ function App() {
         trip_icon: newTripIcon.trim() || '✈️',
         start_date: newTripStartDate || null,
         end_date: newTripEndDate || null,
+        places: withCoverType([], newTripCoverType),
         updated_at: new Date().toISOString(),
       })
       .select()
@@ -1234,93 +1346,75 @@ function App() {
 
   if (!session) return <Auth />
 
-  if (mainView === 'dashboard') {
+  if (mainView === 'dashboard' || mainView === 'trips') {
     return (
-      <main className={`app theme-${appearance}`}>
-        <section className="hero-card">
-          <h1>✈️ Travel Family</h1>
-          <p>{t.appTagline}</p>
-        </section>
+      <main className={`app theme-${appearance} trips-home-shell`}>
+        <section className="trips-modern-header trips-modern-header-clean">
+          <button className="trips-return-login" onClick={signOut} aria-label="Retour connexion">
+            <span>←</span> Retour connexion
+          </button>
 
-        <section className="card dashboard-card">
-          <h2>🌴 {t.home}</h2>
-
-          <div className="dashboard-actions">
-            <button onClick={() => setMainView('trips')}>
-              <span>🌍</span>
-              <strong>{t.trips}</strong>
-              <small>{t.seeSavedTrips}</small>
-            </button>
-
-            <button onClick={() => setMainView('newTrip')}>
-              <span>➕</span>
-              <strong>{t.addNewTrip}</strong>
-              <small>{t.createDestination}</small>
-            </button>
+          <div className="trips-brand">
+            <span>✈️</span>
+            <strong>Travel Family</strong>
           </div>
         </section>
 
-        <section className="card system-card">
-          <h2>⚙️ {t.account}</h2>
-          <div className="system-row">
-            <strong>{t.connectedEmail}</strong>
-            <span>{session?.user?.email || t.unavailable}</span>
+        <section className="trips-title-card">
+          <div>
+            <h1>{t.trips}</h1>
+            <p>Tous vos voyages en un coup d’œil</p>
           </div>
-          <button className="delete-person-button" onClick={signOut}>
-            Se déconnecter
+
+          <button className="trips-new-button" onClick={() => setMainView('newTrip')}>
+            + {t.newTrip}
           </button>
         </section>
-      </main>
-    )
-  }
 
-  if (mainView === 'trips') {
-    return (
-      <main className={`app theme-${appearance}`}>
-        <section className="hero-card">
-          <button className="menu-button" onClick={() => setMainView('dashboard')}>
-            ←
-          </button>
-          <h1>🌍 {t.trips}</h1>
-          <p>{trips.length} {t.savedTrips}</p>
-        </section>
+        <div className="trips-search-box">
+          <span>🔎</span>
+          <input type="text" placeholder="Rechercher un voyage..." readOnly />
+        </div>
 
-        <section className="card">
-          <div className="document-actions">
-            <button className="open-document" onClick={() => setMainView('newTrip')}>
-              ➕ {t.addNewTrip}
-            </button>
-          </div>
+        <section className="modern-trips-list">
+          {trips.length === 0 && (
+            <div className="empty-state trips-empty-state">
+              <strong>{t.noTrip}</strong>
+              <p>{t.addFirstTrip}</p>
+              <button className="trips-new-button" onClick={() => setMainView('newTrip')}>
+                + {t.addNewTrip}
+              </button>
+            </div>
+          )}
 
-          <div className="trip-list">
-            {trips.length === 0 && (
-              <div className="empty-state">
-                <strong>{t.noTrip}</strong>
-                <p>{t.addFirstTrip}</p>
-              </div>
-            )}
+          {trips.map((trip) => {
+            const coverType = getCoverTypeFromPlaces(trip.places || [])
+            return (
+              <article className="modern-trip-card" key={trip.id}>
+                <button className="modern-trip-open" onClick={() => openTrip(trip)}>
+                  <span
+                    className="modern-trip-photo"
+                    style={{ backgroundImage: `url(${getDestinationImageUrl(trip.trip_name || '', coverType)})` }}
+                  />
 
-            {trips.map((trip) => (
-              <div className="trip-row" key={trip.id}>
-                <button className="trip-open-button" onClick={() => openTrip(trip)}>
-                  <span className="trip-icon">{trip.trip_icon || '✈️'}</span>
-                  <span>
-                    <strong>{trip.trip_name || 'Mon voyage'}</strong>
-                    <small>{getTripDatesText(trip)}</small>
+                  <span className="modern-trip-info">
+                    <strong>{trip.trip_name || 'Mon voyage'} <em>{trip.trip_icon || '✈️'}</em></strong>
+                    <small>📅 {getTripDatesText(trip)}</small>
+                    <small>👨‍👩‍👧‍👦 {getTripPeopleCount(trip)} personne{getTripPeopleCount(trip) > 1 ? 's' : ''}</small>
+                    <span className={`modern-trip-status ${getTripStatusText(trip) === 'Terminé' ? 'finished' : ''}`}>
+                      {getTripStatusText(trip)}
+                    </span>
                   </span>
+
+                  <span className="modern-trip-arrow">›</span>
                 </button>
 
-                <div className="document-actions">
-                  <button className="open-document" onClick={() => openTrip(trip)}>
-                    Ouvrir
-                  </button>
-                  <button className="delete-document" onClick={() => deleteTrip(trip)}>
-                    {t.delete}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+                <button className="modern-trip-delete" onClick={() => deleteTrip(trip)} aria-label={t.delete}>
+                  ⋮
+                </button>
+              </article>
+            )
+          })}
         </section>
       </main>
     )
@@ -1360,6 +1454,21 @@ function App() {
             />
           </label>
 
+
+          <label className="field">
+            Photo de couverture
+            <select
+              value={newTripCoverType}
+              onChange={(e) => setNewTripCoverType(e.target.value)}
+            >
+              {coverOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {getCoverLabel(option)}
+                </option>
+              ))}
+            </select>
+          </label>
+
           <label className="field">
             {t.departureDate}
             <input
@@ -1392,112 +1501,156 @@ function App() {
   }
 
   return (
-    <main className={`app theme-${appearance}`}>
-      <section className="hero-card premium-trip-hero">
-        <button className="menu-button" onClick={() => setMenuOpen(true)}>
-          ☰
-        </button>
+    <main className={`app theme-${appearance} ${activeTab === 'home' ? 'home-app-shell' : ''}`}>
+      {activeTab !== 'home' && (
+        <section className="hero-card premium-trip-hero">
+          <button className="menu-button" onClick={() => setMenuOpen(true)}>
+            ☰
+          </button>
 
-        <button className="back-trip-button" onClick={closeTrip}>
-          ← {t.backTrips}
-        </button>
+          <button className="back-trip-button" onClick={closeTrip}>
+            ← {t.backTrips}
+          </button>
 
-        <div className="hero-copy">
-          <span className="hero-kicker">{tripIcon} Travel Family</span>
-          <h1>{tripName}</h1>
-          {getTripDatesText() && <p>{getTripDatesText()}</p>}
-        </div>
-      </section>
+          <div className="hero-copy">
+            <span className="hero-kicker">{tripIcon} Travel Family</span>
+            <h1>{tripName}</h1>
+            {getTripDatesText() && <p>{getTripDatesText()}</p>}
+          </div>
+        </section>
+      )}
 
       {activeTab === 'home' && (
         <>
+          <div className="home-topbar">
+            <button className="home-back-button" onClick={closeTrip}>← {t.backTrips}</button>
+            <div>
+              <span>Travel Family</span>
+              <strong>{t.home}</strong>
+            </div>
+            <button className="home-menu-button" onClick={() => setMenuOpen(true)}>☰</button>
+          </div>
+
           <section className="home-dashboard">
             <div className="home-welcome-card">
-              <span>Bonjour ! 👋</span>
-              <h2>{t.holidays} {tripName}</h2>
-              <p>{getTripDatesText()}</p>
-              {getDaysUntilStart() !== null && (
-                <div className="home-progress">
-                  <strong>{getDaysUntilStart() >= 0 ? `J-${getDaysUntilStart()}` : 'Voyage en cours'}</strong>
-                  <div><span style={{ width: `${Math.max(8, Math.min(100, 100 - Math.max(0, getDaysUntilStart()))) }%` }} /></div>
-                </div>
-              )}
+              <div className="home-welcome-copy">
+                <span>👋 Bonjour !</span>
+                <h2>{t.holidays} {tripName}</h2>
+                <p>{getTripDatesText()}</p>
+                {getDaysUntilStart() !== null && (
+                  <div className="home-progress">
+                    <strong>{getDaysUntilStart() >= 0 ? `J-${getDaysUntilStart()}` : 'Voyage en cours'} <small>avant le départ</small></strong>
+                    <div><span style={{ width: `${Math.max(8, Math.min(100, 100 - Math.max(0, getDaysUntilStart()))) }%` }} /></div>
+                  </div>
+                )}
+              </div>
+
+              <div
+                className="home-destination-photo"
+                aria-label={tripName}
+                style={{ backgroundImage: `url(${getDestinationImageUrl(tripName, getCoverTypeFromPlaces())})` }}
+              />
             </div>
 
             <div className="home-tiles">
-              <button onClick={() => setActiveTab('packing')}>
+              <button onClick={() => setActiveTab('packing')} className="home-tile-card home-tile-blue">
                 <span>🧳</span>
-                <strong>{t.packing}</strong>
-                <small>{checkedPackingItems.length}/{allPackingItems.length || 0}</small>
+                <div>
+                  <strong>{t.packing}</strong>
+                  <em>{packingProgress}%</em>
+                  <small>{checkedPackingItems.length} / {allPackingItems.length || 0} objets</small>
+                </div>
               </button>
-              <button onClick={() => setActiveTab('budget')}>
+              <button onClick={() => setActiveTab('budget')} className="home-tile-card home-tile-green">
                 <span>💰</span>
-                <strong>{t.budget}</strong>
-                <small>{totalSpent} € / {budget || 0} €</small>
+                <div>
+                  <strong>{t.budget}</strong>
+                  <em>{totalSpent} €</em>
+                  <small>sur {budget || 0} €</small>
+                </div>
               </button>
-              <button onClick={() => setActiveTab('planning')}>
+              <button onClick={() => setActiveTab('planning')} className="home-tile-card home-tile-purple">
                 <span>📅</span>
-                <strong>{t.planning}</strong>
-                <small>{activities.length} activité{activities.length > 1 ? 's' : ''}</small>
+                <div>
+                  <strong>{t.planning}</strong>
+                  <em>{activities.length}</em>
+                  <small>activité{activities.length > 1 ? 's prévues' : ' prévue'}</small>
+                </div>
               </button>
-              <button onClick={() => setActiveTab('documents')}>
+              <button onClick={() => setActiveTab('documents')} className="home-tile-card home-tile-yellow">
                 <span>📁</span>
-                <strong>{t.documents}</strong>
-                <small>{documents.length} fichier{documents.length > 1 ? 's' : ''}</small>
+                <div>
+                  <strong>{t.documents}</strong>
+                  <em>{documents.length}</em>
+                  <small>fichier{documents.length > 1 ? 's enregistrés' : ' enregistré'}</small>
+                </div>
               </button>
             </div>
           </section>
 
-          <section className="card weather-card premium-card">
-            <h2>🌤️ {t.weatherTitle}</h2>
-
-            {weatherLoading && <p>{t.loadingWeather}</p>}
-            {weatherError && <p>{weatherError}</p>}
-
-            {weather && (
-              <div className="weather-box">
-                <div className="weather-main">
-                  <span className="weather-icon">{getWeatherIcon(weather.code)}</span>
-                  <div>
-                    <strong>{weather.city}, {weather.country}</strong>
-                    <p>{weather.temperature}°C — {t.feelsLike} {weather.feelsLike}°C</p>
-                  </div>
-                </div>
-
-                <div className="weather-details">
-                  <p>💨 {t.wind} : <strong>{weather.wind} km/h</strong></p>
-                  <p>💧 {t.humidity} : <strong>{weather.humidity}%</strong></p>
-                </div>
-              </div>
-            )}
-
-            <button onClick={fetchWeather}>{t.refreshWeather}</button>
-          </section>
-
-          <section className="card next-activity-card premium-card">
-            <h2>🤖 {t.assistant}</h2>
-            <div className="next-activity-box advice-list">
-              {getAssistantAdvice().slice(0, 6).map((advice, index) => (
-                <p key={index}>{advice}</p>
-              ))}
-            </div>
-          </section>
-
-          <section className="card next-activity-card premium-card">
-            <h2>📅 {t.nextActivity}</h2>
-            {nextActivity ? (
-              <div className="next-activity-box">
-                <strong>{nextActivity.name}</strong>
-                <p>📅 {nextActivity.date}</p>
-                <p>⏳ {getActivityCountdownText(nextActivity)}</p>
+          <section className="home-info-card home-next-card">
+            <div className="home-info-icon">📅</div>
+            <div className="home-info-content">
+              <div className="home-info-title-row">
+                <h2>{t.nextActivity}</h2>
                 <button onClick={() => setActiveTab('planning')}>{t.seePlanning}</button>
               </div>
-            ) : (
-              <div className="next-activity-box">
-                <p>{t.noActivityYet}</p>
-                <button onClick={() => setActiveTab('planning')}>{t.addActivity}</button>
+              {nextActivity ? (
+                <>
+                  <strong>{nextActivity.name}</strong>
+                  <p>📅 {nextActivity.date} · ⏳ {getActivityCountdownText(nextActivity)}</p>
+                </>
+              ) : (
+                <>
+                  <strong>{t.noActivityYet}</strong>
+                  <p>{t.addActivity}</p>
+                </>
+              )}
+            </div>
+          </section>
+
+          <section className="home-info-card home-assistant-card">
+            <div className="home-info-icon">🤖</div>
+            <div className="home-info-content">
+              <div className="home-info-title-row">
+                <h2>{t.assistant}</h2>
               </div>
-            )}
+              <strong>{getAssistantAdvice()[0]}</strong>
+              <p>{getAssistantAdvice()[1] || 'Pense à vérifier ta valise et tes documents.'}</p>
+            </div>
+          </section>
+
+          <section className="home-info-card home-weather-card">
+            <div className="home-info-icon">☀️</div>
+            <div className="home-info-content">
+              <div className="home-info-title-row">
+                <h2>{t.weatherTitle}</h2>
+                <button onClick={fetchWeather}>{t.refreshWeather} ↻</button>
+              </div>
+
+              {weatherLoading && <p>{t.loadingWeather}</p>}
+              {weatherError && <p>{weatherError}</p>}
+
+              {weather && (
+                <div className="home-weather-grid">
+                  <div className="home-weather-temperature">
+                    <span>{getWeatherIcon(weather.code)}</span>
+                    <strong>{weather.temperature}°C</strong>
+                    <small>{t.feelsLike} {weather.feelsLike}°C</small>
+                  </div>
+                  <div>
+                    <span>💨</span>
+                    <small>{t.wind}</small>
+                    <strong>{weather.wind} km/h</strong>
+                  </div>
+                  <div>
+                    <span>💧</span>
+                    <small>{t.humidity}</small>
+                    <strong>{weather.humidity}%</strong>
+                  </div>
+                </div>
+              )}
+            </div>
           </section>
         </>
       )}
@@ -1899,9 +2052,9 @@ function App() {
           </div>
 
           <div className="document-list">
-            {places.length === 0 && <p>{t.noPlace}</p>}
+            {getVisiblePlaces().length === 0 && <p>{t.noPlace}</p>}
 
-            {places.map((place) => (
+            {getVisiblePlaces().map((place) => (
               <div className="document-row" key={place.id}>
                 <strong>📍 {place.name}</strong>
                 <span>{place.type}</span>
