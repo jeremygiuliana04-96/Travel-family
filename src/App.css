@@ -3687,3 +3687,16 @@ body.theme-dark .packing-row {
   font-size: 0.85rem;
   font-weight: 700;
 }
+
+.auth-primary-button,
+.auth-create-button,
+.secondary-auth-button {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  min-height: 52px !important;
+  border-radius: 18px !important;
+}
+
+.auth-primary-button {
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.20) !important;
+}

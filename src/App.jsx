@@ -1502,24 +1502,6 @@ function App() {
 
   return (
     <main className={`app theme-${appearance} ${activeTab === 'home' ? 'home-app-shell' : ''}`}>
-      {activeTab !== 'home' && (
-        <section className="hero-card premium-trip-hero">
-          <button className="menu-button" onClick={() => setMenuOpen(true)}>
-            ☰
-          </button>
-
-          <button className="back-trip-button" onClick={closeTrip}>
-            ← {t.backTrips}
-          </button>
-
-          <div className="hero-copy">
-            <span className="hero-kicker">{tripIcon} Travel Family</span>
-            <h1>{tripName}</h1>
-            {getTripDatesText() && <p>{getTripDatesText()}</p>}
-          </div>
-        </section>
-      )}
-
       {activeTab === 'home' && (
         <>
           <div className="home-topbar">
@@ -2184,11 +2166,11 @@ function App() {
 
       <nav className="bottom-nav">
         {[
-          ['home', '⌂', t.home],
-          ['packing', '▣', t.packing],
-          ['documents', '▤', t.documents],
-          ['planning', '◫', t.planning],
-          ['gallery', '▧', t.gallery],
+          ['home', '🏠', t.home],
+          ['packing', '🧳', t.packing],
+          ['documents', '📄', t.documents],
+          ['planning', '📅', t.planning],
+          ['gallery', '🖼️', t.gallery],
         ].map(([tab, icon, label]) => (
           <button
             key={tab}
