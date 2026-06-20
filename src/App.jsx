@@ -2216,7 +2216,7 @@ function App() {
           <aside className="side-menu" onClick={(e) => e.stopPropagation()}>
             <button className="close-menu" onClick={() => setMenuOpen(false)}>×</button>
 
-            <h2>🌴 Travel Family</h2>
+            <h2>Travel Family</h2>
 
             {[
               ['home', '🏠', t.home],
