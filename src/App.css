@@ -3780,3 +3780,58 @@ body.theme-dark .packing-row {
 .forgot-password-button {
   color: white !important;
 }
+
+/* ===== AUTH CLEAN INPUTS - VERSION FINALE ===== */
+.auth-input-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-height: 58px !important;
+  padding: 0 16px !important;
+  margin-top: 12px !important;
+  border: 1px solid rgba(210, 222, 240, 0.95) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 8px 18px rgba(15, 43, 86, 0.06) !important;
+}
+
+.auth-input-icon {
+  flex: 0 0 auto !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+}
+
+.auth-input-wrap input,
+.auth-card .auth-input-wrap input {
+  flex: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #061b3a !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.auth-input-wrap input::placeholder {
+  color: rgba(6, 27, 58, 0.48) !important;
+  font-weight: 700 !important;
+}
+
+.auth-input-wrap:focus-within {
+  border-color: rgba(29, 125, 242, 0.55) !important;
+  box-shadow: 0 0 0 4px rgba(29, 125, 242, 0.10), 0 10px 24px rgba(15, 43, 86, 0.08) !important;
+}
+
+.auth-input-content {
+  display: contents !important;
+}
+
+.auth-input-content small {
+  display: none !important;
+}

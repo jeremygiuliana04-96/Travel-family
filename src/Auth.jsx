@@ -122,43 +122,34 @@ function Auth() {
 
         <label className={`auth-input-wrap ${email ? (isEmailValid ? 'input-valid' : 'input-invalid') : ''}`}>
           <span className="auth-input-icon">✉️</span>
-          <div className="auth-input-content">
-            <small>Adresse e-mail</small>
-            <input
-              type="email"
-              placeholder="exemple@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+          <input
+            type="email"
+            placeholder="exemple@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
           {email && <strong>{isEmailValid ? '✓' : '!'}</strong>}
         </label>
 
         <label className={`auth-input-wrap ${password ? (isPasswordValid ? 'input-valid' : 'input-invalid') : ''}`}>
           <span className="auth-input-icon">🔒</span>
-          <div className="auth-input-content">
-            <small>Mot de passe</small>
-            <input
-              type="password"
-              placeholder="Votre mot de passe"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          <input
+            type="password"
+            placeholder="Votre mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </label>
 
         {isRegister && (
           <label className={`auth-input-wrap ${confirmPassword ? (passwordsMatch ? 'input-valid' : 'input-invalid') : ''}`}>
             <span className="auth-input-icon">🔒</span>
-            <div className="auth-input-content">
-              <small>Confirmation</small>
-              <input
-                type="password"
-                placeholder="Retapez votre mot de passe"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
+            <input
+              type="password"
+              placeholder="Retapez votre mot de passe"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
           </label>
         )}
 
