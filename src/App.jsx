@@ -35,11 +35,11 @@ const translations = {
     backTrips: 'Mes voyages', holidays: 'Vacances', datesToDefine: '📅 Dates à définir', departureOn: '📅 Départ le', returnOn: '📅 Retour le', fromTo: '📅 Du', to: 'au',
     weatherTitle: 'Météo de la destination', loadingWeather: 'Chargement de la météo...', refreshWeather: 'Actualiser météo', feelsLike: 'ressenti', wind: 'Vent', humidity: 'Humidité', weatherNotFound: 'Destination introuvable pour la météo', weatherImpossible: 'Impossible de charger la météo',
     assistant: 'Assistant voyage', nextActivity: 'Prochaine activité', seePlanning: 'Voir le planning', addActivity: 'Ajouter une activité', noActivityYet: 'Aucune activité prévue pour le moment.', noActivityPlanned: 'Aucune activité prévue.',
-    packing: 'Valises', preparation: 'Préparation', remaining: 'Restant', addPersonPlaceholder: 'Ajouter une personne : ex Eva', addPerson: 'Ajouter une personne', deletePerson: 'Supprimer', takeFor: 'À prendre pour', add: 'Ajouter', noObjectFor: 'Aucun objet pour',
+    packing: 'Valises', preparation: 'Préparation', remaining: 'Restant', addPersonPlaceholder: 'Ajouter une personne : ex Jean', addPerson: 'Ajouter une personne', deletePerson: 'Supprimer', takeFor: 'À prendre pour', add: 'Ajouter', noObjectFor: 'Aucun objet pour',
     shopping: 'Achats', shoppingTitle: 'Achats avant départ', bought: 'Acheté', shoppingPlaceholder: 'Ex : Crème solaire, brassards, lunettes...', noShopping: 'Aucun achat à prévoir pour le moment.',
     planning: 'Planning', datePlaceholder: 'Date : ex 29 juin', activityPlaceholder: 'Activité : ex Restaurant',
     budget: 'Budget', plannedBudget: 'Budget prévu', spent: 'Dépensé', expensePlaceholder: 'Ex : Restaurant', amount: 'Montant', noExpense: 'Aucune dépense enregistrée.',
-    documents: 'Documents', vault: 'Coffre-fort Voyage', documentNamePlaceholder: 'Nom du document : ex Passeport Jérémy', documentTypePlaceholder: 'Type : ex Passeport, Hôtel, Assurance...', fileSelected: '✅ Fichier sélectionné', chooseFile: '📎 Choisir une photo ou un PDF', uploading: 'Envoi en cours...', addDocument: 'Ajouter le document', noDocumentFor: 'Aucun document pour',
+    documents: 'Documents', vault: 'Coffre-fort Voyage', documentNamePlaceholder: 'Nom du document : ex Passeport de Jean', documentTypePlaceholder: 'Type : ex Passeport, Hôtel, Assurance...', fileSelected: '✅ Fichier sélectionné', chooseFile: '📎 Choisir une photo ou un PDF', uploading: 'Envoi en cours...', addDocument: 'Ajouter le document', noDocumentFor: 'Aucun document pour',
     gallery: 'Galerie', galleryTitle: 'Galerie photo', tripMemories: 'Souvenirs du voyage', photos: 'photos', photo: 'photo', photoSelected: '✅ Photo sélectionnée', choosePhoto: '📷 Choisir une photo', captionPlaceholder: 'Petit souvenir : ex Plage, restaurant, aquarium...', addGallery: 'Ajouter à la galerie', noPhotoTrip: 'Aucune photo pour ce voyage.', addMemoriesHere: 'Ajoute tes souvenirs ici, ils resteront classés dans ce voyage.', enlarge: 'Agrandir', memoryPhoto: 'Photo souvenir', openNewTab: 'Ouvrir dans un nouvel onglet',
     places: 'Lieux', favoritePlaces: 'Lieux favoris', placeNamePlaceholder: 'Nom : ex Hôtel, Aquarium...', placeTypePlaceholder: 'Type : Hôtel, Restaurant, Plage...', addressPlaceholder: 'Adresse ou lien Google Maps', addPlace: 'Ajouter le lieu', noPlace: 'Aucun lieu enregistré.', openMaps: 'Ouvrir Maps',
     system: 'Système', openTrip: 'Voyage ouvert', status: 'Statut', connected: 'Connecté', application: 'Application', appName: 'Nom de l’application', version: 'Version', installMode: 'Mode d’installation', iphoneCompatible: 'Compatible iPhone / PWA', save: 'Sauvegarde', cloudSave: 'Sauvegarde cloud', enabledSupabase: 'Activée avec Supabase', syncedData: 'Données synchronisées', syncedDataText: 'Voyage, budget, valises, achats, lieux, documents et photos', data: 'Données', resetTrip: 'Réinitialiser ce voyage', session: 'Session', language: 'Langue', chooseLanguage: 'Choisis la langue de l’application', french: 'Français', english: 'English', spanish: 'Español', returnToTrips: 'Retour à mes voyages',
@@ -1997,18 +1997,6 @@ function App() {
             <div className="system-row">
               <strong>{t.installMode}</strong>
               <span>{t.iphoneCompatible}</span>
-            </div>
-          </div>
-
-          <div className="system-section">
-            <h3>💾 {t.save}</h3>
-            <div className="system-row">
-              <strong>{t.cloudSave}</strong>
-              <span>{t.enabledSupabase}</span>
-            </div>
-            <div className="system-row">
-              <strong>{t.syncedData}</strong>
-              <span>{t.syncedDataText}</span>
             </div>
           </div>
 
