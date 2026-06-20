@@ -50,10 +50,10 @@ const translations = {
     adviceDepartureIn: '✈️ Départ dans', adviceDepartureTomorrow: '✈️ Départ demain ! Dernière vérification des valises.', adviceDepartureToday: '✈️ C’est le jour du départ ! Vérifie documents, valises et trajet.', adviceTripStarted: '🌴 Le voyage a déjà commencé. Profite bien !', adviceShoppingLeft: '🛒 Il reste', adviceShoppingLeftEnd: 'achat(s) à faire avant le départ.', adviceShoppingDone: '🛒 Tous les achats avant départ sont faits.', adviceDocs: '📁 Coffre-fort :', adviceDocsEnd: 'document(s) enregistré(s).', adviceDocsEmpty: '📁 Pense à ajouter les documents importants dans le coffre-fort.', advicePhotos: '📸 Galerie :', advicePhotosEnd: 'photo(s) enregistrée(s) pour ce voyage.', advicePhotosEmpty: '📸 Tu pourras ajouter les photos souvenirs dans la galerie du voyage.', adviceGoodWeather: '☀️ Temps idéal pour prévoir une activité extérieure ou une sortie plage.', adviceBadWeather: '🌧️ Météo moins favorable : une activité intérieure serait plus confortable.', adviceOkWeather: '🌤️ Météo correcte : garde une activité flexible selon l’énergie de la famille.', advicePackingLeft: '🧳 Il reste', advicePackingLeftEnd: 'objet(s) non cochés dans les valises.', advicePackingReady: '✅ Toutes les valises sont prêtes. Nickel pour partir tranquille.', adviceBudgetOver: '⚠️ Le budget est dépassé de', adviceBudgetWatch: '💰 Il reste', adviceBudgetWatchEnd: '€. Budget à surveiller.', adviceBudgetLeft: '💰 Budget restant :', adviceBudgetLeftEnd: '€. Tu as encore une bonne marge.', adviceNextActivity: '📅 Prochaine activité prévue :', adviceNoPlanning: '📅 Aucun planning prévu pour le moment. Tu peux ajouter une activité simple.'
   },
   en: {
-    appTagline: 'Organize all your family trips in one place.', preparingSpace: 'Preparing your travel space...', home: 'Home', trips: 'My trips', newTrip: 'New trip', addNewTrip: 'Add a new trip', seeSavedTrips: 'View saved trips', createDestination: 'Create a destination, dates and organization', account: 'Account', connectedEmail: 'Connected email', unavailable: 'Unavailable', signOut: 'Sign out', savedTrips: 'saved trip(s)', noTrip: 'No trip yet.', addFirstTrip: 'Add your first trip to start organizing.', open: 'Open', delete: 'Delete', cancel: 'Cancel', createTrip: 'Create trip', destination: 'Destination', icon: 'Icon', departureDate: 'Departure date', returnDate: 'Return date', destinationPlaceholder: 'E.g. Maspalomas 2026, Paris, Tenerife...', iconPlaceholder: 'E.g. 🌴 ✈️ 🏖️ 🏔️', backTrips: 'My trips', holidays: 'Holiday', datesToDefine: '📅 Dates to define', departureOn: '📅 Departure on', returnOn: '📅 Return on', fromTo: '📅 From', to: 'to', weatherTitle: 'Destination weather', loadingWeather: 'Loading weather...', refreshWeather: 'Refresh weather', feelsLike: 'feels like', wind: 'Wind', humidity: 'Humidity', weatherNotFound: 'Destination not found for weather', weatherImpossible: 'Unable to load weather', assistant: 'Travel assistant', nextActivity: 'Next activity', seePlanning: 'View planning', addActivity: 'Add activity', noActivityYet: 'No activity planned yet.', noActivityPlanned: 'No activity planned.', packing: 'Packing', preparation: 'Preparation', remaining: 'Remaining', addPersonPlaceholder: 'Add a person: e.g. Eva', addPerson: 'Add person', deletePerson: 'Delete', takeFor: 'To pack for', add: 'Add', noObjectFor: 'No item for', shopping: 'Shopping', shoppingTitle: 'Pre-departure shopping', bought: 'Bought', shoppingPlaceholder: 'E.g. Sunscreen, armbands, sunglasses...', noShopping: 'No shopping planned yet.', planning: 'Planning', datePlaceholder: 'Date: e.g. June 29', activityPlaceholder: 'Activity: e.g. Restaurant', budget: 'Budget', plannedBudget: 'Planned budget', spent: 'Spent', expensePlaceholder: 'E.g. Restaurant', amount: 'Amount', noExpense: 'No expense recorded.', documents: 'Documents', vault: 'Travel vault', documentNamePlaceholder: 'Document name: e.g. Jeremy passport', documentTypePlaceholder: 'Type: e.g. Passport, Hotel, Insurance...', fileSelected: '✅ File selected', chooseFile: '📎 Choose a photo or PDF', uploading: 'Uploading...', addDocument: 'Add document', noDocumentFor: 'No document for', gallery: 'Gallery', galleryTitle: 'Photo gallery', tripMemories: 'Trip memories', photos: 'photos', photo: 'photo', photoSelected: '✅ Photo selected', choosePhoto: '📷 Choose a photo', captionPlaceholder: 'Small memory: e.g. Beach, restaurant, aquarium...', addGallery: 'Add to gallery', noPhotoTrip: 'No photo for this trip.', addMemoriesHere: 'Add your memories here; they will stay organized in this trip.', enlarge: 'Enlarge', memoryPhoto: 'Travel memory', openNewTab: 'Open in a new tab', places: 'Places', favoritePlaces: 'Favorite places', placeNamePlaceholder: 'Name: e.g. Hotel, Aquarium...', placeTypePlaceholder: 'Type: Hotel, Restaurant, Beach...', addressPlaceholder: 'Address or Google Maps link', addPlace: 'Add place', noPlace: 'No saved place.', openMaps: 'Open Maps', system: 'Settings', openTrip: 'Open trip', status: 'Status', connected: 'Connected', application: 'Application', appName: 'Application name', version: 'Version', installMode: 'Installation mode', iphoneCompatible: 'iPhone / PWA compatible', save: 'Backup', cloudSave: 'Cloud backup', enabledSupabase: 'Enabled with Supabase', syncedData: 'Synced data', syncedDataText: 'Trip, budget, packing, shopping, places, documents and photos', data: 'Data', resetTrip: 'Reset this trip', session: 'Session', language: 'Language', chooseLanguage: 'Choose the app language', french: 'Français', english: 'English', spanish: 'Español', returnToTrips: 'Back to my trips', today: 'Today', tomorrow: 'Tomorrow', daysIn: 'In', days: 'days', pastActivity: 'Activity already passed', checkDate: 'Date to check in planning.', alertAddTripName: 'Add at least the trip name.', alertCreateTripImpossible: 'Unable to create trip.', confirmDeleteTrip: 'Delete trip', confirmDeleteDocument: 'Delete', confirmDeletePhoto: 'Delete this photo?', resetConfirm: 'Reset this trip? Packing lists, shopping, planning, budget, places, documents and photos for this trip will be deleted.', uploadFileImpossible: 'Unable to upload the file.', saveDocumentImpossible: 'Unable to save the document.', openDocumentImpossible: 'Unable to open the document.', openPhotoImpossible: 'Unable to open the photo.', notImage: 'The selected file is not an image.', compressionImpossible: 'Unable to compress the photo.', jpgTry: 'Photo format not compatible. Try with a JPG photo.', compressionUploadImpossible: 'Unable to compress or upload the photo.', noPhotoSelected: 'No photo selected.', adviceDepartureIn: '✈️ Departure in', adviceDepartureTomorrow: '✈️ Departure tomorrow! Last check for packing.', adviceDepartureToday: '✈️ Today is departure day! Check documents, bags and route.', adviceTripStarted: '🌴 The trip has already started. Enjoy!', adviceShoppingLeft: '🛒', adviceShoppingLeftEnd: 'shopping item(s) left before departure.', adviceShoppingDone: '🛒 All pre-departure shopping is done.', adviceDocs: '📁 Vault:', adviceDocsEnd: 'document(s) saved.', adviceDocsEmpty: '📁 Remember to add important documents to the vault.', advicePhotos: '📸 Gallery:', advicePhotosEnd: 'photo(s) saved for this trip.', advicePhotosEmpty: '📸 You can add travel memories to the trip gallery.', adviceGoodWeather: '☀️ Great weather for an outdoor activity or beach outing.', adviceBadWeather: '🌧️ Less favorable weather: an indoor activity would be more comfortable.', adviceOkWeather: '🌤️ Decent weather: keep the activity flexible depending on the family’s energy.', advicePackingLeft: '🧳', advicePackingLeftEnd: 'unchecked item(s) left in the packing lists.', advicePackingReady: '✅ All bags are ready. Perfect for a stress-free departure.', adviceBudgetOver: '⚠️ Budget exceeded by', adviceBudgetWatch: '💰', adviceBudgetWatchEnd: '€ left. Keep an eye on the budget.', adviceBudgetLeft: '💰 Remaining budget:', adviceBudgetLeftEnd: '€. You still have a good margin.', adviceNextActivity: '📅 Next planned activity:', adviceNoPlanning: '📅 No planning yet. You can add a simple activity.'
+    appTagline: 'Organize all your family trips in one place.', preparingSpace: 'Preparing your travel space...', home: 'Home', trips: 'My trips', newTrip: 'New trip', addNewTrip: 'Add a new trip', seeSavedTrips: 'View saved trips', createDestination: 'Create a destination, dates and organization', account: 'Account', connectedEmail: 'Connected email', unavailable: 'Unavailable', signOut: 'Sign out', savedTrips: 'saved trip(s)', noTrip: 'No trip yet.', addFirstTrip: 'Add your first trip to start organizing.', open: 'Open', delete: 'Delete', cancel: 'Cancel', createTrip: 'Create trip', destination: 'Destination', icon: 'Icon', departureDate: 'Departure date', returnDate: 'Return date', destinationPlaceholder: 'E.g. Maspalomas 2026, Paris, Tenerife...', iconPlaceholder: 'E.g. 🌴 ✈️ 🏖️ 🏔️', backTrips: 'My trips', holidays: 'Holiday', datesToDefine: '📅 Dates to define', departureOn: '📅 Departure on', returnOn: '📅 Return on', fromTo: '📅 From', to: 'to', weatherTitle: 'Destination weather', loadingWeather: 'Loading weather...', refreshWeather: 'Refresh weather', feelsLike: 'feels like', wind: 'Wind', humidity: 'Humidity', weatherNotFound: 'Destination not found for weather', weatherImpossible: 'Unable to load weather', assistant: 'Travel assistant', nextActivity: 'Next activity', seePlanning: 'View planning', addActivity: 'Add activity', noActivityYet: 'No activity planned yet.', noActivityPlanned: 'No activity planned.', packing: 'Packing', preparation: 'Preparation', remaining: 'Remaining', addPersonPlaceholder: 'Add a person: e.g. John', addPerson: 'Add person', deletePerson: 'Delete', takeFor: 'To pack for', add: 'Add', noObjectFor: 'No item for', shopping: 'Shopping', shoppingTitle: 'Pre-departure shopping', bought: 'Bought', shoppingPlaceholder: 'E.g. Sunscreen, armbands, sunglasses...', noShopping: 'No shopping planned yet.', planning: 'Planning', datePlaceholder: 'Date: e.g. June 29', activityPlaceholder: 'Activity: e.g. Restaurant', budget: 'Budget', plannedBudget: 'Planned budget', spent: 'Spent', expensePlaceholder: 'E.g. Restaurant', amount: 'Amount', noExpense: 'No expense recorded.', documents: 'Documents', vault: 'Travel vault', documentNamePlaceholder: 'Document name: e.g. John passport', documentTypePlaceholder: 'Type: e.g. Passport, Hotel, Insurance...', fileSelected: '✅ File selected', chooseFile: '📎 Choose a photo or PDF', uploading: 'Uploading...', addDocument: 'Add document', noDocumentFor: 'No document for', gallery: 'Gallery', galleryTitle: 'Photo gallery', tripMemories: 'Trip memories', photos: 'photos', photo: 'photo', photoSelected: '✅ Photo selected', choosePhoto: '📷 Choose a photo', captionPlaceholder: 'Small memory: e.g. Beach, restaurant, aquarium...', addGallery: 'Add to gallery', noPhotoTrip: 'No photo for this trip.', addMemoriesHere: 'Add your memories here; they will stay organized in this trip.', enlarge: 'Enlarge', memoryPhoto: 'Travel memory', openNewTab: 'Open in a new tab', places: 'Places', favoritePlaces: 'Favorite places', placeNamePlaceholder: 'Name: e.g. Hotel, Aquarium...', placeTypePlaceholder: 'Type: Hotel, Restaurant, Beach...', addressPlaceholder: 'Address or Google Maps link', addPlace: 'Add place', noPlace: 'No saved place.', openMaps: 'Open Maps', system: 'Settings', openTrip: 'Open trip', status: 'Status', connected: 'Connected', application: 'Application', appName: 'Application name', version: 'Version', installMode: 'Installation mode', iphoneCompatible: 'iPhone / PWA compatible', save: 'Backup', cloudSave: 'Cloud backup', enabledSupabase: 'Enabled with Supabase', syncedData: 'Synced data', syncedDataText: 'Trip, budget, packing, shopping, places, documents and photos', data: 'Data', resetTrip: 'Reset this trip', session: 'Session', language: 'Language', chooseLanguage: 'Choose the app language', french: 'Français', english: 'English', spanish: 'Español', returnToTrips: 'Back to my trips', today: 'Today', tomorrow: 'Tomorrow', daysIn: 'In', days: 'days', pastActivity: 'Activity already passed', checkDate: 'Date to check in planning.', alertAddTripName: 'Add at least the trip name.', alertCreateTripImpossible: 'Unable to create trip.', confirmDeleteTrip: 'Delete trip', confirmDeleteDocument: 'Delete', confirmDeletePhoto: 'Delete this photo?', resetConfirm: 'Reset this trip? Packing lists, shopping, planning, budget, places, documents and photos for this trip will be deleted.', uploadFileImpossible: 'Unable to upload the file.', saveDocumentImpossible: 'Unable to save the document.', openDocumentImpossible: 'Unable to open the document.', openPhotoImpossible: 'Unable to open the photo.', notImage: 'The selected file is not an image.', compressionImpossible: 'Unable to compress the photo.', jpgTry: 'Photo format not compatible. Try with a JPG photo.', compressionUploadImpossible: 'Unable to compress or upload the photo.', noPhotoSelected: 'No photo selected.', adviceDepartureIn: '✈️ Departure in', adviceDepartureTomorrow: '✈️ Departure tomorrow! Last check for packing.', adviceDepartureToday: '✈️ Today is departure day! Check documents, bags and route.', adviceTripStarted: '🌴 The trip has already started. Enjoy!', adviceShoppingLeft: '🛒', adviceShoppingLeftEnd: 'shopping item(s) left before departure.', adviceShoppingDone: '🛒 All pre-departure shopping is done.', adviceDocs: '📁 Vault:', adviceDocsEnd: 'document(s) saved.', adviceDocsEmpty: '📁 Remember to add important documents to the vault.', advicePhotos: '📸 Gallery:', advicePhotosEnd: 'photo(s) saved for this trip.', advicePhotosEmpty: '📸 You can add travel memories to the trip gallery.', adviceGoodWeather: '☀️ Great weather for an outdoor activity or beach outing.', adviceBadWeather: '🌧️ Less favorable weather: an indoor activity would be more comfortable.', adviceOkWeather: '🌤️ Decent weather: keep the activity flexible depending on the family’s energy.', advicePackingLeft: '🧳', advicePackingLeftEnd: 'unchecked item(s) left in the packing lists.', advicePackingReady: '✅ All bags are ready. Perfect for a stress-free departure.', adviceBudgetOver: '⚠️ Budget exceeded by', adviceBudgetWatch: '💰', adviceBudgetWatchEnd: '€ left. Keep an eye on the budget.', adviceBudgetLeft: '💰 Remaining budget:', adviceBudgetLeftEnd: '€. You still have a good margin.', adviceNextActivity: '📅 Next planned activity:', adviceNoPlanning: '📅 No planning yet. You can add a simple activity.'
   },
   es: {
-    appTagline: 'Organiza todos tus viajes familiares en un solo lugar.', preparingSpace: 'Preparando tu espacio de viaje...', home: 'Inicio', trips: 'Mis viajes', newTrip: 'Nuevo viaje', addNewTrip: 'Añadir un nuevo viaje', seeSavedTrips: 'Ver viajes guardados', createDestination: 'Crear un destino, fechas y organización', account: 'Cuenta', connectedEmail: 'Correo conectado', unavailable: 'No disponible', signOut: 'Cerrar sesión', savedTrips: 'viaje(s) guardado(s)', noTrip: 'No hay viajes por ahora.', addFirstTrip: 'Añade tu primer viaje para empezar la organización.', open: 'Abrir', delete: 'Eliminar', cancel: 'Cancelar', createTrip: 'Crear viaje', destination: 'Destino', icon: 'Icono', departureDate: 'Fecha de salida', returnDate: 'Fecha de regreso', destinationPlaceholder: 'Ej.: Maspalomas 2026, París, Tenerife...', iconPlaceholder: 'Ej.: 🌴 ✈️ 🏖️ 🏔️', backTrips: 'Mis viajes', holidays: 'Vacaciones', datesToDefine: '📅 Fechas por definir', departureOn: '📅 Salida el', returnOn: '📅 Regreso el', fromTo: '📅 Del', to: 'al', weatherTitle: 'Tiempo del destino', loadingWeather: 'Cargando el tiempo...', refreshWeather: 'Actualizar tiempo', feelsLike: 'sensación', wind: 'Viento', humidity: 'Humedad', weatherNotFound: 'Destino no encontrado para el tiempo', weatherImpossible: 'No se puede cargar el tiempo', assistant: 'Asistente de viaje', nextActivity: 'Próxima actividad', seePlanning: 'Ver planificación', addActivity: 'Añadir actividad', noActivityYet: 'No hay actividad prevista por ahora.', noActivityPlanned: 'No hay actividad prevista.', packing: 'Maletas', preparation: 'Preparación', remaining: 'Restante', addPersonPlaceholder: 'Añadir una persona: ej. Eva', addPerson: 'Añadir persona', deletePerson: 'Eliminar', takeFor: 'Para llevar para', add: 'Añadir', noObjectFor: 'Ningún objeto para', shopping: 'Compras', shoppingTitle: 'Compras antes de salir', bought: 'Comprado', shoppingPlaceholder: 'Ej.: Protector solar, manguitos, gafas...', noShopping: 'No hay compras previstas por ahora.', planning: 'Planificación', datePlaceholder: 'Fecha: ej. 29 de junio', activityPlaceholder: 'Actividad: ej. Restaurante', budget: 'Presupuesto', plannedBudget: 'Presupuesto previsto', spent: 'Gastado', expensePlaceholder: 'Ej.: Restaurante', amount: 'Importe', noExpense: 'No hay gastos registrados.', documents: 'Documentos', vault: 'Caja fuerte de viaje', documentNamePlaceholder: 'Nombre del documento: ej. Pasaporte Jeremy', documentTypePlaceholder: 'Tipo: ej. Pasaporte, Hotel, Seguro...', fileSelected: '✅ Archivo seleccionado', chooseFile: '📎 Elegir una foto o PDF', uploading: 'Enviando...', addDocument: 'Añadir documento', noDocumentFor: 'Ningún documento para', gallery: 'Galería', galleryTitle: 'Galería de fotos', tripMemories: 'Recuerdos del viaje', photos: 'fotos', photo: 'foto', photoSelected: '✅ Foto seleccionada', choosePhoto: '📷 Elegir una foto', captionPlaceholder: 'Pequeño recuerdo: ej. Playa, restaurante, acuario...', addGallery: 'Añadir a la galería', noPhotoTrip: 'No hay fotos para este viaje.', addMemoriesHere: 'Añade tus recuerdos aquí; quedarán guardados en este viaje.', enlarge: 'Ampliar', memoryPhoto: 'Foto recuerdo', openNewTab: 'Abrir en una nueva pestaña', places: 'Lugares', favoritePlaces: 'Lugares favoritos', placeNamePlaceholder: 'Nombre: ej. Hotel, Acuario...', placeTypePlaceholder: 'Tipo: Hotel, Restaurante, Playa...', addressPlaceholder: 'Dirección o enlace de Google Maps', addPlace: 'Añadir lugar', noPlace: 'Ningún lugar guardado.', openMaps: 'Abrir Maps', system: 'Sistema', openTrip: 'Viaje abierto', status: 'Estado', connected: 'Conectado', application: 'Aplicación', appName: 'Nombre de la aplicación', version: 'Versión', installMode: 'Modo de instalación', iphoneCompatible: 'Compatible iPhone / PWA', save: 'Copia de seguridad', cloudSave: 'Copia en la nube', enabledSupabase: 'Activada con Supabase', syncedData: 'Datos sincronizados', syncedDataText: 'Viaje, presupuesto, maletas, compras, lugares, documentos y fotos', data: 'Datos', resetTrip: 'Reiniciar este viaje', session: 'Sesión', language: 'Idioma', chooseLanguage: 'Elige el idioma de la aplicación', french: 'Français', english: 'English', spanish: 'Español', returnToTrips: 'Volver a mis viajes', today: 'Hoy', tomorrow: 'Mañana', daysIn: 'En', days: 'días', pastActivity: 'Actividad ya pasada', checkDate: 'Fecha a revisar en la planificación.', alertAddTripName: 'Añade al menos el nombre del viaje.', alertCreateTripImpossible: 'No se puede crear el viaje.', confirmDeleteTrip: 'Eliminar el viaje', confirmDeleteDocument: 'Eliminar', confirmDeletePhoto: '¿Eliminar esta foto?', resetConfirm: '¿Reiniciar este viaje? Se borrarán maletas, compras, planificación, presupuesto, lugares, documentos y fotos de este viaje.', uploadFileImpossible: 'No se puede enviar el archivo.', saveDocumentImpossible: 'No se puede guardar el documento.', openDocumentImpossible: 'No se puede abrir el documento.', openPhotoImpossible: 'No se puede abrir la foto.', notImage: 'El archivo seleccionado no es una imagen.', compressionImpossible: 'No se puede comprimir la foto.', jpgTry: 'Formato de foto no compatible. Prueba con una foto JPG.', compressionUploadImpossible: 'No se puede comprimir o enviar la foto.', noPhotoSelected: 'No hay foto seleccionada.', adviceDepartureIn: '✈️ Salida en', adviceDepartureTomorrow: '✈️ ¡Salida mañana! Última revisión de maletas.', adviceDepartureToday: '✈️ ¡Hoy es el día de salida! Revisa documentos, maletas y trayecto.', adviceTripStarted: '🌴 El viaje ya ha comenzado. ¡Disfruta!', adviceShoppingLeft: '🛒 Quedan', adviceShoppingLeftEnd: 'compra(s) antes de salir.', adviceShoppingDone: '🛒 Todas las compras antes de salir están hechas.', adviceDocs: '📁 Caja fuerte:', adviceDocsEnd: 'documento(s) guardado(s).', adviceDocsEmpty: '📁 Piensa en añadir los documentos importantes a la caja fuerte.', advicePhotos: '📸 Galería:', advicePhotosEnd: 'foto(s) guardada(s) para este viaje.', advicePhotosEmpty: '📸 Podrás añadir recuerdos en la galería del viaje.', adviceGoodWeather: '☀️ Tiempo ideal para una actividad exterior o playa.', adviceBadWeather: '🌧️ Tiempo menos favorable: una actividad interior sería más cómoda.', adviceOkWeather: '🌤️ Tiempo correcto: mantén una actividad flexible según la energía de la familia.', advicePackingLeft: '🧳 Quedan', advicePackingLeftEnd: 'objeto(s) sin marcar en las maletas.', advicePackingReady: '✅ Todas las maletas están listas. Perfecto para salir tranquilo.', adviceBudgetOver: '⚠️ Presupuesto superado por', adviceBudgetWatch: '💰 Quedan', adviceBudgetWatchEnd: '€. Hay que vigilar el presupuesto.', adviceBudgetLeft: '💰 Presupuesto restante:', adviceBudgetLeftEnd: '€. Todavía tienes buen margen.', adviceNextActivity: '📅 Próxima actividad prevista:', adviceNoPlanning: '📅 No hay planificación por ahora. Puedes añadir una actividad simple.'
+    appTagline: 'Organiza todos tus viajes familiares en un solo lugar.', preparingSpace: 'Preparando tu espacio de viaje...', home: 'Inicio', trips: 'Mis viajes', newTrip: 'Nuevo viaje', addNewTrip: 'Añadir un nuevo viaje', seeSavedTrips: 'Ver viajes guardados', createDestination: 'Crear un destino, fechas y organización', account: 'Cuenta', connectedEmail: 'Correo conectado', unavailable: 'No disponible', signOut: 'Cerrar sesión', savedTrips: 'viaje(s) guardado(s)', noTrip: 'No hay viajes por ahora.', addFirstTrip: 'Añade tu primer viaje para empezar la organización.', open: 'Abrir', delete: 'Eliminar', cancel: 'Cancelar', createTrip: 'Crear viaje', destination: 'Destino', icon: 'Icono', departureDate: 'Fecha de salida', returnDate: 'Fecha de regreso', destinationPlaceholder: 'Ej.: Maspalomas 2026, París, Tenerife...', iconPlaceholder: 'Ej.: 🌴 ✈️ 🏖️ 🏔️', backTrips: 'Mis viajes', holidays: 'Vacaciones', datesToDefine: '📅 Fechas por definir', departureOn: '📅 Salida el', returnOn: '📅 Regreso el', fromTo: '📅 Del', to: 'al', weatherTitle: 'Tiempo del destino', loadingWeather: 'Cargando el tiempo...', refreshWeather: 'Actualizar tiempo', feelsLike: 'sensación', wind: 'Viento', humidity: 'Humedad', weatherNotFound: 'Destino no encontrado para el tiempo', weatherImpossible: 'No se puede cargar el tiempo', assistant: 'Asistente de viaje', nextActivity: 'Próxima actividad', seePlanning: 'Ver planificación', addActivity: 'Añadir actividad', noActivityYet: 'No hay actividad prevista por ahora.', noActivityPlanned: 'No hay actividad prevista.', packing: 'Maletas', preparation: 'Preparación', remaining: 'Restante', addPersonPlaceholder: 'Añadir una persona: ej. Juan', addPerson: 'Añadir persona', deletePerson: 'Eliminar', takeFor: 'Para llevar para', add: 'Añadir', noObjectFor: 'Ningún objeto para', shopping: 'Compras', shoppingTitle: 'Compras antes de salir', bought: 'Comprado', shoppingPlaceholder: 'Ej.: Protector solar, manguitos, gafas...', noShopping: 'No hay compras previstas por ahora.', planning: 'Planificación', datePlaceholder: 'Fecha: ej. 29 de junio', activityPlaceholder: 'Actividad: ej. Restaurante', budget: 'Presupuesto', plannedBudget: 'Presupuesto previsto', spent: 'Gastado', expensePlaceholder: 'Ej.: Restaurante', amount: 'Importe', noExpense: 'No hay gastos registrados.', documents: 'Documentos', vault: 'Caja fuerte de viaje', documentNamePlaceholder: 'Nombre del documento: ej. Pasaporte Juan', documentTypePlaceholder: 'Tipo: ej. Pasaporte, Hotel, Seguro...', fileSelected: '✅ Archivo seleccionado', chooseFile: '📎 Elegir una foto o PDF', uploading: 'Enviando...', addDocument: 'Añadir documento', noDocumentFor: 'Ningún documento para', gallery: 'Galería', galleryTitle: 'Galería de fotos', tripMemories: 'Recuerdos del viaje', photos: 'fotos', photo: 'foto', photoSelected: '✅ Foto seleccionada', choosePhoto: '📷 Elegir una foto', captionPlaceholder: 'Pequeño recuerdo: ej. Playa, restaurante, acuario...', addGallery: 'Añadir a la galería', noPhotoTrip: 'No hay fotos para este viaje.', addMemoriesHere: 'Añade tus recuerdos aquí; quedarán guardados en este viaje.', enlarge: 'Ampliar', memoryPhoto: 'Foto recuerdo', openNewTab: 'Abrir en una nueva pestaña', places: 'Lugares', favoritePlaces: 'Lugares favoritos', placeNamePlaceholder: 'Nombre: ej. Hotel, Acuario...', placeTypePlaceholder: 'Tipo: Hotel, Restaurante, Playa...', addressPlaceholder: 'Dirección o enlace de Google Maps', addPlace: 'Añadir lugar', noPlace: 'Ningún lugar guardado.', openMaps: 'Abrir Maps', system: 'Sistema', openTrip: 'Viaje abierto', status: 'Estado', connected: 'Conectado', application: 'Aplicación', appName: 'Nombre de la aplicación', version: 'Versión', installMode: 'Modo de instalación', iphoneCompatible: 'Compatible iPhone / PWA', save: 'Copia de seguridad', cloudSave: 'Copia en la nube', enabledSupabase: 'Activada con Supabase', syncedData: 'Datos sincronizados', syncedDataText: 'Viaje, presupuesto, maletas, compras, lugares, documentos y fotos', data: 'Datos', resetTrip: 'Reiniciar este viaje', session: 'Sesión', language: 'Idioma', chooseLanguage: 'Elige el idioma de la aplicación', french: 'Français', english: 'English', spanish: 'Español', returnToTrips: 'Volver a mis viajes', today: 'Hoy', tomorrow: 'Mañana', daysIn: 'En', days: 'días', pastActivity: 'Actividad ya pasada', checkDate: 'Fecha a revisar en la planificación.', alertAddTripName: 'Añade al menos el nombre del viaje.', alertCreateTripImpossible: 'No se puede crear el viaje.', confirmDeleteTrip: 'Eliminar el viaje', confirmDeleteDocument: 'Eliminar', confirmDeletePhoto: '¿Eliminar esta foto?', resetConfirm: '¿Reiniciar este viaje? Se borrarán maletas, compras, planificación, presupuesto, lugares, documentos y fotos de este viaje.', uploadFileImpossible: 'No se puede enviar el archivo.', saveDocumentImpossible: 'No se puede guardar el documento.', openDocumentImpossible: 'No se puede abrir el documento.', openPhotoImpossible: 'No se puede abrir la foto.', notImage: 'El archivo seleccionado no es una imagen.', compressionImpossible: 'No se puede comprimir la foto.', jpgTry: 'Formato de foto no compatible. Prueba con una foto JPG.', compressionUploadImpossible: 'No se puede comprimir o enviar la foto.', noPhotoSelected: 'No hay foto seleccionada.', adviceDepartureIn: '✈️ Salida en', adviceDepartureTomorrow: '✈️ ¡Salida mañana! Última revisión de maletas.', adviceDepartureToday: '✈️ ¡Hoy es el día de salida! Revisa documentos, maletas y trayecto.', adviceTripStarted: '🌴 El viaje ya ha comenzado. ¡Disfruta!', adviceShoppingLeft: '🛒 Quedan', adviceShoppingLeftEnd: 'compra(s) antes de salir.', adviceShoppingDone: '🛒 Todas las compras antes de salir están hechas.', adviceDocs: '📁 Caja fuerte:', adviceDocsEnd: 'documento(s) guardado(s).', adviceDocsEmpty: '📁 Piensa en añadir los documentos importantes a la caja fuerte.', advicePhotos: '📸 Galería:', advicePhotosEnd: 'foto(s) guardada(s) para este viaje.', advicePhotosEmpty: '📸 Podrás añadir recuerdos en la galería del viaje.', adviceGoodWeather: '☀️ Tiempo ideal para una actividad exterior o playa.', adviceBadWeather: '🌧️ Tiempo menos favorable: una actividad interior sería más cómoda.', adviceOkWeather: '🌤️ Tiempo correcto: mantén una actividad flexible según la energía de la familia.', advicePackingLeft: '🧳 Quedan', advicePackingLeftEnd: 'objeto(s) sin marcar en las maletas.', advicePackingReady: '✅ Todas las maletas están listas. Perfecto para salir tranquilo.', adviceBudgetOver: '⚠️ Presupuesto superado por', adviceBudgetWatch: '💰 Quedan', adviceBudgetWatchEnd: '€. Hay que vigilar el presupuesto.', adviceBudgetLeft: '💰 Presupuesto restante:', adviceBudgetLeftEnd: '€. Todavía tienes buen margen.', adviceNextActivity: '📅 Próxima actividad prevista:', adviceNoPlanning: '📅 No hay planificación por ahora. Puedes añadir una actividad simple.'
   },
 }
 
@@ -245,6 +245,7 @@ function App() {
 
   const totalSpent = expenses.reduce((total, expense) => total + Number(expense.amount || 0), 0)
   const remaining = Number(budget || 0) - totalSpent
+  const budgetUsagePercent = budget > 0 ? Math.min(100, Math.round((totalSpent / Number(budget)) * 100)) : 0
 
   const allPackingItems = Object.values(packingLists || {}).flat()
   const uncheckedPackingItems = allPackingItems.filter((item) => !item.checked)
@@ -269,6 +270,10 @@ function App() {
     sortedActivities.find((activity) => parseActivityDate(activity.date) >= todayForActivity.getTime()) ||
     sortedActivities[0] ||
     null
+
+  function getPersonInitial(person) {
+    return (person || '?').trim().charAt(0).toUpperCase()
+  }
 
   function resetDocumentFileInput() {
     setDocumentFile(null)
@@ -1388,7 +1393,7 @@ function App() {
 
   return (
     <main className={`app theme-${appearance}`}>
-      <section className="hero-card">
+      <section className="hero-card premium-trip-hero">
         <button className="menu-button" onClick={() => setMenuOpen(true)}>
           ☰
         </button>
@@ -1397,14 +1402,53 @@ function App() {
           ← {t.backTrips}
         </button>
 
-        <h1>{tripIcon} Travel Family</h1>
-        <p>{t.holidays} {tripName}</p>
-        {getTripDatesText() && <p>{getTripDatesText()}</p>}
+        <div className="hero-copy">
+          <span className="hero-kicker">{tripIcon} Travel Family</span>
+          <h1>{tripName}</h1>
+          {getTripDatesText() && <p>{getTripDatesText()}</p>}
+        </div>
       </section>
 
       {activeTab === 'home' && (
         <>
-          <section className="card weather-card">
+          <section className="home-dashboard">
+            <div className="home-welcome-card">
+              <span>Bonjour ! 👋</span>
+              <h2>{t.holidays} {tripName}</h2>
+              <p>{getTripDatesText()}</p>
+              {getDaysUntilStart() !== null && (
+                <div className="home-progress">
+                  <strong>{getDaysUntilStart() >= 0 ? `J-${getDaysUntilStart()}` : 'Voyage en cours'}</strong>
+                  <div><span style={{ width: `${Math.max(8, Math.min(100, 100 - Math.max(0, getDaysUntilStart()))) }%` }} /></div>
+                </div>
+              )}
+            </div>
+
+            <div className="home-tiles">
+              <button onClick={() => setActiveTab('packing')}>
+                <span>🧳</span>
+                <strong>{t.packing}</strong>
+                <small>{checkedPackingItems.length}/{allPackingItems.length || 0}</small>
+              </button>
+              <button onClick={() => setActiveTab('budget')}>
+                <span>💰</span>
+                <strong>{t.budget}</strong>
+                <small>{totalSpent} € / {budget || 0} €</small>
+              </button>
+              <button onClick={() => setActiveTab('planning')}>
+                <span>📅</span>
+                <strong>{t.planning}</strong>
+                <small>{activities.length} activité{activities.length > 1 ? 's' : ''}</small>
+              </button>
+              <button onClick={() => setActiveTab('documents')}>
+                <span>📁</span>
+                <strong>{t.documents}</strong>
+                <small>{documents.length} fichier{documents.length > 1 ? 's' : ''}</small>
+              </button>
+            </div>
+          </section>
+
+          <section className="card weather-card premium-card">
             <h2>🌤️ {t.weatherTitle}</h2>
 
             {weatherLoading && <p>{t.loadingWeather}</p>}
@@ -1430,34 +1474,28 @@ function App() {
             <button onClick={fetchWeather}>{t.refreshWeather}</button>
           </section>
 
-          <section className="card next-activity-card">
+          <section className="card next-activity-card premium-card">
             <h2>🤖 {t.assistant}</h2>
-
-            <div className="next-activity-box">
+            <div className="next-activity-box advice-list">
               {getAssistantAdvice().slice(0, 6).map((advice, index) => (
                 <p key={index}>{advice}</p>
               ))}
             </div>
           </section>
 
-          <section className="card next-activity-card">
+          <section className="card next-activity-card premium-card">
             <h2>📅 {t.nextActivity}</h2>
-
             {nextActivity ? (
               <div className="next-activity-box">
                 <strong>{nextActivity.name}</strong>
                 <p>📅 {nextActivity.date}</p>
                 <p>⏳ {getActivityCountdownText(nextActivity)}</p>
-                <button onClick={() => setActiveTab('planning')}>
-                  {t.seePlanning}
-                </button>
+                <button onClick={() => setActiveTab('planning')}>{t.seePlanning}</button>
               </div>
             ) : (
               <div className="next-activity-box">
                 <p>{t.noActivityYet}</p>
-                <button onClick={() => setActiveTab('planning')}>
-                  {t.addActivity}
-                </button>
+                <button onClick={() => setActiveTab('planning')}>{t.addActivity}</button>
               </div>
             )}
           </section>
@@ -1465,66 +1503,65 @@ function App() {
       )}
 
       {activeTab === 'packing' && (
-        <section className="card">
-          <h2>🧳 {t.packing}</h2>
+        <section className="card page-card packing-premium-card">
+          <div className="page-title-row">
+            <h2>🧳 {t.packing}</h2>
+            <span className="round-action">{packingProgress}%</span>
+          </div>
 
-          <div className="budget-summary">
+          <div className="budget-summary premium-summary">
             <p>{t.preparation} : <strong>{packingProgress}%</strong></p>
             <p>{t.remaining} : <strong>{uncheckedPackingItems.length}</strong></p>
           </div>
 
-          <div className="expense-form">
-            <input
-              type="text"
-              placeholder={t.addPersonPlaceholder}
-              value={newPersonName}
-              onChange={(e) => setNewPersonName(e.target.value)}
-            />
+          <div className="expense-form floating-form">
+            <input type="text" placeholder={t.addPersonPlaceholder} value={newPersonName} onChange={(e) => setNewPersonName(e.target.value)} />
             <button onClick={addPerson}>{t.addPerson}</button>
           </div>
 
-          <div className="person-tabs">
+          <div className="person-tabs premium-tabs">
             {people.map((person) => (
-              <button
-                key={person}
-                className={selectedPerson === person ? 'active-tab' : ''}
-                onClick={() => setSelectedPerson(person)}
-              >
+              <button key={person} className={selectedPerson === person ? 'active-tab' : ''} onClick={() => setSelectedPerson(person)}>
                 {person}
               </button>
             ))}
           </div>
 
+          <div className="traveler-list-card">
+            <h3>👨‍👩‍👧‍👦 Membres du voyage</h3>
+            {people.map((person) => {
+              const list = packingLists[person] || []
+              const done = list.filter((item) => item.checked).length
+              return (
+                <button key={person} className={`traveler-row ${selectedPerson === person ? 'active-traveler' : ''}`} onClick={() => setSelectedPerson(person)}>
+                  <span className="traveler-avatar">{getPersonInitial(person)}</span>
+                  <span>
+                    <strong>{person}</strong>
+                    <small>{person === 'Famille' ? 'Liste commune' : 'Voyageur'}</small>
+                  </span>
+                  <em>{done}/{list.length}</em>
+                </button>
+              )
+            })}
+          </div>
+
           {selectedPerson !== 'Famille' && (
-            <button className="delete-person-button" onClick={() => deletePerson(selectedPerson)}>
-              {t.delete} {selectedPerson}
-            </button>
+            <button className="delete-person-button" onClick={() => deletePerson(selectedPerson)}>{t.delete} {selectedPerson}</button>
           )}
 
-          <div className="expense-form">
-            <input
-              type="text"
-              placeholder={`À prendre pour ${selectedPerson}`}
-              value={packingItemName}
-              onChange={(e) => setPackingItemName(e.target.value)}
-            />
+          <div className="expense-form floating-form">
+            <input type="text" placeholder={`À prendre pour ${selectedPerson}`} value={packingItemName} onChange={(e) => setPackingItemName(e.target.value)} />
             <button onClick={addPackingItem}>Ajouter</button>
           </div>
 
-          <div className="packing-list">
+          <div className="packing-list premium-list">
             {currentPackingList.length === 0 && <p>{t.noObjectFor} {selectedPerson}.</p>}
-
             {currentPackingList.map((item) => (
               <div className="packing-row" key={item.id}>
                 <label className="check-item">
-                  <input
-                    type="checkbox"
-                    checked={item.checked}
-                    onChange={() => togglePackingItem(item.id)}
-                  />
+                  <input type="checkbox" checked={item.checked} onChange={() => togglePackingItem(item.id)} />
                   <span className={item.checked ? 'checked' : ''}>{item.name}</span>
                 </label>
-
                 <button onClick={() => deletePackingItem(item.id)}>✕</button>
               </div>
             ))}
@@ -1574,75 +1611,51 @@ function App() {
       )}
 
       {activeTab === 'planning' && (
-        <section className="card">
-          <h2>📅 {t.planning}</h2>
-
-          <div className="expense-form">
-            <input
-              type="text"
-              placeholder={t.datePlaceholder}
-              value={activityDate}
-              onChange={(e) => setActivityDate(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder={t.activityPlaceholder}
-              value={activityName}
-              onChange={(e) => setActivityName(e.target.value)}
-            />
+        <section className="card page-card planning-premium-card">
+          <div className="page-title-row"><h2>📅 {t.planning}</h2><span className="round-action">＋</span></div>
+          <div className="expense-form floating-form">
+            <input type="text" placeholder={t.datePlaceholder} value={activityDate} onChange={(e) => setActivityDate(e.target.value)} />
+            <input type="text" placeholder={t.activityPlaceholder} value={activityName} onChange={(e) => setActivityName(e.target.value)} />
             <button onClick={addActivity}>{t.addActivity}</button>
           </div>
-
-          <ul className="expenses-list">
+          <div className="timeline-list">
             {activities.length === 0 && <p>{t.noActivityPlanned}</p>}
-
-            {sortedActivities.map((activity) => (
-              <li key={activity.id}>
-                <span><strong>{activity.date}</strong> — {activity.name}</span>
-                <button onClick={() => deleteActivity(activity.id)}>✕</button>
-              </li>
+            {sortedActivities.map((activity, index) => (
+              <article className="timeline-item" key={activity.id}>
+                <div className="timeline-date"><strong>{activity.date}</strong><span>{getActivityCountdownText(activity)}</span></div>
+                <div className="timeline-dot">{index % 3 === 0 ? '🌴' : index % 3 === 1 ? '🍽️' : '🏖️'}</div>
+                <div className="timeline-card"><strong>{activity.name}</strong><button onClick={() => deleteActivity(activity.id)}>✕</button></div>
+              </article>
             ))}
-          </ul>
+          </div>
         </section>
       )}
 
       {activeTab === 'budget' && (
-        <section className="card">
-          <h2>💰 {t.budget}</h2>
-
+        <section className="card page-card budget-premium-card">
+          <div className="page-title-row"><h2>💰 {t.budget}</h2><span className="round-action">{budgetUsagePercent}%</span></div>
           <label className="field">
             {t.plannedBudget}
-            <input
-              type="number"
-              value={budget}
-              onChange={(e) => setBudget(Number(e.target.value))}
-            />
+            <input type="number" value={budget} onChange={(e) => setBudget(Number(e.target.value))} />
           </label>
-
-          <div className="budget-summary">
+          <div className="budget-donut-wrap">
+            <div className="budget-donut" style={{ '--budget-progress': `${budgetUsagePercent * 3.6}deg` }}>
+              <strong>{totalSpent} €</strong>
+              <span>sur {budget || 0} €</span>
+              <em>{budgetUsagePercent}%</em>
+            </div>
+          </div>
+          <div className="budget-summary premium-summary">
             <p>{t.spent} : <strong>{totalSpent} €</strong></p>
             <p>{t.remaining} : <strong>{remaining} €</strong></p>
           </div>
-
-          <div className="expense-form">
-            <input
-              type="text"
-              placeholder={t.expensePlaceholder}
-              value={expenseName}
-              onChange={(e) => setExpenseName(e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder={t.amount}
-              value={expenseAmount}
-              onChange={(e) => setExpenseAmount(e.target.value)}
-            />
+          <div className="expense-form floating-form">
+            <input type="text" placeholder={t.expensePlaceholder} value={expenseName} onChange={(e) => setExpenseName(e.target.value)} />
+            <input type="number" placeholder={t.amount} value={expenseAmount} onChange={(e) => setExpenseAmount(e.target.value)} />
             <button onClick={addExpense}>Ajouter</button>
           </div>
-
-          <ul className="expenses-list">
+          <ul className="expenses-list premium-expenses">
             {expenses.length === 0 && <p>{t.noExpense}</p>}
-
             {expenses.map((expense) => (
               <li key={expense.id}>
                 <span>{expense.name}</span>
@@ -1655,8 +1668,8 @@ function App() {
       )}
 
       {activeTab === 'documents' && (
-        <section className="card vault-card">
-          <h2>📁 {t.vault}</h2>
+        <section className="card page-card vault-card documents-premium-card">
+          <div className="page-title-row"><h2>📁 {t.vault}</h2><span className="round-action">{documents.length}</span></div>
 
           <div className="person-tabs">
             {people.map((person) => (
@@ -1718,7 +1731,7 @@ function App() {
             </button>
           </div>
 
-          <div className="document-list">
+          <div className="document-list premium-document-list">
             {filteredDocuments.length === 0 && <p>{t.noDocumentFor} {documentPerson}.</p>}
 
             {filteredDocuments.map((document) => (
@@ -1748,7 +1761,7 @@ function App() {
       )}
 
       {activeTab === 'gallery' && (
-        <section className="card gallery-card">
+        <section className="card page-card gallery-card">
           <div className="gallery-header">
             <div>
               <h2>📸 {t.galleryTitle}</h2>
@@ -2015,6 +2028,29 @@ function App() {
           </div>
         </section>
       )}
+
+      <nav className="bottom-nav">
+        {[
+          ['home', '⌂', t.home],
+          ['packing', '▣', t.packing],
+          ['documents', '▤', t.documents],
+          ['planning', '◫', t.planning],
+          ['gallery', '▧', t.gallery],
+        ].map(([tab, icon, label]) => (
+          <button
+            key={tab}
+            className={activeTab === tab ? 'bottom-nav-active' : ''}
+            onClick={() => setActiveTab(tab)}
+          >
+            <span>{icon}</span>
+            <small>{label}</small>
+          </button>
+        ))}
+        <button onClick={() => setMenuOpen(true)}>
+          <span>•••</span>
+          <small>Plus</small>
+        </button>
+      </nav>
 
       {selectedPhoto && (
         <div className="photo-modal-overlay" onClick={() => setSelectedPhoto(null)}>
