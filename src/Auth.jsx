@@ -6,6 +6,7 @@ function Auth() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [isRegister, setIsRegister] = useState(false)
 
   async function signIn() {
     if (!email || !password) return
@@ -35,8 +36,8 @@ function Auth() {
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin
-      }
+        emailRedirectTo: window.location.origin,
+      },
     })
 
     if (error) {
@@ -46,6 +47,11 @@ function Auth() {
     }
 
     setLoading(false)
+  }
+
+  function switchMode() {
+    setMessage('')
+    setIsRegister(!isRegister)
   }
 
   return (
@@ -61,8 +67,13 @@ function Auth() {
       </section>
 
       <section className="auth-card auth-premium-card">
-        <h2>Bienvenue !</h2>
-        <p>Connectez-vous à votre compte</p>
+        <h2>{isRegister ? 'Créer un compte' : 'Bienvenue !'}</h2>
+
+        <p>
+          {isRegister
+            ? 'Créez votre compte Travel Family'
+            : 'Connectez-vous à votre compte'}
+        </p>
 
         <label className="auth-input-wrap">
           <span>✉️</span>
@@ -86,8 +97,16 @@ function Auth() {
 
         {message && <p className="auth-message">{message}</p>}
 
-        <button className="auth-primary-button" onClick={signIn} disabled={loading}>
-          {loading ? 'Chargement...' : 'Se connecter'}
+        <button
+          className="auth-primary-button"
+          onClick={isRegister ? signUp : signIn}
+          disabled={loading}
+        >
+          {loading
+            ? 'Chargement...'
+            : isRegister
+              ? 'Créer mon compte'
+              : 'Se connecter'}
         </button>
 
         <div className="auth-separator">
@@ -96,8 +115,12 @@ function Auth() {
           <span></span>
         </div>
 
-        <button className="secondary-auth-button auth-create-button" onClick={signUp} disabled={loading}>
-          👤+ Créer un compte
+        <button
+          className="secondary-auth-button auth-create-button"
+          onClick={switchMode}
+          disabled={loading}
+        >
+          {isRegister ? '← Retour à la connexion' : '👤+ Créer un compte'}
         </button>
       </section>
 
