@@ -3780,3 +3780,21 @@ body.theme-dark .packing-row {
 .forgot-password-button {
   color: white !important;
 }
+
+/* ===== SUPPRESSION BORDURE BLANCHE LOGO ===== */
+
+.auth-premium-logo {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.auth-premium-logo img {
+  width: 120px !important;
+  height: 120px !important;
+  object-fit: contain !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
