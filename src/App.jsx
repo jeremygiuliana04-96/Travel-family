@@ -168,6 +168,8 @@ function App() {
 
   const [photos, setPhotos] = useState([])
   const [photoFile, setPhotoFile] = useState(null)
+  const [photoFiles, setPhotoFiles] = useState([])
+  const [photoUploadProgress, setPhotoUploadProgress] = useState('')
   const [photoCaption, setPhotoCaption] = useState('')
   const [photoUploading, setPhotoUploading] = useState(false)
   const [photoFileInputKey, setPhotoFileInputKey] = useState(Date.now())
@@ -290,6 +292,8 @@ function App() {
 
   function resetPhotoFileInput() {
     setPhotoFile(null)
+    setPhotoFiles([])
+    setPhotoUploadProgress('')
 
     if (photoFileInputRef.current) {
       photoFileInputRef.current.value = ''
@@ -347,6 +351,8 @@ function App() {
     setDocumentType('Passeport')
     setPhotos([])
     setPhotoCaption('')
+    setPhotoFiles([])
+    setPhotoUploadProgress('')
     setSelectedPhoto(null)
     resetDocumentFileInput()
     resetPhotoFileInput()
@@ -860,47 +866,47 @@ function App() {
 }
 
   async function addPhoto() {
-    if (!selectedTripId || !photoFile) return
+    const filesToUpload = photoFiles.length > 0 ? photoFiles : photoFile ? [photoFile] : []
+    if (!selectedTripId || filesToUpload.length === 0) return
 
     try {
       setPhotoUploading(true)
 
-      const compressedPhoto = await compressPhoto(photoFile)
-      alert(
-        `Original : ${(photoFile.size / 1024 / 1024).toFixed(2)} MB\n` +
-        `Compressé : ${(compressedPhoto.size / 1024 / 1024).toFixed(2)} MB\n` +
-        `Type : ${photoFile.type}`
-      )
+      for (let index = 0; index < filesToUpload.length; index += 1) {
+        const file = filesToUpload[index]
+        setPhotoUploadProgress(`${index + 1}/${filesToUpload.length}`)
 
-      const cleanFileName = compressedPhoto.name.replaceAll(' ', '-')
-      const filePath = `${session.user.id}/${selectedTripId}/${cleanFileName}`
+        const compressedPhoto = await compressPhoto(file)
+        const cleanFileName = compressedPhoto.name.replaceAll(' ', '-')
+        const filePath = `${session.user.id}/${selectedTripId}/${Date.now()}-${index}-${cleanFileName}`
 
-      const { error: uploadError } = await supabase.storage
-        .from('travel-photos')
-        .upload(filePath, compressedPhoto, {
-          contentType: compressedPhoto.type || 'image/jpeg',
-          upsert: false,
-        })
+        const { error: uploadError } = await supabase.storage
+          .from('travel-photos')
+          .upload(filePath, compressedPhoto, {
+            contentType: compressedPhoto.type || 'image/jpeg',
+            upsert: false,
+          })
 
-      if (uploadError) {
-        console.error(uploadError)
-        alert(uploadError.message)
-        return
-      }
+        if (uploadError) {
+          console.error(uploadError)
+          alert(uploadError.message)
+          return
+        }
 
-      const { error: insertError } = await supabase
-        .from('travel_photos')
-        .insert({
-          user_id: session.user.id,
-          trip_id: selectedTripId,
-          photo_url: filePath,
-          caption: photoCaption.trim(),
-        })
+        const { error: insertError } = await supabase
+          .from('travel_photos')
+          .insert({
+            user_id: session.user.id,
+            trip_id: selectedTripId,
+            photo_url: filePath,
+            caption: photoCaption.trim(),
+          })
 
-      if (insertError) {
-        console.error(insertError)
-        alert(insertError.message)
-        return
+        if (insertError) {
+          console.error(insertError)
+          alert(insertError.message)
+          return
+        }
       }
 
       setPhotoCaption('')
@@ -912,6 +918,7 @@ function App() {
       alert(error.message || 'Impossible de compresser ou d’envoyer la photo.')
     } finally {
       setPhotoUploading(false)
+      setPhotoUploadProgress('')
     }
   }
 
@@ -1756,7 +1763,9 @@ function App() {
 
           <div className="gallery-upload-box">
             <label className="file-picker-button" htmlFor="photo-file-input">
-              {photoFile ? t.photoSelected : t.choosePhoto}
+              {photoFiles.length > 0
+                ? `✅ ${photoFiles.length} ${photoFiles.length > 1 ? t.photos : t.photo} sélectionnée${photoFiles.length > 1 ? 's' : ''}`
+                : t.choosePhoto}
             </label>
 
             <input
@@ -1766,12 +1775,25 @@ function App() {
               className="file-input"
               type="file"
               accept="image/*,.heic,.heif,.jpg,.jpeg,.png"
+              multiple
               onClick={(e) => {
                 e.target.value = ''
               }}
               onChange={(e) => {
-                const file = e.target.files?.[0] || null
-                setPhotoFile(file)
+                const selectedFiles = Array.from(e.target.files || [])
+                const imageFiles = selectedFiles.filter((file) =>
+                  file.type?.startsWith('image/') ||
+                  file.name.toLowerCase().endsWith('.heic') ||
+                  file.name.toLowerCase().endsWith('.heif')
+                )
+
+                if (imageFiles.length > 20) {
+                  alert('Maximum 20 photos à la fois. Les 20 premières ont été sélectionnées.')
+                }
+
+                const limitedFiles = imageFiles.slice(0, 20)
+                setPhotoFiles(limitedFiles)
+                setPhotoFile(limitedFiles[0] || null)
 
                 setTimeout(() => {
                   if (photoFileInputRef.current) {
@@ -1791,7 +1813,11 @@ function App() {
             />
 
             <button onClick={addPhoto} disabled={photoUploading}>
-              {photoUploading ? t.uploading : t.addGallery}
+              {photoUploading
+                ? `${t.uploading}${photoUploadProgress ? ` ${photoUploadProgress}` : ''}`
+                : photoFiles.length > 1
+                  ? `Ajouter les ${photoFiles.length} photos`
+                  : t.addGallery}
             </button>
           </div>
 
