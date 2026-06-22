@@ -4169,9 +4169,5 @@ textarea,
 
 .auth-logo img,
 .auth-premium-logo img {
-  width: 160px !important;
-  height: auto !important;
-  object-fit: contain !important;
-  display: block !important;
-  margin: 0 auto !important;
+  width: 110px !important;
 }
