@@ -4139,3 +4139,21 @@ textarea,
 .delete-account-button:hover {
   background: rgba(239,68,68,.08) !important;
 }
+
+/* LOGO AUTH - sans cadre blanc */
+
+.auth-premium-logo {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.auth-premium-logo img {
+  width: 150px !important;
+  height: 150px !important;
+  object-fit: contain !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
