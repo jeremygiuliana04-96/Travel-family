@@ -3910,3 +3910,232 @@ body.theme-dark .packing-row {
 .next-activity-box {
   border-radius: 14px !important;
 }
+
+/* =========================================================
+   TRAVEL FAMILY V3.1 — Coins plus structurés partout
+   Objectif : design plus premium, moins "bulle".
+   Modifications visuelles uniquement.
+   ========================================================= */
+
+:root {
+  --radius-xl: 16px;
+  --radius-lg: 14px;
+  --radius-md: 12px;
+  --tf-radius-card: 14px;
+  --tf-radius-control: 12px;
+  --tf-radius-photo: 10px;
+  --tf-shadow: 0 10px 26px rgba(15, 43, 86, 0.08);
+  --tf-shadow-soft: 0 6px 16px rgba(15, 43, 86, 0.06);
+  --shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+/* Cadres principaux — accueil inclus */
+.hero-card,
+.hero-card.premium-trip-hero,
+.home-welcome-card,
+.home-trip-card,
+.home-dashboard,
+.home-card,
+.home-progress,
+.card,
+.page-card,
+.premium-card,
+.dashboard-card,
+.dashboard-actions button,
+.trip-row,
+.trip-card,
+.trip-list-card,
+.gallery-card,
+.gallery-counter,
+.gallery-upload-box,
+.photo-card,
+.premium-photo-card,
+.empty-state,
+.budget-summary p,
+.weather-box,
+.weather-details p,
+.next-activity-card,
+.next-activity-box,
+.expenses-list li,
+.packing-row,
+.document-row,
+.system-row,
+.map-info-box,
+.ai-map-advice,
+.map-cost-box,
+.map-result-card,
+.places-card,
+.maps-card,
+.vault-card,
+.auth-card,
+.auth-premium-card,
+.auth-features div,
+.auth-premium-features div,
+.auth-input-wrap,
+.side-menu,
+.side-menu button,
+.timeline-card,
+.traveler-row.active-traveler,
+.appearance-field,
+.suggestions-card,
+.suggestions-grid button {
+  border-radius: var(--tf-radius-card) !important;
+}
+
+/* Champs, boutons et contrôles */
+input,
+select,
+textarea,
+.field input,
+.expense-form input,
+.maps-card input,
+.auth-card input,
+.auth-input-wrap input,
+.appearance-field select,
+.gallery-upload-box input[type='text'],
+.file-picker-button,
+.expense-form button,
+.weather-card button,
+.auth-buttons button,
+.auth-card button,
+.auth-primary-button,
+.auth-create-button,
+.secondary-auth-button,
+.forgot-password-button,
+.delete-person-button,
+.map-actions button,
+.map-search-box button,
+.document-actions button,
+.open-document,
+.delete-document,
+.delete-photo-button,
+.person-tabs button,
+.round-action,
+.next-activity-box button,
+.timeline-card button,
+.packing-row button,
+.expenses-list button {
+  border-radius: var(--tf-radius-control) !important;
+}
+
+/* Petits blocs/icônes */
+.section-badge,
+.trip-icon,
+.dashboard-actions button span,
+.auth-premium-logo,
+.auth-input-icon,
+.traveler-avatar,
+.timeline-dot {
+  border-radius: var(--tf-radius-control) !important;
+}
+
+/* Photos : un peu plus carré que les cartes */
+.gallery-thumbnail,
+.photo-preview-button,
+.photo-preview-button img,
+.gallery-card img,
+.photo-card img,
+.premium-photo-card img,
+.premium-photo-grid img,
+.photo-modal img {
+  border-radius: var(--tf-radius-photo) !important;
+}
+
+/* Ombres plus discrètes pour un rendu plus sérieux */
+.card,
+.page-card,
+.premium-card,
+.home-welcome-card,
+.hero-card.premium-trip-hero,
+.dashboard-actions button,
+.trip-row,
+.photo-card,
+.premium-photo-card,
+.system-row,
+.document-row,
+.packing-row,
+.weather-box,
+.next-activity-box,
+.budget-summary p,
+.empty-state,
+.gallery-counter,
+.gallery-upload-box,
+.auth-card,
+.auth-premium-card {
+  box-shadow: var(--tf-shadow) !important;
+}
+
+/* On garde les boutons flottants ronds : plus naturel sur mobile */
+.menu-button,
+.close-menu {
+  border-radius: 50% !important;
+}
+
+.back-trip-button,
+.hero-kicker,
+.countdown,
+.home-progress div,
+.home-progress div span {
+  border-radius: 999px !important;
+}
+
+/* Responsive : évite que les anciennes règles mobiles remettent de gros arrondis */
+@media (max-width: 520px) {
+  .hero-card,
+  .hero-card.premium-trip-hero,
+  .home-welcome-card,
+  .card,
+  .page-card,
+  .premium-card,
+  .auth-card,
+  .auth-premium-card,
+  .gallery-upload-box,
+  .empty-state {
+    border-radius: var(--tf-radius-card) !important;
+  }
+}
+
+/* ==========================
+   BOUTONS PREMIUM OUTLINE
+========================== */
+
+.open-document,
+.reset-button,
+.logout-button,
+.delete-account-button,
+.privacy-button {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-width: 2px !important;
+  border-style: solid !important;
+  font-weight: 700;
+}
+
+/* Bleu */
+
+.open-document,
+.privacy-button {
+  border-color: #3b82f6 !important;
+  color: #3b82f6 !important;
+}
+
+.open-document:hover,
+.privacy-button:hover {
+  background: rgba(59,130,246,.08) !important;
+}
+
+/* Rouge */
+
+.reset-button,
+.logout-button,
+.delete-account-button {
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+}
+
+.reset-button:hover,
+.logout-button:hover,
+.delete-account-button:hover {
+  background: rgba(239,68,68,.08) !important;
+}
