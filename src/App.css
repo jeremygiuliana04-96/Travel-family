@@ -22,10 +22,10 @@
   --border: rgba(255, 255, 255, 0.78);
   --shadow: 0 20px 55px rgba(15, 23, 42, 0.11);
   --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.08);
-  --radius-xl: 32px;
-  --radius-lg: 24px;
-  --radius-md: 18px;
-}
+  --radius-xl: 16px;
+  --radius-lg: 14px;
+  --radius-md: 12px;
+  }
 
 html {
   min-height: 100%;
@@ -3834,4 +3834,79 @@ body.theme-dark .packing-row {
 
 .auth-input-content small {
   display: none !important;
+}
+
+/* ==========================
+   TRAVEL FAMILY V3
+   Style plus professionnel
+========================== */
+
+.card,
+.trip-row,
+.photo-card,
+.premium-photo-card,
+.system-row,
+.document-row,
+.packing-row,
+.expenses-list li,
+.weather-box,
+.next-activity-box,
+.map-info-box,
+.ai-map-advice,
+.map-cost-box,
+.empty-state {
+  border-radius: 14px !important;
+}
+
+.field input,
+.expense-form input,
+.maps-card input,
+.auth-card input,
+.appearance-field select,
+.file-picker-button {
+  border-radius: 12px !important;
+}
+
+.expense-form button,
+.weather-card button,
+.auth-card button,
+.auth-buttons button,
+.delete-person-button,
+.map-actions button,
+.map-search-box button,
+.document-actions button {
+  border-radius: 12px !important;
+}
+
+.person-tabs button {
+  border-radius: 12px !important;
+}
+
+.dashboard-actions button {
+  border-radius: 14px !important;
+}
+
+.trip-icon,
+.dashboard-actions button span,
+.section-badge {
+  border-radius: 12px !important;
+}
+
+.card,
+.trip-row,
+.photo-card,
+.system-row,
+.document-row,
+.packing-row {
+  box-shadow: 0 4px 14px rgba(15,23,42,0.06) !important;
+}
+
+.hero-stats div {
+  border-radius: 14px !important;
+}
+
+.gallery-upload-box,
+.weather-box,
+.next-activity-box {
+  border-radius: 14px !important;
 }
