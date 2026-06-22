@@ -4157,3 +4157,21 @@ textarea,
   background: transparent !important;
   box-shadow: none !important;
 }
+
+/* Correction logo Travel Family */
+.auth-logo,
+.auth-premium-logo {
+  background: transparent !important;
+  overflow: visible !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.auth-logo img,
+.auth-premium-logo img {
+  width: 160px !important;
+  height: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: 0 auto !important;
+}
