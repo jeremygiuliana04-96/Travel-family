@@ -1498,10 +1498,6 @@ function App() {
             <span>✈️</span>
             <strong>Travel Family</strong>
           </div>
-
-          <button className="trips-return-login" onClick={() => { window.location.href = '/privacy' }}>
-            Confidentialité
-          </button>
         </section>
 
         <section className="trips-title-card">
