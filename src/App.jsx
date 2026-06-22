@@ -114,6 +114,143 @@ const coverOptions = [
   { value: 'generic', icon: '✈️', fr: 'Voyage générique', en: 'Generic travel', es: 'Viaje genérico' },
 ]
 
+
+function PrivacyPage({ appearance = 'tropical' }) {
+  return (
+    <main className={`app theme-${appearance}`}>
+      <section className="hero-card">
+        <button className="menu-button" onClick={() => { window.location.href = '/' }}>
+          ←
+        </button>
+        <h1>🔐 Politique de confidentialité</h1>
+        <p>Travel Family protège vos informations de voyage, vos documents et vos souvenirs.</p>
+      </section>
+
+      <section className="card system-card">
+        <h2>Politique de confidentialité – Travel Family</h2>
+        <p><strong>Dernière mise à jour :</strong> 22 juin 2026</p>
+
+        <div className="system-section">
+          <h3>1. Responsable du traitement</h3>
+          <p>
+            Travel Family est une application développée et maintenue par Jérémy Giuliana.
+            Pour toute question concernant vos données personnelles, vous pouvez nous contacter à :
+          </p>
+          <p><strong>Email :</strong> jeremy.giuliana@outlook.com</p>
+        </div>
+
+        <div className="system-section">
+          <h3>2. Données collectées</h3>
+          <p>Lors de l’utilisation de Travel Family, nous pouvons collecter les informations suivantes :</p>
+          <ul>
+            <li>Adresse e-mail et identifiant utilisateur généré automatiquement.</li>
+            <li>Informations de voyage : nom du voyage, dates, membres ajoutés, listes de bagages, achats, activités, budget, dépenses et lieux enregistrés.</li>
+            <li>Documents de voyage téléversés si vous utilisez le coffre-fort.</li>
+            <li>Photos ajoutées si vous utilisez la galerie photo.</li>
+          </ul>
+        </div>
+
+        <div className="system-section">
+          <h3>3. Utilisation des données</h3>
+          <p>Les données sont utilisées uniquement pour :</p>
+          <ul>
+            <li>fournir les fonctionnalités de Travel Family ;</li>
+            <li>synchroniser vos données entre vos appareils ;</li>
+            <li>sauvegarder vos informations de voyage ;</li>
+            <li>améliorer la stabilité et la sécurité du service.</li>
+          </ul>
+          <p>Nous ne vendons aucune donnée personnelle à des tiers.</p>
+        </div>
+
+        <div className="system-section">
+          <h3>4. Stockage des données</h3>
+          <p>
+            Les données sont hébergées via Supabase. Les informations liées à votre compte sont stockées
+            dans des espaces sécurisés et associées à votre identifiant utilisateur.
+          </p>
+        </div>
+
+        <div className="system-section">
+          <h3>5. Partage des données</h3>
+          <p>
+            Vos données personnelles ne sont pas partagées avec des tiers à des fins commerciales.
+            Elles peuvent uniquement être traitées par nos fournisseurs techniques lorsque cela est nécessaire
+            au bon fonctionnement de l’application.
+          </p>
+        </div>
+
+        <div className="system-section">
+          <h3>6. Sécurité</h3>
+          <p>
+            Nous mettons en œuvre des mesures raisonnables pour protéger vos informations contre l’accès non autorisé,
+            la modification, la divulgation ou la destruction. Aucun système de transmission ou de stockage sur Internet
+            ne peut toutefois être garanti comme totalement sécurisé.
+          </p>
+        </div>
+
+        <div className="system-section">
+          <h3>7. Suppression du compte et des données</h3>
+          <p>
+            Vous pouvez demander la suppression de votre compte et de toutes les données associées à tout moment
+            en nous contactant par e-mail.
+          </p>
+          <p>Lorsqu’un compte est supprimé, les voyages, documents, photos et données associées sont effacés dans un délai raisonnable.</p>
+        </div>
+
+        <div className="system-section">
+          <h3>8. Conservation des données</h3>
+          <p>
+            Les données sont conservées tant que votre compte reste actif. Si votre compte est supprimé,
+            les données associées sont supprimées conformément à nos procédures de suppression.
+          </p>
+        </div>
+
+        <div className="system-section">
+          <h3>9. Vos droits</h3>
+          <p>Conformément au RGPD, vous disposez notamment des droits suivants :</p>
+          <ul>
+            <li>droit d’accès ;</li>
+            <li>droit de rectification ;</li>
+            <li>droit à l’effacement ;</li>
+            <li>droit à la limitation du traitement ;</li>
+            <li>droit à la portabilité ;</li>
+            <li>droit d’opposition.</li>
+          </ul>
+          <p>Pour exercer ces droits, contactez-nous à l’adresse indiquée ci-dessus.</p>
+        </div>
+
+        <div className="system-section">
+          <h3>10. Enfants</h3>
+          <p>
+            Travel Family est destinée à être utilisée sous la supervision d’un adulte.
+            Nous ne collectons pas sciemment de données personnelles auprès d’enfants sans l’intervention
+            d’un parent ou responsable légal.
+          </p>
+        </div>
+
+        <div className="system-section">
+          <h3>11. Modifications</h3>
+          <p>
+            Cette politique de confidentialité peut être mise à jour à tout moment.
+            La date de dernière mise à jour figurera toujours en haut du document.
+          </p>
+        </div>
+
+        <div className="system-section">
+          <h3>12. Contact</h3>
+          <p><strong>Email :</strong> jeremy.giuliana@outlook.com</p>
+        </div>
+
+        <div className="document-actions">
+          <button className="open-document" onClick={() => { window.location.href = '/' }}>
+            Retour à Travel Family
+          </button>
+        </div>
+      </section>
+    </main>
+  )
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState('home')
   const [mainView, setMainView] = useState('dashboard')
@@ -122,6 +259,7 @@ function App() {
   const [appearance, setAppearance] = useState(getSavedAppearance)
   const t = translations[language] || translations.fr
   const appearanceText = appearanceLabels[language] || appearanceLabels.fr
+  const isPrivacyPage = typeof window !== 'undefined' && window.location.pathname === '/privacy'
 
   const [session, setSession] = useState(null)
   const [sessionLoading, setSessionLoading] = useState(true)
@@ -1333,6 +1471,8 @@ function App() {
     setExpenses(expenses.filter((expense) => expense.id !== id))
   }
 
+  if (isPrivacyPage) return <PrivacyPage appearance={appearance} />
+
   if (sessionLoading || dataLoading) {
     return (
       <main className={`app theme-${appearance} loading-screen`}>
@@ -1358,6 +1498,10 @@ function App() {
             <span>✈️</span>
             <strong>Travel Family</strong>
           </div>
+
+          <button className="trips-return-login" onClick={() => { window.location.href = '/privacy' }}>
+            Confidentialité
+          </button>
         </section>
 
         <section className="trips-title-card">
@@ -2146,6 +2290,17 @@ function App() {
               <strong>{t.installMode}</strong>
               <span>{t.iphoneCompatible}</span>
             </div>
+          </div>
+
+          <div className="system-section">
+            <h3>🔐 Confidentialité</h3>
+            <div className="system-row">
+              <strong>Politique de confidentialité</strong>
+              <span>Accessible publiquement</span>
+            </div>
+            <button className="open-document" onClick={() => { window.location.href = '/privacy' }}>
+              Ouvrir la politique
+            </button>
           </div>
 
           <div className="system-section">
