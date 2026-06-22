@@ -251,6 +251,80 @@ function PrivacyPage({ appearance = 'tropical' }) {
   )
 }
 
+
+function DeleteAccountPage({ appearance = 'tropical' }) {
+  return (
+    <main className={`app theme-${appearance}`}>
+      <section className="hero-card">
+        <button className="menu-button" onClick={() => { window.location.href = '/' }}>
+          ←
+        </button>
+        <h1>🗑️ Suppression du compte</h1>
+        <p>Demander la suppression de votre compte Travel Family et des données associées.</p>
+      </section>
+
+      <section className="card system-card">
+        <h2>Suppression du compte – Travel Family</h2>
+        <p><strong>Dernière mise à jour :</strong> 22 juin 2026</p>
+
+        <div className="system-section">
+          <h3>1. Demander la suppression</h3>
+          <p>
+            Vous pouvez demander la suppression de votre compte Travel Family à tout moment.
+            Pour cela, envoyez un e-mail à l’adresse suivante :
+          </p>
+          <p><strong>Email :</strong> jeremy.giuliana@outlook.com</p>
+          <p><strong>Objet conseillé :</strong> Suppression de compte Travel Family</p>
+        </div>
+
+        <div className="system-section">
+          <h3>2. Données supprimées</h3>
+          <p>Lorsque votre compte est supprimé, les données associées à votre compte sont également supprimées, notamment :</p>
+          <ul>
+            <li>vos voyages enregistrés ;</li>
+            <li>les membres ajoutés dans vos voyages ;</li>
+            <li>vos listes de valises ;</li>
+            <li>vos listes d’achats ;</li>
+            <li>vos activités et plannings ;</li>
+            <li>vos budgets et dépenses ;</li>
+            <li>vos lieux enregistrés ;</li>
+            <li>vos documents téléversés ;</li>
+            <li>vos photos ajoutées dans la galerie.</li>
+          </ul>
+        </div>
+
+        <div className="system-section">
+          <h3>3. Délai de traitement</h3>
+          <p>
+            Les demandes de suppression sont traitées dans un délai raisonnable après réception de l’e-mail.
+            Une confirmation pourra vous être envoyée une fois la demande traitée.
+          </p>
+        </div>
+
+        <div className="system-section">
+          <h3>4. Données conservées temporairement</h3>
+          <p>
+            Certaines données techniques peuvent être conservées temporairement si cela est nécessaire pour la sécurité,
+            la prévention des abus, le respect d’une obligation légale ou le bon fonctionnement du service.
+          </p>
+        </div>
+
+        <div className="system-section">
+          <h3>5. Contact</h3>
+          <p>Pour toute question concernant la suppression de compte :</p>
+          <p><strong>Email :</strong> jeremy.giuliana@outlook.com</p>
+        </div>
+
+        <div className="document-actions">
+          <button className="open-document" onClick={() => { window.location.href = '/' }}>
+            Retour à Travel Family
+          </button>
+        </div>
+      </section>
+    </main>
+  )
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState('home')
   const [mainView, setMainView] = useState('dashboard')
@@ -260,6 +334,7 @@ function App() {
   const t = translations[language] || translations.fr
   const appearanceText = appearanceLabels[language] || appearanceLabels.fr
   const isPrivacyPage = typeof window !== 'undefined' && window.location.pathname === '/privacy'
+  const isDeleteAccountPage = typeof window !== 'undefined' && window.location.pathname === '/delete-account'
 
   const [session, setSession] = useState(null)
   const [sessionLoading, setSessionLoading] = useState(true)
@@ -1472,6 +1547,7 @@ function App() {
   }
 
   if (isPrivacyPage) return <PrivacyPage appearance={appearance} />
+  if (isDeleteAccountPage) return <DeleteAccountPage appearance={appearance} />
 
   if (sessionLoading || dataLoading) {
     return (
@@ -2289,14 +2365,19 @@ function App() {
           </div>
 
           <div className="system-section">
-            <h3>🔐 Confidentialité</h3>
+            <h3>🔐 Confidentialité et compte</h3>
             <div className="system-row">
               <strong>Politique de confidentialité</strong>
               <span>Accessible publiquement</span>
             </div>
-            <button className="open-document" onClick={() => { window.location.href = '/privacy' }}>
-              Ouvrir la politique
-            </button>
+            <div className="document-actions">
+              <button className="open-document" onClick={() => { window.location.href = '/privacy' }}>
+                📋 Politique de confidentialité
+              </button>
+              <button className="delete-document" onClick={() => { window.location.href = '/delete-account' }}>
+                🗑️ Suppression du compte
+              </button>
+            </div>
           </div>
 
           <div className="system-section">
